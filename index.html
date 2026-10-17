@@ -11,8 +11,10 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
+<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </head><body>
-<title>B3 Punch Clock</title>
+<title>Punch Clock</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,7 +120,12 @@ textarea.inp{resize:vertical;min-height:58px;font:inherit;line-height:1.4}
 .note{display:flex;gap:8px;align-items:flex-start;margin:-4px 0 0;padding:8px 10px;border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13.5px;line-height:1.4;overflow-wrap:anywhere}
 .note svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--accent)}
 .links{display:flex;gap:14px;flex-wrap:wrap}
-.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.adminbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:8px 13px;font-weight:800;font-size:13.5px;white-space:nowrap}
+.adminbtn svg{width:16px;height:16px}
+.adminbtn[aria-pressed="true"]{background:var(--in-soft);border-color:transparent;color:var(--in)}
+.adminbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--in)}
+.pinbox{width:min(360px,100%)}
+body.viewer .card .acts,body.viewer .card .links,body.viewer .card>.link,body.viewer .pen,body.viewer .bulk{display:none!important}
 .who{position:relative}
 .who>div:nth-child(2){flex:1}
 .pen{flex:none;width:32px;height:32px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--faint);display:grid;place-items:center;align-self:flex-start}
@@ -378,8 +385,16 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
       <button role="tab" data-tab="sched" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h7M4 17h6"/><circle cx="17" cy="15" r="4.5"/><path d="M17 13v2l1.3 1"/></svg>Schedule</button>
       <button role="tab" data-tab="team" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="9" r="3.5"/><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5M16 6.5a3 3 0 0 1 0 5.5M18 14.8c1.4.7 2.4 2 2.9 4.2"/></svg>Team</button>
     </nav>
+    <button class="adminbtn" id="adminBtn" type="button"></button>
   </div>
 </header>
+<div id="pinov" class="pdfov" hidden><form class="pdfbox pinbox" id="pinForm" autocomplete="off">
+  <div class="pdfbar"><div><b>Admin access</b><span>Enter the PIN to mark attendance and make changes.</span></div></div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+    <input class="inp" id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="Admin PIN" style="font-size:20px;letter-spacing:.3em;text-align:center">
+    <p id="pinErr" class="sub" style="margin:0;color:var(--danger)" hidden>That PIN isn't right. Try again.</p>
+    <div class="acts"><button class="btn" type="submit" id="pinGo">Unlock</button><button class="btn ghost sm" type="button" id="pinCancel">Cancel</button></div>
+  </div></form></div>
 
 <main class="wrap">
   <div id="notice" class="notice" hidden></div>
@@ -389,52 +404,102 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script>
-/* standalone site: plain browser downloads, and ask the browser to keep this site's data */
-window.claude={use:async n=>n==="downloads"?{save:async({filename,data})=>{
-  const ext=String(filename).split(".").pop().toLowerCase();
-  const type={pdf:"application/pdf",csv:"text/csv;charset=utf-8",json:"application/json",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}[ext]||"application/octet-stream";
-  const blob=data instanceof Blob?data:new Blob([data],{type}); const url=URL.createObjectURL(blob), a=document.createElement("a");
-  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return {status:"saved"}}}:null};
-try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
-</script>
-<script>
-/* On-device storage: everything lives in this browser's local storage. */
-window.LocalDB=(function(){
-  const KEY="b3-punch-clock:v1";
-  let store={}, ok=true;
-  try{const raw=localStorage.getItem(KEY);store=raw?JSON.parse(raw)||{}:{};localStorage.setItem(KEY+":probe","1");localStorage.removeItem(KEY+":probe")}catch(e){ok=false;store={}}
-  const listeners=new Set(); const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
-  let q=false; function notify(){if(q)return;q=true;Promise.resolve().then(()=>{q=false;listeners.forEach(f=>{try{f()}catch(e){console.error(e)}})})}
-  function persist(){if(!ok)return;try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){ok=false;throw {code:"quota_exceeded",message:"This device couldn't save. Storage may be full or blocked."}}}
-  function write(path,fn){const before=path in store?clone(store[path]):undefined;fn();try{persist()}catch(e){if(before===undefined)delete store[path];else store[path]=before;notify();return Promise.reject(e)}notify();return Promise.resolve()}
-  function snap(path){const v=store[path];return {id:path.split("/").pop(),exists:v!==undefined,data:()=>v===undefined?undefined:clone(v),metadata:{fromCache:false,hasPendingWrites:false}}}
-  function doc(path){return {id:path.split("/").pop(),path,
-    get:async()=>snap(path),
-    set:d=>write(path,()=>{store[path]=clone(d)}),
-    update:d=>path in store?write(path,()=>{store[path]={...store[path],...clone(d)}}):Promise.reject({code:"invalid_argument",message:"Document does not exist"}),
-    delete:()=>write(path,()=>{delete store[path]}),
-    onSnapshot:next=>{const f=()=>next(snap(path));listeners.add(f);setTimeout(f,0);return()=>listeners.delete(f)},
-    collection:sub=>query(path+"/"+sub,[],null,null)}}
-  function match(v,op,x){switch(op){case"==":return v===x;case"!=":return v!==x;case"<":return v<x;case"<=":return v<=x;case">":return v>x;case">=":return v>=x;case"in":return Array.isArray(x)&&x.includes(v);case"not-in":return Array.isArray(x)&&!x.includes(v);case"array-contains":return Array.isArray(v)&&v.includes(x);default:return false}}
-  function run(col,filters,order,lim){const depth=col.split("/").length+1;
-    let keys=Object.keys(store).filter(k=>k.startsWith(col+"/")&&k.split("/").length===depth).filter(k=>filters.every(([f,op,x])=>match(store[k][f],op,x)));
-    if(order){const [f,dir]=order;keys.sort((a,b)=>{const A=store[a][f],B=store[b][f];if(A===B)return 0;if(A===undefined)return 1;if(B===undefined)return -1;return (A<B?-1:1)*(dir==="desc"?-1:1)})}else keys.sort();
-    if(lim)keys=keys.slice(0,lim); const docs=keys.map(snap);
-    return {docs,size:docs.length,empty:!docs.length,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:false}}}
-  function query(col,filters,order,lim){return {path:col,
-    where:(f,op,x)=>query(col,[...filters,[f,op,x]],order,lim),orderBy:(f,d)=>query(col,filters,[f,d||"asc"],lim),limit:n=>query(col,filters,order,n),
-    get:async()=>run(col,filters,order,lim),
-    onSnapshot:next=>{const f=()=>next(run(col,filters,order,lim));listeners.add(f);setTimeout(f,0);return()=>listeners.delete(f)},
-    doc:id=>doc(col+"/"+(id||(Date.now().toString(36)+Math.random().toString(36).slice(2,8)))),
-    add:async d=>{const r=doc(col+"/"+Date.now().toString(36)+Math.random().toString(36).slice(2,8));await r.set(d);return r}}}
-  // other tabs on the same device stay in sync
-  window.addEventListener("storage",e=>{if(e.key===KEY){try{store=e.newValue?JSON.parse(e.newValue):{}}catch(_){}notify()}});
-  return {db:{doc,collection:c=>query(c,[],null,null)},ok:()=>ok,
-    exportJSON:()=>JSON.stringify({app:"punch-clock",version:1,exported:new Date().toISOString(),data:store},null,1),
-    importJSON:txt=>{const o=JSON.parse(txt);const d=o&&o.data;if(!d||typeof d!=="object")throw new Error("Not a Punch Clock backup");
-      const prev=store;store=d;try{persist()}catch(e){store=prev;throw e}notify();return Object.keys(d).length},
-    count:()=>Object.keys(store).length};
+/* Standalone runtime: stores data in the Google Sheet through Apps Script,
+   and offers the same small API the page was written against. */
+(function(){
+  const store={}; const listeners=new Set(); let ready=null, pending=0;
+  const PIN_KEY="b3-punch-clock:admin"; let PIN=null; try{PIN=localStorage.getItem(PIN_KEY)}catch(e){}
+  const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
+  const API=(window.PC_API_URL||"").trim(), useFetch=/^https:\/\/script\.google\.com\/.+\/exec$/.test(API);
+  async function callFetch(fn,args){
+    let r;
+    try{r=await fetch(API,{method:"POST",body:JSON.stringify({fn,args}),redirect:"follow"})}catch(e){throw {code:"unavailable",message:"No connection to the attendance sheet"}}
+    let out; try{out=await r.json()}catch(e){throw {code:"unavailable",message:"The attendance sheet didn't answer. Check the link in config.js."}}
+    if(!out.ok){const m=String(out.error||"");throw {code:/invalid_argument/.test(m)?"invalid_argument":"unavailable",message:m}}
+    return out.result;
+  }
+  function call(fn,...args){
+    if(useFetch)return callFetch(fn,args);
+    return new Promise((res,rej)=>{
+      if(!(window.google&&google.script&&google.script.run)){rej({code:"unavailable",message:"No attendance sheet connected. Add your Google link to config.js."});return}
+      google.script.run.withSuccessHandler(res).withFailureHandler(e=>{const m=String(e&&e.message||e);rej({code:/invalid_argument/.test(m)?"invalid_argument":"unavailable",message:m})})[fn](...args);
+    });
+  }
+  let notifyQueued=false;
+  function notify(){if(notifyQueued)return;notifyQueued=true;Promise.resolve().then(()=>{notifyQueued=false;listeners.forEach(f=>{try{f()}catch(e){console.error(e)}})})}
+  async function refresh(){
+    if(pending)return; // never overwrite local changes that are still saving
+    const all=JSON.parse(await call("getAll"));
+    if(pending)return;
+    let changed=Object.keys(store).length!==Object.keys(all).length;
+    Object.keys(store).forEach(k=>{if(!(k in all)){delete store[k];changed=true}});
+    Object.keys(all).forEach(k=>{let v;try{v=JSON.parse(all[k])}catch(e){return}
+      if(JSON.stringify(store[k])!==JSON.stringify(v)){store[k]=v;changed=true}});
+    if(changed)notify();
+  }
+  async function write(fn,path,body,local){
+    const before=path in store?clone(store[path]):undefined;
+    local(); notify(); pending++;
+    try{await (body==null?call(fn,path,PIN||""):call(fn,path,JSON.stringify(body),PIN||""))}
+    catch(e){if(before===undefined)delete store[path];else store[path]=before;notify();throw e}
+    finally{pending--}
+  }
+  function snapDoc(path){const v=store[path];return {id:path.split("/").pop(),exists:v!==undefined,data:()=>v===undefined?undefined:clone(v),metadata:{fromCache:false,hasPendingWrites:pending>0}}}
+  function docRef(path){
+    return {id:path.split("/").pop(),path,
+      get:async()=>{await ready;return snapDoc(path)},
+      set:d=>write("setDoc",path,d,()=>{store[path]=clone(d)}),
+      update:d=>{if(!(path in store))return Promise.reject({code:"invalid_argument",message:"Document does not exist"});
+        return write("updateDoc",path,d,()=>{store[path]={...store[path],...clone(d)}})},
+      delete:()=>write("deleteDoc",path,null,()=>{delete store[path]}),
+      onSnapshot:(next,err)=>{const f=()=>next(snapDoc(path));listeners.add(f);ready.then(f,e=>err&&err(e));return()=>listeners.delete(f)},
+      collection:sub=>query(path+"/"+sub,[],null,null)};
+  }
+  function match(v,op,x){switch(op){case"==":return v===x;case"!=":return v!==x;case"<":return v<x;case"<=":return v<=x;case">":return v>x;case">=":return v>=x;
+    case"in":return Array.isArray(x)&&x.includes(v);case"not-in":return Array.isArray(x)&&!x.includes(v);case"array-contains":return Array.isArray(v)&&v.includes(x);default:return false}}
+  function run(col,filters,order,lim){
+    const depth=col.split("/").length+1;
+    let keys=Object.keys(store).filter(k=>k.startsWith(col+"/")&&k.split("/").length===depth)
+      .filter(k=>filters.every(([f,op,x])=>match(store[k][f],op,x)));
+    if(order){const [f,dir]=order;keys.sort((a,b)=>{const A=store[a][f],B=store[b][f];if(A===B)return 0;if(A===undefined)return 1;if(B===undefined)return -1;return (A<B?-1:1)*(dir==="desc"?-1:1)})}
+    else keys.sort();
+    if(lim)keys=keys.slice(0,lim);
+    const docs=keys.map(snapDoc);
+    return {docs,size:docs.length,empty:!docs.length,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:pending>0}};
+  }
+  function query(col,filters,order,lim){
+    return {path:col,
+      where:(f,op,x)=>query(col,[...filters,[f,op,x]],order,lim),
+      orderBy:(f,dir)=>query(col,filters,[f,dir||"asc"],lim),
+      limit:n=>query(col,filters,order,n),
+      get:async()=>{await ready;return run(col,filters,order,lim)},
+      onSnapshot:(next,err)=>{const f=()=>next(run(col,filters,order,lim));listeners.add(f);ready.then(f,e=>err&&err(e));return()=>listeners.delete(f)},
+      doc:id=>docRef(col+"/"+(id||(Date.now().toString(36)+Math.random().toString(36).slice(2,8)))),
+      add:async d=>{const r=docRef(col+"/"+Date.now().toString(36)+Math.random().toString(36).slice(2,8));await r.set(d);return r}};
+  }
+  const db={doc:docRef,collection:c=>query(c,[],null,null)};
+  ready=refresh().catch(e=>{console.error(e);throw e});
+  // pick up other people's changes
+  setInterval(()=>{if(document.visibilityState==="visible")refresh().catch(()=>{})},15000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refresh().catch(()=>{})});
+
+  const downloads={save:async({filename,data})=>{
+    const ext=String(filename).split(".").pop().toLowerCase();
+    const type={pdf:"application/pdf",csv:"text/csv;charset=utf-8",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}[ext]||"application/octet-stream";
+    const blob=data instanceof Blob?data:new Blob([data],{type});
+    const url=URL.createObjectURL(blob), a=document.createElement("a");
+    a.href=url;a.download=filename;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    return {status:"saved"};
+  }};
+  window.PC_ADMIN={
+    is:()=>!!PIN,
+    unlock:async p=>{const ok=await call("checkPin",String(p||""));if(ok){PIN=String(p);try{localStorage.setItem(PIN_KEY,PIN)}catch(e){}}return ok},
+    lock:()=>{PIN=null;try{localStorage.removeItem(PIN_KEY)}catch(e){}}};
+  // a saved PIN that no longer works (it was changed) is dropped quietly
+  if(PIN)call("checkPin",PIN).then(ok=>{if(!ok){window.PC_ADMIN.lock();window.dispatchEvent(new Event("pc-admin"))}},()=>{});
+  const user={can:async()=>!!PIN,isOwner:async()=>true,canEdit:async()=>true,id:async()=>null,me:async()=>({id:null,name:"",email:null})};
+  window.claude={use:async n=>n==="db"?(await ready.then(()=>db,()=>null)):n==="downloads"?downloads:n==="user"?user:null};
 })();
 
 </script>
@@ -522,7 +587,7 @@ document.getElementById("toast").addEventListener("click",async e=>{
   try{await fn();toast("Undone")}catch(err){fail(err)}
 });
 function fail(err){
-  if(err&&err.code==="invalid_argument"){S.canWrite=false;render();toast("You have view-only access to this board.");return}
+  if(err&&err.code==="invalid_argument"){S.canWrite=false;render();toast("Enter the admin PIN to make changes.");return}
   if(err&&err.code==="quota_exceeded"){toast("Storage is full. Remove old records to keep saving.");return}
   toast("Couldn't save. Check your connection and try again.");
 }
@@ -1424,18 +1489,12 @@ function renderTeam(){
         ?`<button class="btn warn sm" type="button" data-act="rmok" data-id="${p.id}" ${ro}>Remove</button><button class="btn ghost sm" type="button" data-act="rmcancel">Keep</button>`
         :`<button class="btn ghost sm" type="button" data-act="rm" data-id="${p.id}" ${ro}>Remove</button>`}</li>`).join("")}</ul>
   </div>
-  <div class="side">
   <div class="panel"><h2>Team name</h2><p class="sub">Shown under the logo and on reports.</p>
     <form class="settings" id="teamForm" autocomplete="off">
       <div class="field"><label for="sTeam">Team name</label><input class="inp" id="sTeam" maxlength="50" value="${esc(D.sTeam==null?s.teamName:D.sTeam)}" placeholder="e.g. B3 Dubai office"></div>
       <button class="btn" type="submit" ${ro}>Save name</button>
     </form>
-  </div>
-  <div class="panel"><h2>Your data</h2><p class="sub">Everything is saved on this device only, in this browser. Nobody else can see it, and clearing your browser data erases it. Save a backup now and then, or to move to another device.</p>
-    <div class="acts" style="flex-wrap:wrap">${downloads?`<button class="btn sm" type="button" data-act="backup">${IC.dl}Save backup</button>`:`<button class="btn sm" type="button" data-act="backupcopy">Copy backup</button>`}
-      <label class="btn ghost sm" for="restoreFile" style="cursor:pointer">Restore from backup</label><input type="file" id="restoreFile" accept=".json,application/json" hidden></div>
-    ${S.backupText?`<textarea class="inp mailtxt" id="backupTxt" rows="6" readonly style="margin-top:10px;min-height:120px">${esc(S.backupText)}</textarea><p class="sub" style="margin:6px 0 0">Copied. Paste it into a note or email to yourself and save it as a .json file to restore later.</p>`:""}
-  </div></div></div>`;
+  </div></div>`;
 }
 
 /* ---------- schedule ---------- */
@@ -1474,9 +1533,11 @@ function renderSchedule(){
 function render(){
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===S.tab)));
   document.getElementById("teamName").textContent=S.settings.teamName||"B3 International";
+  const ab=document.getElementById("adminBtn"); if(ab){ab.innerHTML=S.canWrite?'<span class="dot"></span>Admin · Lock':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Admin';ab.setAttribute("aria-pressed",String(!!S.canWrite))}
+  document.body.classList.toggle("viewer",!S.canWrite);
   const n=document.getElementById("notice");
-  if(S.offline){n.hidden=false;n.textContent="This browser isn't keeping data (private browsing or blocked storage), so attendance will be lost when you close the page. Open the link in a normal browser window."}
-  else if(!S.canWrite){n.hidden=false;n.textContent="Changes couldn't be saved on this device."}
+  if(S.offline){n.hidden=false;n.textContent="Can't reach the attendance sheet. Check your internet connection and reopen the app."}
+  else if(!S.canWrite){n.hidden=false;n.innerHTML="You're viewing. Tap <b>Admin</b> at the top and enter the PIN to mark attendance or make changes."}
   else n.hidden=true;
   // keep focus and caret in whatever field the person is typing in
   const a=document.activeElement, aid=a&&a.id&&view.contains(a)?a.id:null;
@@ -1546,17 +1607,9 @@ view.addEventListener("click",e=>{
     case "goreport":S.tab="week";S.day=todayKey;S.mail=null;render();window.scrollTo({top:0});break;
     case "xlsx":exportExcel();break;
     case "rm":S.removing=id;render();break;
-    case "backup":downloads.save({filename:"punch-clock-backup-"+todayKey+".json",data:window.LocalDB.exportJSON()}).then(()=>toast("Backup saved"),e=>{if(!e||e.code!=="declined")toast("Couldn't save the backup here.")});break;
-    case "backupcopy":{S.backupText=window.LocalDB.exportJSON();render();const t=S.backupText;try{navigator.clipboard.writeText(t).then(()=>toast("Backup copied"),()=>{const x=document.getElementById("backupTxt");x&&x.select()})}catch(e){}break}
     case "rmcancel":S.removing=null;render();break;
     case "rmok":{if(!db){noDb();break}const name=personName(id);S.removing=null;render();db.doc("people/"+id).delete().then(()=>toast(name+" removed")).catch(fail);break}
   }
-});
-view.addEventListener("change",e=>{
-  if(e.target.id!=="restoreFile"||!e.target.files||!e.target.files[0])return;
-  const f=e.target.files[0], rd=new FileReader();
-  rd.onload=()=>{try{const n=window.LocalDB.importJSON(String(rd.result));S.backupText=null;toast("Backup restored ("+n+" records)")}catch(err){toast("That file isn't a Punch Clock backup.")}};
-  rd.readAsText(f); e.target.value="";
 });
 view.addEventListener("submit",async e=>{
   e.preventDefault();
@@ -1578,6 +1631,25 @@ view.addEventListener("submit",async e=>{
       D.hours=null;toast("Schedule saved")}catch(err){fail(err)}
   }
 });
+
+/* ---------- admin PIN ---------- */
+const pinov=document.getElementById("pinov");
+function openPin(){pinov.hidden=false;document.getElementById("pinErr").hidden=true;const i=document.getElementById("pinIn");i.value="";setTimeout(()=>i.focus(),30)}
+document.getElementById("adminBtn").addEventListener("click",()=>{
+  if(S.canWrite){window.PC_ADMIN.lock();S.canWrite=false;S.edit=null;S.rename=null;S.confirm=null;render();toast("Locked. Viewing only.")}
+  else openPin();
+});
+document.getElementById("pinCancel").addEventListener("click",()=>{pinov.hidden=true});
+pinov.addEventListener("click",e=>{if(e.target===pinov)pinov.hidden=true});
+document.getElementById("pinForm").addEventListener("submit",async e=>{
+  e.preventDefault(); const go=document.getElementById("pinGo"); go.disabled=true;
+  try{const ok=await window.PC_ADMIN.unlock(document.getElementById("pinIn").value);
+    if(ok){pinov.hidden=true;S.canWrite=true;render();toast("Admin mode on. You can make changes.")}
+    else{document.getElementById("pinErr").hidden=false;document.getElementById("pinIn").select()}}
+  catch(err){toast("Couldn't check the PIN. Check your connection.")}
+  finally{go.disabled=false}
+});
+window.addEventListener("pc-admin",()=>{S.canWrite=false;render()});
 
 /* ---------- clock ---------- */
 let lastMin=new Date().getMinutes();
@@ -1609,9 +1681,13 @@ function subHist(){
   },()=>{});
 }
 async function start(){
+  S.canWrite=!!(window.PC_ADMIN&&window.PC_ADMIN.is());
   render();
-  db=window.LocalDB.db; if(!window.LocalDB.ok()){S.offline=true}
-  try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>{downloads=d;render()},()=>{})}catch(e){}
+  if(!window.claude||!window.claude.use){S.offline=true;S.ready=true;render();return}
+  db=await window.claude.use("db");
+  if(!db){S.offline=true;S.ready=true;render();return}
+  window.claude.use("downloads").then(d=>{downloads=d;if(S.tab==="week")render()});
+  window.claude.use("user").then(async u=>{if(u){const c=await u.can("data.write");if(c===false){S.canWrite=false;render()}}});
   db.collection("people").onSnapshot(s=>{
     S.people=s.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.name).sort((a,b)=>a.name.localeCompare(b.name));
     S.ready=true;render();
