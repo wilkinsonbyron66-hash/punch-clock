@@ -16,6 +16,9 @@
 </head><body>
 <title>Punch Clock</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: a B3-branded time-clock terminal. An aubergine clock-face panel anchors every view; light time-cards and charts sit below it. */
 :root{
@@ -372,123 +375,6 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
 @media (prefers-reduced-motion:no-preference){
   .toast{animation:up .22s ease}@keyframes up{from{opacity:0;transform:translate(-50%,8px)}}
   .card{animation:pop .25s ease both}@keyframes pop{from{transform:translateY(4px)}}
-}
-
-/* ===== Apple-style theme: system type, soft greys, quiet colour ===== */
-:root{
-  --bg:#F5F5F7; --surface:#FFFFFF; --surface-2:#F2F2F7; --line:#E5E5EA; --line-2:#D1D1D6;
-  --ink:#1D1D1F; --muted:#6E6E73; --faint:#AEAEB2;
-  --accent:#6B3FA0; --accent-ink:#FFFFFF; --accent-soft:#F1EBF8;
-  --hero:#1D1D1F; --hero-2:#3A3A3C; --hero-fg:#FFFFFF; --hero-muted:#AEAEB2; --hero-line:#E5E5EA;
-  --in:#248A3D; --in-soft:#E8F7EC; --late:#C93400; --late-soft:#FFF1E6;
-  --done:#6E6E73; --done-soft:#F2F2F7; --leave:#D70015; --leave-soft:#FFEBEE; --absent:#D1D1D6;
-  --home:#0071A4; --home-soft:#E5F4FA; --danger:#D70015;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
-  --f-display:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --f-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --r:16px;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --line:#38383A; --line-2:#48484A;
-  --ink:#F5F5F7; --muted:#98989D; --faint:#636366;
-  --accent:#B48AE8; --accent-ink:#1C1C1E; --accent-soft:#2E2540;
-  --hero:#F5F5F7; --hero-2:#E5E5EA; --hero-fg:#1C1C1E; --hero-muted:#636366; --hero-line:#38383A;
-  --in:#30D158; --in-soft:#13301C; --late:#FF9F0A; --late-soft:#3A2A10; --done:#98989D; --done-soft:#2C2C2E;
-  --leave:#FF453A; --leave-soft:#3A1614; --absent:#48484A; --home:#64D2FF; --home-soft:#0F2C38; --danger:#FF453A;
-  --shadow:none; color-scheme:dark;}}
-:root[data-theme="dark"]{
-  --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --line:#38383A; --line-2:#48484A;
-  --ink:#F5F5F7; --muted:#98989D; --faint:#636366;
-  --accent:#B48AE8; --accent-ink:#1C1C1E; --accent-soft:#2E2540;
-  --hero:#F5F5F7; --hero-2:#E5E5EA; --hero-fg:#1C1C1E; --hero-muted:#636366; --hero-line:#38383A;
-  --in:#30D158; --in-soft:#13301C; --late:#FF9F0A; --late-soft:#3A2A10; --done:#98989D; --done-soft:#2C2C2E;
-  --leave:#FF453A; --leave-soft:#3A1614; --absent:#48484A; --home:#64D2FF; --home-soft:#0F2C38; --danger:#FF453A;
-  --shadow:none; color-scheme:dark;}
-body{font-family:var(--f-body);font-size:15px;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
-h1,h2,h3,.head h2,.panel h2,.panel h3,.rep h3,.empty h2{font-weight:700;letter-spacing:-.022em}
-.eyebrow{text-transform:none;letter-spacing:0;font-weight:600;font-size:13px;color:var(--muted)}
-/* header: frosted bar, segmented tabs */
-header{background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--line)}
-header::after{display:none}
-body::before{background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
-.brand h1{font-size:17px;font-weight:600;letter-spacing:-.02em}
-.brand small{font-weight:400}
-.logo{height:38px}
-.divider{height:26px;background:var(--line)}
-.tabs{background:var(--surface-2);border:0;border-radius:10px;padding:2px;gap:0}
-.tabs button{border-radius:8px;padding:6px 14px;font-weight:500;font-size:13.5px;color:var(--ink)}
-.tabs button svg{display:none}
-.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
-:root[data-theme="dark"] .tabs button[aria-selected="true"]{background:#636366}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs button[aria-selected="true"]{background:#636366}}
-.adminbtn{background:transparent;border:0;color:var(--accent);font-weight:600;padding:6px 10px}
-.adminbtn[aria-pressed="true"]{background:transparent;color:var(--in)}
-/* the day panel: plain white, big date */
-.face{background:var(--surface);color:var(--ink);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px}
-.face .watermark{display:none}
-.face .eyebrow{color:var(--muted)}
-.dateclock{font-weight:700;letter-spacing:-.035em;font-size:clamp(34px,6.5vw,52px);line-height:1.05}
-.dateclock .sec{color:var(--muted);font-weight:500;font-size:.4em;letter-spacing:-.01em;margin-top:4px}
-.tally{background:none;padding:0;gap:8px;border-radius:0}
-.tally div{background:var(--surface-2);border-radius:12px;padding:12px 14px}
-.tally b{font-weight:700;font-size:28px;letter-spacing:-.03em}
-.tally span{color:var(--muted);font-weight:500}
-.track-note{color:var(--muted);font-weight:500}
-.track-bar{height:6px;background:var(--surface-2)}
-.track-fill{background:var(--accent)}
-/* surfaces */
-.card,.panel,.kpi,.bulk,.daybar,.tablewrap,.empty{border:0;border-radius:var(--r);box-shadow:var(--shadow)}
-.empty{border:0}
-.card{gap:12px;padding:16px}
-.card.s-in,.card.s-late,.card.s-in.at-home{border:0}
-.av{box-shadow:none!important;width:40px;height:40px;font-weight:600}
-.who strong{font-weight:600;font-size:16px}
-.stamp{background:transparent;padding:0;min-height:0}
-.pill{font-weight:600;font-size:12.5px;padding:4px 10px;background:var(--surface-2)}
-.pill::before{display:none}
-/* controls */
-.btn{border-radius:10px;font-weight:600;font-size:15px;padding:11px 14px;letter-spacing:-.01em}
-.btn:hover{filter:brightness(1.05)}
-.btn.sm{font-size:13.5px;padding:7px 12px;border-radius:8px}
-.btn.ghost{background:var(--surface-2);border:0;color:var(--accent)}
-.btn.out,.btn.pdfbtn{background:var(--ink);color:var(--surface)}
-.btn.home{background:var(--home);color:#fff}
-.link{color:var(--accent);text-decoration:none;font-weight:500}
-.link:hover{text-decoration:underline}
-.chipbtn{border:0;background:var(--surface);font-weight:500;box-shadow:var(--shadow)}
-.chipbtn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border:0}
-.seg{background:var(--surface-2);border:0;border-radius:9px;padding:2px}
-.seg button{font-weight:500;border-radius:7px;color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.inp{border:0;background:var(--surface-2);border-radius:10px}
-.inp:focus{background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft),0 0 0 1px var(--accent)}
-.search input{border:0;box-shadow:var(--shadow);border-radius:10px}
-.icon{border:0;background:var(--surface-2);border-radius:50%;width:36px;height:36px;color:var(--accent)}
-.field label{text-transform:none;letter-spacing:0;font-size:13px;font-weight:600}
-.lvbtn,.stbtn,.wbtn,.emo{border:0;border-radius:10px;font-weight:600}
-.note{background:var(--surface-2)}
-.note svg{color:var(--muted)}
-.notice{background:var(--surface);box-shadow:var(--shadow);border-radius:12px}
-.ricon{background:var(--surface-2);color:var(--accent);border-radius:10px}
-.mini-t{background:var(--surface-2);border-left:0;border-radius:10px}
-.mini-t b{font-weight:700}
-.kpi b{font-weight:700;letter-spacing:-.03em}
-.wk th,.ppl th,.wg th{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:600}
-.wk td.name{font-weight:600}
-.wk td.cell span{border-radius:6px;font-weight:600}
-.toast{background:color-mix(in srgb,var(--ink) 88%,transparent);color:var(--surface);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-radius:14px;font-weight:500}
-.toast button{background:transparent;color:var(--accent);font-weight:600}
-:root[data-theme="dark"] .toast button{color:var(--accent-ink)}
-.pdfbox{border-radius:18px}
-.tip{background:color-mix(in srgb,var(--ink) 92%,transparent);color:var(--surface);border-radius:8px}
-@media (max-width:620px){
-  .bar{gap:10px 8px}
-  .brand{flex:1}
-  .adminbtn{order:2}
-  .tabs{order:3;width:100%}
-  .tabs button{flex:1;justify-content:center;padding:6px 2px;font-size:12.5px}
-  .face{padding:18px}
 }
 </style>
 
@@ -880,7 +766,7 @@ function card(p,now){
     pill=(home?`<span class="pill home">Present · from home</span>`:`<span class="pill in">Present · in office</span>`);
     acts=S.confirm==="clr:"+p.id
       ?`<button class="btn warn" type="button" data-act="clrok" data-id="${p.id}" ${dis}>Clear this entry</button><button class="btn ghost sm" type="button" data-act="cancel">Keep</button>`
-      :`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit</button>`;
+      :`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit attendance${r.note?" or note":" / add note"}</button>`;
     if(S.canWrite&&S.confirm!=="clr:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="switch" data-id="${p.id}">${home?"Change to in office":"Change to working from home"}</button><button class="link" type="button" data-act="clr" data-id="${p.id}">Clear</button></div>`;
   }
   const RN=S.rename&&S.rename.pid===p.id?S.rename:null;
@@ -1425,7 +1311,7 @@ function reportsPanel(){
 const PC={brand:"#4B2163",brand2:"#6A2E8E",ink:"#1C1326",muted:"#6B6178",faint:"#A39AAF",line:"#E8E3EE",soft:"#F6F3F9",white:"#FFFFFF",
   office:"#12895B",home:"#0B8C99",leave:"#C2386F",ooo:"#E3A008",off:"#DDD8E3",
   annual:"#2F6FB0",sick:"#C2386F",half:"#C76A12",other:"#6B6178"};
-const PF_D='-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif', PF_B='-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif', PF_M='ui-monospace,"SF Mono",Menlo,Consolas,monospace';
+const PF_D='"Bricolage Grotesque","Figtree",Arial,sans-serif', PF_B='"Figtree",Arial,sans-serif', PF_M='"IBM Plex Mono",Consolas,monospace';
 const PX_MM=200/25.4;
 function pdfPage(){const W=Math.round(210*PX_MM),H=Math.round(297*PX_MM),cv=document.createElement("canvas");cv.width=W;cv.height=H;
   const g=cv.getContext("2d");g.scale(PX_MM,PX_MM);g.fillStyle="#fff";g.fillRect(0,0,210,297);return {cv,g}}
@@ -1437,7 +1323,7 @@ function tx(g,s,x,y,o={}){const pt=o.pt||9;g.font=`${o.w||400} ${pt*0.3528}px ${
   const str=o.max?fitT(g,s,o.max):String(s);g.fillText(str,x,y);return g.measureText(str).width}
 function hline(g,x1,x2,y,c,w){g.strokeStyle=c||PC.line;g.lineWidth=w||0.25;g.beginPath();g.moveTo(x1,y);g.lineTo(x2,y);g.stroke()}
 function loadImg(src){return new Promise(res=>{if(!src)return res(null);const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src})}
-async function pdfFonts(){}
+async function pdfFonts(){try{await Promise.all([document.fonts.load('800 20px "Bricolage Grotesque"'),document.fonts.load('700 12px "Figtree"'),document.fonts.load('400 12px "Figtree"'),document.fonts.load('600 12px "IBM Plex Mono"')])}catch(e){}}
 function jpegToPdf(dataUrl,wPx,hPx){
   const b64=dataUrl.split(",")[1], bin=atob(b64), img=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)img[i]=bin.charCodeAt(i);
   const enc=new TextEncoder(), parts=[], offs=[]; let len=0;
