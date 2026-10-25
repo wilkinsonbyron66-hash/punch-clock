@@ -126,6 +126,11 @@ textarea.inp{resize:vertical;min-height:58px;font:inherit;line-height:1.4}
 .adminbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--in)}
 .pinbox{width:min(360px,100%)}
 body.viewer .card .acts,body.viewer .card .links,body.viewer .card>.link,body.viewer .pen,body.viewer .bulk{display:none!important}
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stbtn{border:1px solid var(--line);border-radius:10px;padding:8px 6px;font-weight:800;font-size:12.5px;background:var(--surface-2);color:var(--ink)}
+.stbtn.st-in{--lv:var(--in);--lvs:var(--in-soft)} .stbtn.st-home{--lv:var(--home);--lvs:var(--home-soft)} .stbtn.st-none{--lv:var(--muted);--lvs:var(--surface-2)}
+.stbtn[aria-pressed="true"]{background:var(--lvs,var(--accent-soft));color:var(--lv,var(--accent));border-color:var(--lv,var(--accent));box-shadow:0 0 0 2px var(--lvs,var(--accent-soft))}
+.btn svg{flex:none}
 .daybar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px;box-shadow:var(--shadow)}
 .daypick{display:flex;align-items:center;gap:10px}
 .daypick .inp{width:auto;padding:8px 10px;font-family:var(--f-mono);font-weight:600;background:var(--surface-2)}
@@ -623,7 +628,8 @@ async function guarded(pid,fn){
 }
 function logRef(pid,k){return db.doc("log/"+(k||vKey())+"_"+pid)}
 function planLoc(p){return wfhDay(p,vDate())?"home":"office"}
-function presentDoc(pid,loc){return {date:vKey(),pid,status:"present",loc}}
+function keepNote(pid){const r=S.today[pid];return r&&r.note?{note:r.note}:{}}
+function presentDoc(pid,loc){return {date:vKey(),pid,status:"present",loc,...keepNote(pid)}}
 function markPresent(pid,loc){return guarded(pid,async()=>{const p=S.people.find(x=>x.id===pid);const l=loc||planLoc(p),ref=logRef(pid);
   await ref.set(presentDoc(pid,l));toast(personName(pid)+" marked present"+(l==="home"?" (from home)":" (in office)"),()=>ref.delete())})}
 async function markAll(){
@@ -641,13 +647,22 @@ async function saveRename(){
     toast(prev.name!==name?prev.name+" renamed to "+name:"Details saved",()=>db.doc("people/"+R.pid).update(prev))}catch(e){fail(e)}
 }
 function clearDay(pid){return guarded(pid,async()=>{const ref=logRef(pid),prev={...S.today[pid]};await ref.delete();toast("Cleared today's entry for "+personName(pid),()=>ref.set(prev))})}
-function startEdit(pid){const r=S.today[pid]||{};S.edit={pid,loc:isHome(r)?"home":"office",note:r.note||""};render();
+const EDIT_CHOICES=[["office","In office","in"],["home","From home","home"],["annual","Annual Leave","lv-annual"],["sick","Sick Leave","lv-sick"],["half","Half Day","lv-half"],["other","On Leave","lv-other"],["ooo","Out of Office","lv-ooo"],["none","Not marked","none"]];
+function currentChoice(r){if(!r)return "none";if(r.status==="leave")return LEAVE_CHOICES[r.leaveType]?r.leaveType:"other";if(isPresent(r))return isHome(r)?"home":"office";return "none"}
+function startEdit(pid){const r=S.today[pid];S.edit={pid,st:currentChoice(r),note:(r&&r.note)||""};S.confirm=null;render();
   setTimeout(()=>{const x=document.getElementById("e-note");x&&x.focus()},0)}
 function saveEdit(){const E=S.edit;if(!E)return;
-  const pid=E.pid; return guarded(pid,async()=>{const ref=logRef(pid),prev={...S.today[pid]};
-    await ref.set({date:vKey(),pid,status:"present",loc:E.loc,note:String(E.note||"").trim(),edited:new Date().toISOString()});
-    S.edit=null;toast(personName(pid)+" updated",()=>ref.set(prev))})}
-
+  const pid=E.pid, note=String(E.note||"").trim();
+  return guarded(pid,async()=>{const ref=logRef(pid),had=S.today[pid],prev=had?{...had}:null;
+    const base={date:vKey(),pid,edited:new Date().toISOString()};let doc;
+    if(E.st==="office"||E.st==="home")doc={...base,status:"present",loc:E.st};
+    else if(E.st==="none")doc=note?{...base,status:"none"}:null;
+    else doc={...base,status:"leave",leaveType:E.st};
+    if(doc&&note)doc.note=note;
+    if(doc)await ref.set(doc);else if(had)await ref.delete();
+    S.edit=null;
+    const label=(EDIT_CHOICES.find(c=>c[0]===E.st)||[])[1]||"";
+    toast(personName(pid)+": "+(E.st==="none"?(note?"note saved":"cleared"):label)+(note&&E.st!=="none"?" · note saved":""),()=>prev?ref.set(prev):ref.delete())})}
 function switchLoc(pid){return guarded(pid,async()=>{const ref=logRef(pid),was=isHome(S.today[pid])?"home":"office",to=was==="home"?"office":"home";await ref.update({loc:to});toast(personName(pid)+(to==="home"?" is now working from home":" is now in the office"),()=>ref.update({loc:was}))})}
 async function toggleWfhDay(pid,d){
   if(!db){noDb();return} if(!S.canWrite)return;
@@ -660,8 +675,8 @@ async function toggleWfhDay(pid,d){
 
 
 
-function markLeave(pid,type){S.confirm=null;return guarded(pid,async()=>{const ref=logRef(pid);await ref.set({date:vKey(),pid,status:"leave",leaveType:type||"other",in:null,out:null});toast(personName(pid)+": "+(LEAVE_CHOICES[type]||"On Leave"),()=>ref.delete())})}
-function clearLeave(pid){return guarded(pid,async()=>{await logRef(pid).delete();toast("Leave cleared for "+personName(pid))})}
+function markLeave(pid,type){S.confirm=null;return guarded(pid,async()=>{const ref=logRef(pid);await ref.set({date:vKey(),pid,status:"leave",leaveType:type||"other",...keepNote(pid)});toast(personName(pid)+": "+(LEAVE_CHOICES[type]||"On Leave"),()=>ref.delete())})}
+function clearLeave(pid){return guarded(pid,async()=>{const r=S.today[pid];if(r&&r.note)await logRef(pid).set({date:vKey(),pid,status:"none",note:r.note});else await logRef(pid).delete();toast("Leave cleared for "+personName(pid))})}
 
 /* ---------- clock face ---------- */
 function face(){
@@ -730,9 +745,10 @@ function card(p,now){
   let pill,acts,extra="";
   if(S.edit&&S.edit.pid===p.id){
     const E=S.edit;
-    pill=`<span class="pill">Edit today</span>`;
+    pill=`<span class="pill">Editing ${esc(isViewToday()?"today":vDate().toLocaleDateString(undefined,{day:"numeric",month:"short"}))}</span>`;
     acts=`<div class="editbox">
-      <div class="seg" role="group" aria-label="Location"><button type="button" data-act="eloc" data-loc="office" aria-pressed="${E.loc==="office"}">In office</button><button type="button" data-act="eloc" data-loc="home" aria-pressed="${E.loc==="home"}">From home</button></div>
+      <span class="eyebrow">Attendance</span>
+      <div class="stgrid" role="group" aria-label="Attendance">${EDIT_CHOICES.map(([k,l,c])=>`<button type="button" class="stbtn ${c.startsWith("lv-")?c:"st-"+c}" data-act="est" data-st="${k}" aria-pressed="${E.st===k}">${l}</button>`).join("")}</div>
       <div class="field"><label for="e-note">Note</label><textarea class="inp" id="e-note" rows="2" maxlength="300" placeholder="Optional, e.g. client site visit in Abu Dhabi">${esc(E.note||"")}</textarea></div>
       <div class="acts"><button class="btn" type="button" data-act="esave" data-id="${p.id}" ${dis}>Save</button><button class="btn ghost sm" type="button" data-act="ecancel">Cancel</button></div></div>`;
   }else if(st==="none"){
@@ -743,14 +759,14 @@ function card(p,now){
         <button class="btn ghost sm" type="button" data-act="cancel">Cancel</button></div>`
       :`<button class="btn${plan?" home":""}" type="button" data-act="present" data-loc="${loc}" data-id="${p.id}" ${dis}>${plan?IC.home:IC.check}Present</button>
       <button class="btn ghost sm" type="button" data-act="leave" data-id="${p.id}" ${dis}>Leave</button>`;
-    if(S.canWrite&&S.confirm!=="lv:"+p.id)extra=`<button class="link" type="button" data-act="present" data-loc="${plan?"office":"home"}" data-id="${p.id}">${plan?"Present in the office instead":"Present, working from home"}</button>`;
+    if(S.canWrite&&S.confirm!=="lv:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="present" data-loc="${plan?"office":"home"}" data-id="${p.id}">${plan?"Present in the office instead":"Present, working from home"}</button><button class="link" type="button" data-act="edit" data-id="${p.id}">${r&&r.note?"Edit note":"Add note"}</button></div>`;
   }else if(st==="leave"){pill=`<span class="pill leave lv-${esc(r.leaveType||"other")}">${esc(leaveLabel(r))}</span>`;
-    acts=`<button class="btn ghost" type="button" data-act="clearleave" data-id="${p.id}" ${dis}>Clear leave</button>`;
+    acts=`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit</button><button class="btn ghost sm" type="button" data-act="clearleave" data-id="${p.id}" ${dis}>Clear leave</button>`;
   }else{
     pill=(home?`<span class="pill home">Present · from home</span>`:`<span class="pill in">Present · in office</span>`);
     acts=S.confirm==="clr:"+p.id
-      ?`<button class="btn warn" type="button" data-act="clrok" data-id="${p.id}" ${dis}>Clear today's entry</button><button class="btn ghost sm" type="button" data-act="cancel">Keep</button>`
-      :`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${r.note?"Edit note or location":"Add note or change location"}</button>`;
+      ?`<button class="btn warn" type="button" data-act="clrok" data-id="${p.id}" ${dis}>Clear this entry</button><button class="btn ghost sm" type="button" data-act="cancel">Keep</button>`
+      :`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit attendance${r.note?" or note":" / add note"}</button>`;
     if(S.canWrite&&S.confirm!=="clr:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="switch" data-id="${p.id}">${home?"Change to in office":"Change to working from home"}</button><button class="link" type="button" data-act="clr" data-id="${p.id}">Clear</button></div>`;
   }
   const RN=S.rename&&S.rename.pid===p.id?S.rename:null;
@@ -899,8 +915,8 @@ function cellFor(r,d,tk,p){
   if(r&&r.status==="leave"&&r.leaveType==="ooo")return {code:"ooo",label:"Out of Office",note:r.note||""};
   if(r&&r.status==="leave")return {code:r.leaveType&&LEAVE[r.leaveType]?r.leaveType:"other",label:leaveLabel(r),note:r.note||""};
   if(isPresent(r)){const base=isHome(r)?"WFH":"P";return {code:isHome(r)?"wfh":"p",label:base,note:r.note||"",rec:r}}
-  if(!sched(d).on)return {code:"off",label:""};
-  return {code:"ooo",label:"Out of Office"};
+  if(!sched(d).on)return {code:"off",label:"",note:(r&&r.note)||""};
+  return {code:"ooo",label:"Out of Office",note:(r&&r.note)||""};
 }
 async function exportCsv(){
   if(!downloads)return; if(!db){noDb();return}
@@ -1600,7 +1616,8 @@ view.addEventListener("click",e=>{
     case "rncancel":S.rename=null;render();break;
     case "rnemoji":if(S.rename){S.rename.emoji=b.dataset.e||"";render()}break;
     case "rnsave":saveRename();break;
-    case "eloc":if(S.edit){S.edit.loc=b.dataset.loc;render()}break;
+    case "eloc":if(S.edit){S.edit.st=b.dataset.loc;render()}break;
+    case "est":if(S.edit){S.edit.st=b.dataset.st;render()}break;
     case "esave":saveEdit();break;
     case "ecancel":S.edit=null;render();break;
     case "clr":S.confirm="clr:"+id;render();break;
