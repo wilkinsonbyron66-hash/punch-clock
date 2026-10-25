@@ -490,33 +490,8 @@ body::before{background:color-mix(in srgb,var(--surface) 78%,transparent);-webki
   .tabs button{flex:1;justify-content:center;padding:6px 2px;font-size:12.5px}
   .face{padding:18px}
 }
-
-/* soft background: a few blurred colour washes, fixed behind everything */
-.bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
-  background:
-    radial-gradient(60vmax 45vmax at 8% -8%, rgba(150,110,220,.34), transparent 62%),
-    radial-gradient(50vmax 40vmax at 100% 0%, rgba(90,170,240,.26), transparent 60%),
-    radial-gradient(55vmax 45vmax at 85% 105%, rgba(240,160,200,.24), transparent 62%),
-    radial-gradient(45vmax 40vmax at 0% 100%, rgba(120,200,190,.18), transparent 60%);}
-.bgfx::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1px);background-size:22px 22px;
-  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 70%);mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 70%)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bgfx{background:
-    radial-gradient(60vmax 45vmax at 8% -8%, rgba(140,90,220,.28), transparent 62%),
-    radial-gradient(50vmax 40vmax at 100% 0%, rgba(40,110,200,.20), transparent 60%),
-    radial-gradient(55vmax 45vmax at 85% 105%, rgba(200,70,140,.14), transparent 62%)}
-  :root:not([data-theme="light"]) .bgfx::after{background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)}}
-:root[data-theme="dark"] .bgfx{background:
-    radial-gradient(60vmax 45vmax at 8% -8%, rgba(140,90,220,.28), transparent 62%),
-    radial-gradient(50vmax 40vmax at 100% 0%, rgba(40,110,200,.20), transparent 60%),
-    radial-gradient(55vmax 45vmax at 85% 105%, rgba(200,70,140,.14), transparent 62%)}
-:root[data-theme="dark"] .bgfx::after{background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)}
-/* cards sit on the wash like frosted glass, still readable */
-.face,.card,.panel,.kpi,.bulk,.daybar,.tablewrap,.empty,.notice,.chipbtn,.search input{background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px)}
-.chipbtn[aria-pressed="true"]{background:var(--ink)}
-.search svg{z-index:1}
 </style>
 
-<div class="bgfx" aria-hidden="true"></div>
 <header>
   <div class="wrap bar">
     <div class="brand">
