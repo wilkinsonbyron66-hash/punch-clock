@@ -126,6 +126,11 @@ textarea.inp{resize:vertical;min-height:58px;font:inherit;line-height:1.4}
 .adminbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--in)}
 .pinbox{width:min(360px,100%)}
 body.viewer .card .acts,body.viewer .card .links,body.viewer .card>.link,body.viewer .pen,body.viewer .bulk{display:none!important}
+.daybar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px;box-shadow:var(--shadow)}
+.daypick{display:flex;align-items:center;gap:10px}
+.daypick .inp{width:auto;padding:8px 10px;font-family:var(--f-mono);font-weight:600;background:var(--surface-2)}
+.daynote{font-size:13px;font-weight:700;color:var(--muted)}
+.daynote.warn{color:var(--late)}
 .who{position:relative}
 .who>div:nth-child(2){flex:1}
 .pen{flex:none;width:32px;height:32px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--faint);display:grid;place-items:center;align-self:flex-start}
@@ -512,6 +517,12 @@ const S={people:[],settings:{...DEFAULTS},today:{},week:{},hist:{},tab:"today",w
   draft:{pName:"",pRole:"",sTeam:null,sGrace:null,hours:null}};
 if(!S.month){const d=new Date();S.month=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
 let db=null, downloads=null, unToday=null, unWeek=null, unHist=null, todayKey=key(new Date());
+let viewKey=null; // the day shown on the Today tab; null means today
+function vKey(){return viewKey||todayKey}
+function vDate(){return dateOf(vKey())}
+function isViewToday(){return vKey()===todayKey}
+function setView(k){viewKey=(!k||k===todayKey)?null:k;S.confirm=null;S.edit=null;S.rename=null;subToday();render()}
+function shiftView(n){const d=vDate();d.setDate(d.getDate()+n);setView(key(d))}
 const view=document.getElementById("view");
 
 /* ---------- helpers ---------- */
@@ -610,9 +621,9 @@ async function guarded(pid,fn){
   S.busy.add(pid);render();
   try{await fn()}catch(e){fail(e)}finally{S.busy.delete(pid);render()}
 }
-function logRef(pid,k){return db.doc("log/"+(k||todayKey)+"_"+pid)}
-function planLoc(p){return wfhDay(p)?"home":"office"}
-function presentDoc(pid,loc){return {date:todayKey,pid,status:"present",loc}}
+function logRef(pid,k){return db.doc("log/"+(k||vKey())+"_"+pid)}
+function planLoc(p){return wfhDay(p,vDate())?"home":"office"}
+function presentDoc(pid,loc){return {date:vKey(),pid,status:"present",loc}}
 function markPresent(pid,loc){return guarded(pid,async()=>{const p=S.people.find(x=>x.id===pid);const l=loc||planLoc(p),ref=logRef(pid);
   await ref.set(presentDoc(pid,l));toast(personName(pid)+" marked present"+(l==="home"?" (from home)":" (in office)"),()=>ref.delete())})}
 async function markAll(){
@@ -634,7 +645,7 @@ function startEdit(pid){const r=S.today[pid]||{};S.edit={pid,loc:isHome(r)?"home
   setTimeout(()=>{const x=document.getElementById("e-note");x&&x.focus()},0)}
 function saveEdit(){const E=S.edit;if(!E)return;
   const pid=E.pid; return guarded(pid,async()=>{const ref=logRef(pid),prev={...S.today[pid]};
-    await ref.set({date:todayKey,pid,status:"present",loc:E.loc,note:String(E.note||"").trim(),edited:new Date().toISOString()});
+    await ref.set({date:vKey(),pid,status:"present",loc:E.loc,note:String(E.note||"").trim(),edited:new Date().toISOString()});
     S.edit=null;toast(personName(pid)+" updated",()=>ref.set(prev))})}
 
 function switchLoc(pid){return guarded(pid,async()=>{const ref=logRef(pid),was=isHome(S.today[pid])?"home":"office",to=was==="home"?"office":"home";await ref.update({loc:to});toast(personName(pid)+(to==="home"?" is now working from home":" is now in the office"),()=>ref.update({loc:was}))})}
@@ -649,7 +660,7 @@ async function toggleWfhDay(pid,d){
 
 
 
-function markLeave(pid,type){S.confirm=null;return guarded(pid,async()=>{const ref=logRef(pid);await ref.set({date:todayKey,pid,status:"leave",leaveType:type||"other",in:null,out:null});toast(personName(pid)+": "+(LEAVE_CHOICES[type]||"On Leave"),()=>ref.delete())})}
+function markLeave(pid,type){S.confirm=null;return guarded(pid,async()=>{const ref=logRef(pid);await ref.set({date:vKey(),pid,status:"leave",leaveType:type||"other",in:null,out:null});toast(personName(pid)+": "+(LEAVE_CHOICES[type]||"On Leave"),()=>ref.delete())})}
 function clearLeave(pid){return guarded(pid,async()=>{await logRef(pid).delete();toast("Leave cleared for "+personName(pid))})}
 
 /* ---------- clock face ---------- */
@@ -657,12 +668,12 @@ function face(){
   const now=new Date();
   const counts={in:0,none:0,leave:0}; let office=0,home=0;
   S.people.forEach(p=>{const s=statusOf(p.id);counts[s]++;if(s==="in"){if(isHome(S.today[p.id]))home++;else office++}});
-  const total=S.people.length, marked=total-counts.none, sc=sched(now), pct=total?Math.round(marked/total*100):0;
+  const vd=vDate(), today=isViewToday(), total=S.people.length, marked=total-counts.none, sc=sched(vd), pct=total?Math.round(marked/total*100):0;
   return `<div class="face">
     <svg class="watermark" viewBox="0 0 62 68" aria-hidden="true"><path d="${MARK}" fill-rule="evenodd"/></svg>
     <div class="face-top">
-      <div><div class="eyebrow">${sc.on?"Working day":"Day off"}</div>
-        <div class="clock dateclock">${esc(now.toLocaleDateString(undefined,{weekday:"long"}))}<span class="sec">${esc(now.toLocaleDateString(undefined,{day:"numeric",month:"long"}))}</span></div></div>
+      <div><div class="eyebrow">${today?"Today · ":vKey()<todayKey?"Past day · ":"Upcoming day · "}${sc.on?"Working day":"Day off"}</div>
+        <div class="clock dateclock">${esc(vd.toLocaleDateString(undefined,{weekday:"long"}))}<span class="sec">${esc(vd.toLocaleDateString(undefined,{day:"numeric",month:"long",year:vd.getFullYear()!==now.getFullYear()?"numeric":undefined}))}</span></div></div>
       <div class="tally t4" aria-label="Today at a glance">
         <div><b>${office}</b><span><i style="background:var(--in)"></i>In office</span></div>
         <div><b>${home}</b><span><i style="background:var(--home)"></i>From home</span></div>
@@ -672,7 +683,7 @@ function face(){
     </div>
     <div class="track" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
-        <span class="track-note">${total?marked+" of "+total+" marked today":"No one on the team yet"}</span><span class="track-note">${pct}%</span></div>
+        <span class="track-note">${total?marked+" of "+total+" marked "+(today?"today":"on this day"):"No one on the team yet"}</span><span class="track-note">${pct}%</span></div>
       <div class="track-bar"><div class="track-fill" style="width:${pct}%"></div></div>
     </div>
   </div>`;
@@ -682,9 +693,15 @@ function renderToday(){
   let h=face();
   if(!S.ready)return h+`<div class="empty"><h2>Loading your team…</h2><p>Names and today's attendance appear here in a moment.</p></div>`;
   if(!S.people.length)return h+`<div class="empty"><h2>Add your team to start</h2><p>Add each person once, set the working days on the Schedule tab, then tap Present for each person every day.</p><button class="btn" data-act="goteam" type="button">Add people</button></div>`;
-  const left=S.people.filter(p=>statusOf(p.id)==="none").length, sc=sched(new Date());
+  const left=S.people.filter(p=>statusOf(p.id)==="none").length, sc=sched(vDate()), today=isViewToday();
+  h+=`<div class="daybar">
+    <button class="icon" type="button" data-act="dayprev" aria-label="Previous day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+    <label class="daypick"><span class="eyebrow">Showing</span><input class="inp" type="date" id="viewDate" value="${vKey()}" aria-label="Choose a date to view"></label>
+    <button class="icon" type="button" data-act="daynext" aria-label="Next day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
+    ${today?`<span class="daynote">Today</span>`:`<button class="btn ghost sm" type="button" data-act="daytoday">Back to today</button><span class="daynote warn">${S.canWrite?"Changes you make now are saved to "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})):"You're looking at "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</span>`}
+  </div>`;
   if(left&&S.canWrite){
-    h+=`<div class="bulk"><div><b>${left} ${left===1?"person":"people"} not marked yet</b><span>${sc.on?"Present marks the day and picks office or home from each person's schedule.":"Today is set as a day off on the Schedule tab."}</span></div>
+    h+=`<div class="bulk"><div><b>${left} ${left===1?"person":"people"} not marked ${today?"yet":"on this day"}</b><span>${sc.on?"Present marks the day and picks office or home from each person's schedule.":"This day is set as a day off on the Schedule tab."}</span></div>
       ${S.confirm==="__all"
         ?`<div class="acts"><button class="btn" type="button" data-act="allok">${IC.check}Mark ${left} present</button><button class="btn ghost sm" type="button" data-act="cancel">Cancel</button></div>`
         :`<button class="btn ghost sm" type="button" data-act="all">Mark everyone present</button>`}</div>`;
@@ -693,7 +710,7 @@ function renderToday(){
   h+=`<div class="tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Find a name" value="${esc(S.q)}" aria-label="Find a name" autocomplete="off"></label>
     <div class="filters">${F.map(([k,l])=>`<button type="button" class="chipbtn" data-filter="${k}" aria-pressed="${S.filter===k}">${l}</button>`).join("")}</div>
-    <button class="btn ghost sm" type="button" data-act="goreport">${IC.day}Today's report</button></div>`;
+    <button class="btn ghost sm" type="button" data-act="goreport">${IC.day}${today?"Today's report":"Report for this day"}</button></div>`;
   const q=S.q.trim().toLowerCase(), now=new Date();
   const list=S.people.filter(p=>{
     const st=statusOf(p.id);
@@ -709,7 +726,7 @@ function renderToday(){
 }
 function card(p,now){
   const st=statusOf(p.id), r=S.today[p.id], dis=(!S.canWrite||S.busy.has(p.id))?"disabled":"";
-  const home=isHome(r), plan=wfhDay(p), sc=sched(now);
+  const home=isHome(r), plan=wfhDay(p,vDate()), sc=sched(vDate());
   let pill,acts,extra="";
   if(S.edit&&S.edit.pid===p.id){
     const E=S.edit;
@@ -1556,6 +1573,7 @@ document.querySelector(".tabs").addEventListener("click",e=>{
 view.addEventListener("input",e=>{
   const id=e.target.id;
   if(id==="q"){S.q=e.target.value;render();return}
+  if(id==="viewDate"){if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value))setView(e.target.value);return}
   if(id==="mSel"){S.month=e.target.value;return}
   if(id==="dSel"){if(e.target.value){S.day=e.target.value;S.mail=null;render()}return}
   if(id==="e-note"&&S.edit){S.edit.note=e.target.value;return}
@@ -1604,7 +1622,10 @@ view.addEventListener("click",e=>{
     case "dmail":openMail(S.day||todayKey);break;
     case "copymail":copyMail();break;
     case "closemail":S.mail=null;render();break;
-    case "goreport":S.tab="week";S.day=todayKey;S.mail=null;render();window.scrollTo({top:0});break;
+    case "dayprev":shiftView(-1);break;
+    case "daynext":shiftView(1);break;
+    case "daytoday":setView(null);break;
+    case "goreport":S.tab="week";S.day=vKey();S.mail=null;render();window.scrollTo({top:0});break;
     case "xlsx":exportExcel();break;
     case "rm":S.removing=id;render();break;
     case "rmcancel":S.removing=null;render();break;
@@ -1655,14 +1676,14 @@ window.addEventListener("pc-admin",()=>{S.canWrite=false;render()});
 let lastMin=new Date().getMinutes();
 setInterval(()=>{
   const now=new Date();
-  const k=key(now); if(k!==todayKey){todayKey=k;subToday();subHist()}
+  const k=key(now); if(k!==todayKey){todayKey=k;if(!viewKey)subToday();subHist()}
   if(now.getMinutes()!==lastMin){lastMin=now.getMinutes();if(!typing())render()}
 },1000);
 
 /* ---------- data ---------- */
 function subToday(){
   if(!db)return; if(unToday)unToday(); S.today={};
-  unToday=db.collection("log").where("date","==",todayKey).onSnapshot(s=>{
+  unToday=db.collection("log").where("date","==",vKey()).onSnapshot(s=>{
     const m={};s.docs.forEach(d=>{const r=d.data();if(r&&r.pid)m[r.pid]=r});S.today=m;render();
   },()=>{});
 }
