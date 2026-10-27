@@ -376,6 +376,47 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
   .toast{animation:up .22s ease}@keyframes up{from{opacity:0;transform:translate(-50%,8px)}}
   .card{animation:pop .25s ease both}@keyframes pop{from{transform:translateY(4px)}}
 }
+
+/* ===== calmer, cleaner surfaces (purple B3 look kept) ===== */
+:root{--shadow:0 1px 2px rgba(28,19,38,.04)}
+.card,.panel,.kpi,.tablewrap{box-shadow:none;border-color:var(--line)}
+.card{border-radius:18px;padding:18px;gap:12px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.card:hover{border-color:var(--line-2);box-shadow:0 6px 18px rgba(44,18,64,.06)}
+.stamp{background:transparent;padding:0;min-height:0}
+.bulk,.daybar{box-shadow:none}
+.links{gap:12px}
+.link{font-weight:600;font-size:12.5px;color:var(--muted);text-decoration:none}
+.link:hover{color:var(--accent);text-decoration:underline}
+.chipbtn{border-color:transparent;background:var(--surface)}
+.empty{border-style:solid;border-color:var(--line)}
+.who strong{font-size:15.5px}
+.face{padding:24px 26px}
+/* ===== motion: short, soft, and off when the device asks for less motion ===== */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.025)}100%{transform:scale(1)}}
+  @keyframes glow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 35%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  #view.enter>*{animation:rise .42s cubic-bezier(.2,.7,.2,1) both}
+  #view.enter>*:nth-child(2){animation-delay:.04s} #view.enter>*:nth-child(3){animation-delay:.08s}
+  #view.enter>*:nth-child(4){animation-delay:.12s} #view.enter>*:nth-child(n+5){animation-delay:.16s}
+  #view.enter .grid>.card{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+  #view.enter .grid>.card:nth-child(1){animation-delay:.10s}#view.enter .grid>.card:nth-child(2){animation-delay:.14s}
+  #view.enter .grid>.card:nth-child(3){animation-delay:.18s}#view.enter .grid>.card:nth-child(4){animation-delay:.22s}
+  #view.enter .grid>.card:nth-child(5){animation-delay:.26s}#view.enter .grid>.card:nth-child(6){animation-delay:.30s}
+  #view.enter .grid>.card:nth-child(n+7){animation-delay:.34s}
+  #view.enter .track-fill,#view.enter .meter span,#view.enter .hb-t i{transform-origin:left;animation:grow .8s .15s cubic-bezier(.2,.7,.2,1) both}
+  #view.enter svg.chart rect:not(.hit){animation:fadein .6s .2s ease both}
+  .card.pop{animation:pop .45s ease,glow .9s ease}
+  .card.pop .pill{animation:fadein .35s ease}
+  .tabs button{transition:background .2s,color .2s}
+  .btn,.chipbtn,.icon,.link,.lvbtn,.stbtn{transition:transform .12s ease,filter .15s,background .2s,color .2s}
+  .btn:active,.chipbtn:active,.lvbtn:active,.stbtn:active{transform:scale(.97)}
+  .editbox,.rename{animation:rise .25s ease both}
+  .pdfov:not([hidden]) .pdfbox{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}
+  .pdfov:not([hidden]){animation:fadein .2s ease both}
+}
 </style>
 
 <header>
@@ -526,7 +567,7 @@ let viewKey=null; // the day shown on the Today tab; null means today
 function vKey(){return viewKey||todayKey}
 function vDate(){return dateOf(vKey())}
 function isViewToday(){return vKey()===todayKey}
-function setView(k){viewKey=(!k||k===todayKey)?null:k;S.confirm=null;S.edit=null;S.rename=null;subToday();render()}
+function setView(k){viewKey=(!k||k===todayKey)?null:k;S.confirm=null;S.edit=null;S.rename=null;S.anim=true;subToday();render()}
 function shiftView(n){const d=vDate();d.setDate(d.getDate()+n);setView(key(d))}
 const view=document.getElementById("view");
 
@@ -780,7 +821,7 @@ function card(p,now){
     :`<div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div>
       <div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div>
       ${S.canWrite?`<button class="pen" type="button" data-act="rename" data-id="${p.id}" aria-label="Edit ${esc(p.name)}'s name" title="Edit name">${IC.pen}</button>`:""}</div>`;
-  return `<article class="card s-${st}${home?" at-home":""}">
+  return `<article class="card s-${st}${home?" at-home":""}" data-pid="${p.id}">
     ${who}
     <div class="stamp"><span style="display:flex;gap:6px;flex-wrap:wrap">${pill}</span></div>
     ${r&&r.note&&!(S.edit&&S.edit.pid===p.id)?`<p class="note">${IC.note}<span>${esc(r.note)}</span></p>`:""}
@@ -1576,6 +1617,12 @@ function render(){
   const a=document.activeElement, aid=a&&a.id&&view.contains(a)?a.id:null;
   let s0=null,s1=null; try{if(aid){s0=a.selectionStart;s1=a.selectionEnd}}catch(e){}
   view.innerHTML=S.tab==="today"?renderToday():S.tab==="dash"?renderDash():S.tab==="week"?renderWeek():S.tab==="sched"?renderSchedule():renderTeam();
+  // entrance animation only after a tab or date change
+  if(S.anim||S.firstPaint!==false){S.anim=false;S.firstPaint=false;view.classList.remove("enter");void view.offsetWidth;view.classList.add("enter");clearTimeout(S.animT);S.animT=setTimeout(()=>view.classList.remove("enter"),900)}
+  // a card whose status just changed gets a small pop
+  if(S.tab==="today"){const now={};S.people.forEach(p=>{const r=S.today[p.id];now[p.id]=statusOf(p.id)+"|"+(r&&r.loc||"")+"|"+(r&&r.leaveType||"")});
+    if(S.lastSt&&S.lastKey===vKey())Object.keys(now).forEach(id=>{if(S.lastSt[id]!==undefined&&S.lastSt[id]!==now[id]){const c=view.querySelector('.card[data-pid="'+id+'"]');if(c)c.classList.add("pop")}});
+    S.lastSt=now;S.lastKey=vKey()}
   if(aid){const el=document.getElementById(aid);if(el){el.focus({preventScroll:true});try{if(s0!=null)el.setSelectionRange(s0,s1)}catch(e){}}}
 }
 function typing(){const a=document.activeElement;return a&&view.contains(a)&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA")}
@@ -1583,7 +1630,7 @@ function typing(){const a=document.activeElement;return a&&view.contains(a)&&(a.
 /* ---------- events ---------- */
 document.querySelector(".tabs").addEventListener("click",e=>{
   const b=e.target.closest("button[data-tab]");if(!b)return;
-  S.tab=b.dataset.tab;S.confirm=null;S.removing=null;S.edit=null;S.rename=null;tip.hidden=true;
+  S.tab=b.dataset.tab;S.confirm=null;S.removing=null;S.edit=null;S.rename=null;S.anim=true;tip.hidden=true;
   render();
 });
 view.addEventListener("input",e=>{
