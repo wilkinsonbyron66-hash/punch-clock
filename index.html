@@ -417,6 +417,74 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
   .pdfov:not([hidden]) .pdfbox{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}
   .pdfov:not([hidden]){animation:fadein .2s ease both}
 }
+
+/* ---- reminder, week summary, upcoming leave, history, holidays, emails ---- */
+.remind{display:flex;gap:12px;align-items:center;background:var(--late-soft);color:var(--ink);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.remind .ricon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--surface);color:var(--late);flex:none}
+.remind .ricon svg{width:18px;height:18px}
+.remind b{display:block;font-weight:800}.remind span{font-size:13px;color:var(--muted)}
+.panels.p2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:820px){.panels.p2{grid-template-columns:1fr}}
+.wsum{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+.wsum th{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.wsum td{padding:8px;border-bottom:1px solid var(--line)}.wsum tr:last-child td{border-bottom:0}
+.wsum td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.dl{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.dl svg{width:12px;height:12px}.dl.good{color:var(--in)}.dl.bad{color:var(--leave)}
+.upl{list-style:none;margin:6px 0 0;padding:0}
+.upl li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.upl li:first-child{border-top:0}
+.upl .person{display:flex;align-items:center;gap:10px;min-width:0;text-align:left}
+.upl .person b{display:block;font-weight:700}.upl small{display:block;font-size:12px;color:var(--muted)}
+.upl .av{width:32px;height:32px;font-size:12px;flex:none}
+.upr{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}
+.upnone{color:var(--muted);font-size:13.5px;margin:10px 0 0}
+.nmlink{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:left;max-width:100%}
+.nmlink:hover strong,.nmlink:hover b,button.nmlink.person:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.nmlink.person{display:inline-flex;align-items:center;gap:10px}
+.who .nmlink{display:block;overflow:hidden}
+.phbox{width:min(560px,100%)}
+.phbox .pdfbar .who strong{font-size:16px}.phbox .pdfbar .who small{display:block;color:var(--muted);font-size:12.5px}
+.phbody{padding:14px 16px 18px;overflow:auto}
+.phmonth{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.phmonth b{font-weight:800;font-size:15px}
+.phstats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.phstats div{background:var(--surface-2);border-radius:12px;padding:9px 8px}
+.phstats b{display:block;font-size:19px;font-weight:800;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.phstats span{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+.phstats i{width:7px;height:7px;border-radius:50%;flex:none}
+@media (max-width:480px){.phstats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.phcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.phh{font-size:10.5px;font-weight:800;color:var(--muted);text-align:center;letter-spacing:.05em;text-transform:uppercase;padding-bottom:2px}
+.phd{border:0;border-radius:10px;min-height:48px;padding:5px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:inherit;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.phd b{font-size:13px;font-weight:800}.phd span{font-size:9.5px;font-weight:700;display:flex;align-items:center;gap:3px;min-height:12px}
+.phd.blank{background:none;cursor:default}
+.phd.c-p{background:var(--in-soft);color:var(--in)}.phd.c-wfh{background:var(--home-soft);color:var(--home)}
+.phd.c-lv{background:var(--lvs);color:var(--lv)}.phd.c-off{background:none;color:var(--faint,var(--muted));opacity:.75}
+.phd.c-empty{color:var(--muted)}
+.phd.now{box-shadow:inset 0 0 0 2px var(--accent)}
+.phd .ndot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
+.phload{padding:40px 0;text-align:center;color:var(--muted)}
+.phbody h4{margin:16px 0 6px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.phnotes{list-style:none;margin:0;padding:0}.phnotes li{display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.phnotes b{flex:none;width:92px;font-weight:700}
+.holp{margin-top:12px}
+.holform{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}.holform .inp{flex:1 1 150px;width:auto}
+.hollist{list-style:none;margin:0;padding:0}
+.hollist li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.hollist .hd b{display:block;font-weight:700}.hollist .hd span{font-size:12.5px;color:var(--muted)}
+.holpast{margin-top:8px}.holpast summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);padding:6px 0}
+.mailp{grid-column:1/-1}
+.mform{display:flex;flex-direction:column;gap:4px;margin-top:6px}.mform .field{margin-bottom:8px;max-width:560px}.mform .acts{margin-top:10px;flex-wrap:wrap}
+.holform input[type=date]{flex:0 0 190px}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.mrow>div{flex:1;min-width:0}.mrow b{display:block;font-weight:700}.mrow span{font-size:12.5px;color:var(--muted)}
+.mrow .inp.tm{width:120px;flex:none}
+@media (max-width:520px){.mrow{flex-wrap:wrap}.mrow .inp.tm{margin-left:54px}}
+@media (prefers-reduced-motion:no-preference){
+  .phbox .phd{animation:fadein .3s ease both}
+  .remind{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+}
 </style>
 
 <header>
@@ -546,7 +614,8 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
   window.PC_ADMIN={
     is:()=>!!PIN,
     unlock:async p=>{const ok=await call("checkPin",String(p||""));if(ok){PIN=String(p);try{localStorage.setItem(PIN_KEY,PIN)}catch(e){}}return ok},
-    lock:()=>{PIN=null;try{localStorage.removeItem(PIN_KEY)}catch(e){}}};
+    lock:()=>{PIN=null;try{localStorage.removeItem(PIN_KEY)}catch(e){}},
+    run:(fn,...a)=>call(fn,...a,PIN||"")};
   // a saved PIN that no longer works (it was changed) is dropped quietly
   if(PIN)call("checkPin",PIN).then(ok=>{if(!ok){window.PC_ADMIN.lock();window.dispatchEvent(new Event("pc-admin"))}},()=>{});
   const user={can:async()=>!!PIN,isOwner:async()=>true,canEdit:async()=>true,id:async()=>null,me:async()=>({id:null,name:"",email:null})};
@@ -558,9 +627,9 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
 (function(){
 const DEFAULTS={teamName:"",grace:10,hours:null};
 const DEF_HOURS=[0,1,2,3,4,5,6].map(i=>({on:i<5,start:"09:00",end:"18:00"}));
-const S={people:[],settings:{...DEFAULTS},today:{},week:{},hist:{},tab:"today",weekOffset:0,range:14,q:"",filter:"all",
+const S={ph:null,people:[],settings:{...DEFAULTS},today:{},week:{},hist:{},tab:"today",weekOffset:0,range:14,q:"",filter:"all",
   canWrite:true,ready:false,offline:false,confirm:null,removing:null,busy:new Set(),edit:null,co:null,rename:null,month:null,day:null,mail:null,
-  draft:{pName:"",pRole:"",sTeam:null,sGrace:null,hours:null}};
+  draft:{pName:"",pRole:"",sTeam:null,sGrace:null,hours:null,holDate:"",holName:"",mail:null}};
 if(!S.month){const d=new Date();S.month=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
 let db=null, downloads=null, unToday=null, unWeek=null, unHist=null, todayKey=key(new Date());
 let viewKey=null; // the day shown on the Today tab; null means today
@@ -579,7 +648,9 @@ function hmm(m){m=Math.round(m);return pad(Math.floor(m/60)%24)+":"+pad(((m%60)+
 function mins(iso){const d=new Date(iso);return d.getHours()*60+d.getMinutes()}
 function toMin(t){const p=String(t||"0:0").split(":").map(Number);return (p[0]||0)*60+(p[1]||0)}
 function hoursTable(){const h=S.settings.hours;return DEF_HOURS.map((d,i)=>{const x=(Array.isArray(h)&&h[i])||{...d,start:S.settings.start||d.start};return {on:!!x.on,start:x.start||"09:00",end:x.end||"18:00"}})}
-function sched(d){return hoursTable()[dow(d)]}
+function holidays(){return (Array.isArray(S.settings.holidays)?S.settings.holidays:[]).filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date))}
+function holidayOf(d){const k=typeof d==="string"?d:key(d||new Date());const h=holidays().find(x=>x.date===k);return h?(h.name||"Public holiday"):null}
+function sched(d){const x=hoursTable()[dow(d)],h=holidayOf(d);return h?{...x,on:false,holiday:h}:x}
 function startMin(d){return toMin(sched(d).start)}
 function dateOf(k){const [y,m,dd]=String(k).split("-").map(Number);return new Date(y,(m||1)-1,dd||1)}
 function atTime(k,t){const d=dateOf(k),m=toMin(t);d.setHours(Math.floor(m/60),m%60,0,0);return d.toISOString()}
@@ -626,6 +697,9 @@ const IC={
   day:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/><rect x="9.5" y="13" width="5" height="4" rx="1"/></svg>',
   month:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M8 13.5h2M11 13.5h2M14 13.5h2M8 16.5h2M11 16.5h2"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
   office:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M15 9h3a1 1 0 0 1 1 1v10M3 20h18M9 8h2M9 12h2M9 16h2"/></svg>'
 };
 
@@ -728,7 +802,7 @@ function face(){
   return `<div class="face">
     <svg class="watermark" viewBox="0 0 62 68" aria-hidden="true"><path d="${MARK}" fill-rule="evenodd"/></svg>
     <div class="face-top">
-      <div><div class="eyebrow">${today?"Today · ":vKey()<todayKey?"Past day · ":"Upcoming day · "}${sc.on?"Working day":"Day off"}</div>
+      <div><div class="eyebrow">${today?"Today · ":vKey()<todayKey?"Past day · ":"Upcoming day · "}${sc.holiday?"Public holiday · "+esc(sc.holiday):sc.on?"Working day":"Day off"}</div>
         <div class="clock dateclock">${esc(vd.toLocaleDateString(undefined,{weekday:"long"}))}<span class="sec">${esc(vd.toLocaleDateString(undefined,{day:"numeric",month:"long",year:vd.getFullYear()!==now.getFullYear()?"numeric":undefined}))}</span></div></div>
       <div class="tally t4" aria-label="Today at a glance">
         <div><b>${office}</b><span><i style="background:var(--in)"></i>In office</span></div>
@@ -756,8 +830,11 @@ function renderToday(){
     <button class="icon" type="button" data-act="daynext" aria-label="Next day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
     ${today?`<span class="daynote">Today</span>`:`<button class="btn ghost sm" type="button" data-act="daytoday">Back to today</button><span class="daynote warn">${S.canWrite?"Changes you make now are saved to "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})):"You're looking at "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</span>`}
   </div>`;
+  const M=mailCfg(), nowHm=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
+  if(left&&S.canWrite&&today&&sc.on&&M.remind&&M.remindAt&&nowHm>=M.remindAt)
+    h+=`<div class="remind" role="status"><span class="ricon">${IC.bell}</span><div><b>Reminder: attendance isn't finished</b><span>It's past ${esc(fmt12(M.remindAt))} and ${left} ${left===1?"person isn't":"people aren't"} marked yet.</span></div></div>`;
   if(left&&S.canWrite){
-    h+=`<div class="bulk"><div><b>${left} ${left===1?"person":"people"} not marked ${today?"yet":"on this day"}</b><span>${sc.on?"Present marks the day and picks office or home from each person's schedule.":"This day is set as a day off on the Schedule tab."}</span></div>
+    h+=`<div class="bulk"><div><b>${left} ${left===1?"person":"people"} not marked ${today?"yet":"on this day"}</b><span>${sc.on?"Present marks the day and picks office or home from each person's schedule.":(sc.holiday?esc(sc.holiday)+" is a public holiday on the Schedule tab.":"This day is set as a day off on the Schedule tab.")}</span></div>
       ${S.confirm==="__all"
         ?`<div class="acts"><button class="btn" type="button" data-act="allok">${IC.check}Mark ${left} present</button><button class="btn ghost sm" type="button" data-act="cancel">Cancel</button></div>`
         :`<button class="btn ghost sm" type="button" data-act="all">Mark everyone present</button>`}</div>`;
@@ -793,7 +870,7 @@ function card(p,now){
       <div class="field"><label for="e-note">Note</label><textarea class="inp" id="e-note" rows="2" maxlength="300" placeholder="Optional, e.g. client site visit in Abu Dhabi">${esc(E.note||"")}</textarea></div>
       <div class="acts"><button class="btn" type="button" data-act="esave" data-id="${p.id}" ${dis}>Save</button><button class="btn ghost sm" type="button" data-act="ecancel">Cancel</button></div></div>`;
   }else if(st==="none"){
-    pill=!sc.on?`<span class="pill">Day off</span>`:plan?`<span class="pill home">WFH day</span>`:`<span class="pill in">Office day</span>`;
+    pill=!sc.on?`<span class="pill">${sc.holiday?esc(sc.holiday):"Day off"}</span>`:plan?`<span class="pill home">WFH day</span>`:`<span class="pill in">Office day</span>`;
     const loc=plan?"home":"office";
     acts=S.confirm==="lv:"+p.id
       ?`<div class="editbox"><span class="eyebrow">Type of leave</span><div class="lvgrid">${Object.entries(LEAVE_CHOICES).map(([k,l])=>`<button class="lvbtn lv-${k}" type="button" data-act="leavetype" data-type="${k}" data-id="${p.id}" ${dis}>${l}</button>`).join("")}</div>
@@ -819,7 +896,7 @@ function card(p,now){
         <span class="hint">Tip: you can also type emojis in the name, e.g. press Win + . on Windows or Ctrl + Cmd + Space on Mac.</span></div>
       <div class="acts"><button class="btn sm" type="button" data-act="rnsave" data-id="${p.id}">Save</button><button class="btn ghost sm" type="button" data-act="rncancel">Cancel</button></div></div>`
     :`<div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div>
-      <div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div>
+      <div><button class="nmlink" type="button" data-act="hist" data-id="${p.id}" title="See ${esc(p.name)}'s history"><strong>${esc(p.name)}</strong></button><small>${esc(p.role||"Team member")}</small></div>
       ${S.canWrite?`<button class="pen" type="button" data-act="rename" data-id="${p.id}" aria-label="Edit ${esc(p.name)}'s name" title="Edit name">${IC.pen}</button>`:""}</div>`;
   return `<article class="card s-${st}${home?" at-home":""}" data-pid="${p.id}">
     ${who}
@@ -864,6 +941,7 @@ function renderDash(){
     <div class="kpi"><div class="eyebrow">From home</div><b>${hPct==null?"—":hPct}<small>${hPct==null?"":"%"}</small></b><div class="meter"><span style="width:${hPct||0}%;background:var(--home)"></span></div><p>${s.home} WFH day${s.home===1?"":"s"} · ${s.present-s.home} in office</p></div>
     <div class="kpi"><div class="eyebrow">Days away</div><b>${s.away}</b><p>${s.away-s.types.ooo} leave · ${s.types.ooo} out of office</p></div>
   </div>`;
+  h+=`<div class="panels p2">${weekPanel()}${upcomingPanel()}</div>`;
   const T=[["Out of office",s.types.ooo,"var(--late)"],["Sick leave",s.types.sick,"#C2386F"],["Annual leave",s.types.annual,"#2F6FB0"],["Half day",s.types.half,"#C76A12"],["Other leave",s.types.other,"var(--muted)"]];
   const mx=Math.max(1,...T.map(t=>t[1]));
   h+=`<div class="panels">
@@ -875,13 +953,126 @@ function renderDash(){
   </div>`;
   const rows=S.people.map(p=>{const v=s.per[p.id],tot=v.present+v.leave+v.ooo;return {p,v,rate:tot?Math.round(v.present/tot*100):null}})
     .sort((a,b)=>((a.rate==null)-(b.rate==null))||((a.rate||0)-(b.rate||0))||a.p.name.localeCompare(b.p.name));
-  h+=`<div class="panel"><h3>By person</h3><p class="sub">Last ${S.range} days, lowest attendance first</p><div class="scroll"><table class="ppl">
+  h+=`<div class="panel"><h3>By person</h3><p class="sub">Last ${S.range} days, lowest attendance first. Tap a name for their history.</p><div class="scroll"><table class="ppl">
     <thead><tr><th>Name</th><th>Days in</th><th>From home</th><th>Leave</th><th>Out of office</th><th>Attendance</th></tr></thead><tbody>
-    ${rows.map(({p,v,rate})=>`<tr><td><span class="person"><span class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</span>${esc(p.name)}</span></td>
+    ${rows.map(({p,v,rate})=>`<tr><td><button class="nmlink person" type="button" data-act="hist" data-id="${p.id}"><span class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</span>${esc(p.name)}</button></td>
       <td class="n">${v.present}</td><td class="n" style="color:var(--home)">${v.home||"–"}</td><td class="n">${v.leave||"–"}</td><td class="n">${v.ooo||"–"}</td>
       <td><span class="mini"><span class="meter"><span style="width:${rate||0}%;background:${rate==null?"var(--line)":rate>=95?"var(--in)":rate<80?"var(--leave)":"var(--late)"}"></span></span><span class="n" style="font-family:var(--f-mono);font-weight:600">${rate==null?"—":rate+"%"}</span></span></td></tr>`).join("")}
     </tbody></table></div></div>`;
   return h;
+}
+function weekSum(off,upto){
+  const days=weekDays(off), tk=key(new Date()); let o=0,h=0,lv=0,ooo=0,wd=0;
+  days.forEach((d,i)=>{const k=key(d); if(k>tk||i>upto)return; if(sched(d).on)wd++;
+    S.people.forEach(p=>{const r=S.hist[k+"_"+p.id], c=cellFor(r,d,tk,p).code;
+      if(c==="p")o++;else if(c==="wfh")h++;else if(LEAVE[c])lv++;else if(c==="ooo"&&(k<tk||r))ooo++})});
+  const pr=o+h, all=pr+lv+ooo; return {o,h,lv,ooo,pr,wd,rate:all?Math.round(pr/all*100):null};
+}
+function weekPanel(){
+  const t=dow(new Date()), a=weekSum(0,t), b=weekSum(-1,t), span=t?DAYS[0]+"–"+DAYS[t]:DAYS[0];
+  const delta=(x,y,pct,goodUp)=>{if(x==null||y==null)return `<span class="dl">—</span>`;const d=x-y;if(!d)return `<span class="dl">same</span>`;
+    const good=goodUp==null?null:(d>0)===goodUp;return `<span class="dl ${good==null?"":good?"good":"bad"}">${d>0?IC.up:IC.down}${Math.abs(d)}${pct?" pts":""}</span>`};
+  const R=[["Attendance",a.rate==null?"—":a.rate+"%",b.rate==null?"—":b.rate+"%",delta(a.rate,b.rate,true,true)],
+    ["Days present",a.pr,b.pr,delta(a.pr,b.pr,false,true)],["In office",a.o,b.o,delta(a.o,b.o,false,null)],
+    ["From home",a.h,b.h,delta(a.h,b.h,false,null)],["Leave",a.lv,b.lv,delta(a.lv,b.lv,false,false)],["Out of office",a.ooo,b.ooo,delta(a.ooo,b.ooo,false,false)]];
+  return `<div class="panel"><h3>This week</h3><p class="sub">${span} this week, compared with ${span} last week</p>
+    <table class="wsum"><thead><tr><th></th><th>This week</th><th>Last week</th><th>Change</th></tr></thead><tbody>
+    ${R.map(([l,x,y,d])=>`<tr><td>${l}</td><td class="n"><b>${x}</b></td><td class="n">${y}</td><td>${d}</td></tr>`).join("")}</tbody></table></div>`;
+}
+function upcomingLeave(daysAhead){
+  const end=new Date();end.setDate(end.getDate()+daysAhead);const ek=key(end), out=[];
+  Object.values(S.hist).forEach(r=>{if(r&&r.status==="leave"&&r.date>=todayKey&&r.date<=ek&&S.people.some(p=>p.id===r.pid))out.push(r)});
+  out.sort((a,b)=>a.pid.localeCompare(b.pid)||a.date.localeCompare(b.date));
+  const runs=[]; out.forEach(r=>{const L=runs[runs.length-1];
+    if(L&&L.pid===r.pid&&L.type===(r.leaveType||"other")){const nx=dateOf(L.to);nx.setDate(nx.getDate()+1);
+      // join across days off so a leave over a weekend reads as one block
+      while(key(nx)<r.date&&!sched(nx).on)nx.setDate(nx.getDate()+1);
+      if(key(nx)===r.date){L.to=r.date;L.n++;return}}
+    runs.push({pid:r.pid,type:r.leaveType||"other",from:r.date,to:r.date,n:1})});
+  return runs.sort((a,b)=>a.from.localeCompare(b.from)||personName(a.pid).localeCompare(personName(b.pid)));
+}
+function upcomingPanel(){
+  const runs=upcomingLeave(14), sd=k=>dateOf(k).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+  const when=k=>{const n=Math.round((dateOf(k)-dateOf(todayKey))/864e5);return n<=0?"Now":n===1?"Tomorrow":"In "+n+" days"};
+  return `<div class="panel"><h3>Upcoming leave</h3><p class="sub">Next 2 weeks</p>
+    ${runs.length?`<ul class="upl">${runs.map(x=>{const p=S.people.find(y=>y.id===x.pid);return `<li>
+      <button class="nmlink person" type="button" data-act="hist" data-id="${x.pid}"><span class="av" style="background:${colorFor(x.pid)}">${avHtml(p)}</span><span><b>${esc(p.name)}</b><small>${esc(sd(x.from))}${x.to!==x.from?" – "+esc(sd(x.to)):""}</small></span></button>
+      <span class="upr"><span class="pill leave lv-${esc(x.type)}">${esc(LEAVE_CHOICES[x.type]||"On Leave")}${x.n>1?" · "+x.n+" days":""}</span><small>${when(x.from)}</small></span></li>`}).join("")}</ul>`
+    :`<p class="upnone">No leave booked for the next 2 weeks. To book ahead, pick a future date on the Today tab and mark Leave.</p>`}</div>`;
+}
+/* ---------- person history ---------- */
+const PH_LABEL={p:"Office",wfh:"Home",annual:"Annual",sick:"Sick",half:"Half day",other:"Leave",ooo:"Out"};
+async function openPh(pid,ym){
+  if(!db){noDb();return}
+  S.ph={pid,ym:ym||(S.ph&&S.ph.pid===pid?S.ph.ym:ymOf(new Date())),recs:null}; renderPh();
+  const want=S.ph.ym;
+  try{const {days,recs}=await monthData(want); if(S.ph&&S.ph.pid===pid&&S.ph.ym===want){S.ph.days=days;S.ph.recs=recs;renderPh()}}
+  catch(e){toast("Couldn't load the history. Try again.")}
+}
+function phShift(n){if(!S.ph)return;const [y,m]=S.ph.ym.split("-").map(Number),d=new Date(y,m-1+n,1);if(ymOf(d)>ymOf(new Date()))return;openPh(S.ph.pid,ymOf(d))}
+function renderPh(){
+  let ov=document.getElementById("phov");
+  if(!S.ph){if(ov)ov.remove();return}
+  const P=S.ph, p=S.people.find(x=>x.id===P.pid); if(!p){S.ph=null;if(ov)ov.remove();return}
+  if(!ov){ov=document.createElement("div");ov.id="phov";ov.className="pdfov";document.body.appendChild(ov);
+    ov.addEventListener("click",e=>{const b=e.target.closest("[data-ph]");if(e.target===ov||(b&&b.dataset.ph==="close")){S.ph=null;renderPh();return}
+      if(b&&b.dataset.ph==="prev")phShift(-1);if(b&&b.dataset.ph==="next")phShift(1);
+      if(b&&b.dataset.ph==="day"&&S.canWrite){const k=b.dataset.k;S.ph=null;renderPh();S.tab="today";setView(k);window.scrollTo({top:0})}})}
+  const isNow=P.ym>=ymOf(new Date());
+  let body=`<div class="phload">Loading ${esc(monthName(P.ym))}…</div>`;
+  if(P.recs){
+    const tk=key(new Date()), c={p:0,wfh:0,leave:0,ooo:0}, notes=[];
+    const cells=P.days.map(d=>{const k=key(d), r=P.recs[k+"_"+p.id], cf=cellFor(r,d,tk,p), sc=sched(d);
+      if(cf.code==="p")c.p++;else if(cf.code==="wfh")c.wfh++;else if(LEAVE[cf.code])c.leave++;else if(cf.code==="ooo"&&(k<tk||r))c.ooo++;
+      if(cf.note)notes.push([d,cf.note]);
+      const code=cf.code==="ooo"&&k>=tk&&!r?"":cf.code;
+      const lab=sc.holiday&&(code==="off"||!code)?"Holiday":code==="off"?"Off":PH_LABEL[code]||"";
+      const cls=code==="p"?"c-p":code==="wfh"?"c-wfh":code==="off"?"c-off":code==="ooo"?"lv-ooo c-lv":code?"lv-"+code+" c-lv":"c-empty";
+      const tipT=esc(d.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}))+(sc.holiday?"<br>"+esc(sc.holiday):"")+(cf.label&&code!=="off"?"<br><b>"+esc(cf.code==="p"?"In office":cf.code==="wfh"?"From home":cf.label)+"</b>":"")+(cf.note?"<br>Note: "+esc(cf.note):"");
+      return `<button type="button" class="phd ${cls}${k===tk?" now":""}" data-ph="day" data-k="${k}" data-tip="${esc(tipT)}"${S.canWrite?"":" tabindex=\"-1\""}><b>${d.getDate()}</b><span>${lab}${cf.note?'<i class="ndot"></i>':""}</span></button>`});
+    const lead=Array.from({length:dow(P.days[0])},()=>`<span class="phd blank"></span>`).join("");
+    const pr=c.p+c.wfh, all=pr+c.leave+c.ooo, rate=all?Math.round(pr/all*100):null;
+    body=`<div class="phstats">
+        <div><b>${rate==null?"—":rate+"%"}</b><span>Attendance</span></div>
+        <div><b>${c.p}</b><span><i style="background:var(--in)"></i>In office</span></div>
+        <div><b>${c.wfh}</b><span><i style="background:var(--home)"></i>From home</span></div>
+        <div><b>${c.leave}</b><span><i style="background:var(--leave)"></i>Leave</span></div>
+        <div><b>${c.ooo}</b><span><i style="background:var(--late)"></i>Out of office</span></div></div>
+      <div class="phcal">${DAYS.map(x=>`<span class="phh">${x}</span>`).join("")}${lead}${cells.join("")}</div>
+      ${S.canWrite?`<p class="hint" style="margin:8px 0 0">Tap a day to open it on the Today tab and edit it.</p>`:""}
+      ${notes.length?`<h4>Notes</h4><ul class="phnotes">${notes.map(([d,n])=>`<li><b>${esc(d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</b><span>${esc(n)}</span></li>`).join("")}</ul>`:""}`;
+  }
+  ov.innerHTML=`<div class="pdfbox phbox" role="dialog" aria-label="${esc(p.name)}'s attendance history">
+    <div class="pdfbar"><div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div><div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div></div>
+      <button class="btn ghost sm" type="button" data-ph="close">Close</button></div>
+    <div class="phbody"><div class="phmonth"><button class="icon" type="button" data-ph="prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+      <b>${esc(monthName(P.ym))}</b>
+      <button class="icon" type="button" data-ph="next" aria-label="Next month" ${isNow?"disabled":""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>
+      ${body}</div></div>`;
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.ph){S.ph=null;renderPh()}});
+/* ---------- automatic emails ---------- */
+function mailCfg(){return {on:false,to:"",at:"17:30",remind:false,remindAt:"10:00",...(S.settings.autoMail||{}),...(S.draft.mail||{})}}
+function mailPanel(){
+  const M=mailCfg(), ro=S.canWrite?"":"disabled", dirty=!!S.draft.mail;
+  return `<div class="panel mailp"><h2>Daily emails</h2><p class="sub">Sent from your Google account by the attendance sheet, even when nobody has the app open.</p>
+    <form class="mform" id="mailForm" autocomplete="off">
+      <div class="field"><label for="m-to">Send to</label><input class="inp" id="m-to" type="text" inputmode="email" placeholder="e.g. hr@b3international.com, you@b3international.com" value="${esc(M.to)}" ${ro}><span class="hint">Separate addresses with commas.</span></div>
+      <div class="mrow"><label class="switch"><input type="checkbox" id="m-on" ${M.on?"checked":""} ${ro} aria-label="Email the daily report"><span></span></label>
+        <div><b>Email the daily report</b><span>Sent on working days, not on days off or public holidays</span></div><input class="inp tm" type="time" id="m-at" value="${esc(M.at)}" ${ro} aria-label="Time to send the daily report"></div>
+      <div class="mrow"><label class="switch"><input type="checkbox" id="m-remind" ${M.remind?"checked":""} ${ro} aria-label="Reminder if attendance isn't finished"><span></span></label>
+        <div><b>Reminder if attendance isn't finished</b><span>Shows on the Today tab and emails a reminder listing who isn't marked</span></div><input class="inp tm" type="time" id="m-remindAt" value="${esc(M.remindAt)}" ${ro} aria-label="Reminder time"></div>
+      <div class="acts">${dirty?`<button class="btn ghost sm" type="button" data-act="mailreset">Discard</button>`:""}<button class="btn sm" type="submit" ${ro}>${dirty?"Save":"Saved"}</button>
+        <button class="btn ghost sm" type="button" data-act="mailtest" ${ro||(!M.to?"disabled":"")}>${IC.mail}Send today's report now</button></div>
+    </form></div>`;
+}
+async function mailTest(){
+  if(!window.PC_ADMIN||!window.PC_ADMIN.run){toast("Sending email works on the shared app only.");return}
+  if(S.draft.mail){toast("Save your email settings first.");return}
+  toast("Sending…");
+  try{await window.PC_ADMIN.run("sendReportNow");toast("Sent. Check the inbox in a minute.")}
+  catch(e){const m=String(e&&e.message||"");
+    toast(/unknown action/.test(m)?"Update the Google script first (see the steps I sent).":/permission|authoriz/i.test(m)?"Run setupEmails once in the Google script to allow email.":m.replace(/^invalid_argument:\s*/,"")||"Couldn't send. Try again.")}
 }
 function dailyChart(daily){
   const W=720,H=230,L=30,B=26,T=8,R=6, n=daily.length, max=Math.max(1,S.people.length);
@@ -930,7 +1121,7 @@ function renderWeek(){
       const hm_=isHome(r); inD++; if(hm_)wfh++;
       return `<td class="cell ${hm_?"home":"office"}"${r.note?` data-tip="${esc("Note: "+esc(r.note))}"`:""}><span>${hm_?"Home":"Office"}${r.note?'<i class="ndot" aria-label="Has a note"></i>':""}</span></td>`;
     }).join("");
-    h+=`<tr><td class="name">${esc(p.name)}</td>${cells}<td class="num">${inD}</td><td class="num">${wfh}</td></tr>`;
+    h+=`<tr><td class="name"><button class="nmlink" type="button" data-act="hist" data-id="${p.id}">${esc(p.name)}</button></td>${cells}<td class="num">${inD}</td><td class="num">${wfh}</td></tr>`;
   });
   return h+`</tbody></table></div>`;
 }
@@ -1226,7 +1417,7 @@ function statusText(x){const k=x.cf.code;return k==="p"?"Present":k==="wfh"?"Pre
 function emailText(sum){
   const {d,rows,c,sc}=sum, L=[];
   L.push("Daily Attendance Report – "+dayLong(d));
-  L.push((S.settings.teamName||"B3 International")+(sc.on?" · Working day":" · Non-working day"));
+  L.push((S.settings.teamName||"B3 International")+(sc.holiday?" · Public holiday: "+sc.holiday:sc.on?" · Working day":" · Non-working day"));
   L.push("");
   L.push("Present: "+(c.p+c.wfh)+" of "+c.total+"  (In office "+c.p+", Working from home "+c.wfh+")");
   L.push("On leave: "+c.leave+"   Out of office: "+c.ooo);
@@ -1558,7 +1749,7 @@ function renderTeam(){
       <div class="field"><label for="pRole">Role (optional)</label><input class="inp" id="pRole" name="pRole" maxlength="40" placeholder="e.g. Sales" value="${esc(D.pRole)}"></div>
       <button class="btn" type="submit" ${ro}>Add person</button>
     </form>
-    <ul class="roster">${S.people.map(p=>`<li><div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div><div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div></div>
+    <ul class="roster">${S.people.map(p=>`<li><div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div><div><button class="nmlink" type="button" data-act="hist" data-id="${p.id}"><strong>${esc(p.name)}</strong></button><small>${esc(p.role||"Team member")}</small></div></div>
       ${S.removing===p.id
         ?`<button class="btn warn sm" type="button" data-act="rmok" data-id="${p.id}" ${ro}>Remove</button><button class="btn ghost sm" type="button" data-act="rmcancel">Keep</button>`
         :`<button class="btn ghost sm" type="button" data-act="rm" data-id="${p.id}" ${ro}>Remove</button>`}</li>`).join("")}</ul>
@@ -1568,7 +1759,7 @@ function renderTeam(){
       <div class="field"><label for="sTeam">Team name</label><input class="inp" id="sTeam" maxlength="50" value="${esc(D.sTeam==null?s.teamName:D.sTeam)}" placeholder="e.g. B3 Dubai office"></div>
       <button class="btn" type="submit" ${ro}>Save name</button>
     </form>
-  </div></div>`;
+  </div>${mailPanel()}</div>`;
 }
 
 /* ---------- schedule ---------- */
@@ -1590,8 +1781,16 @@ function renderSchedule(){
         <div class="acts" style="flex:none">${dirty?`<button class="btn ghost sm" type="button" data-act="schedreset">Discard</button>`:""}<button class="btn sm" type="submit" ${ro}>${dirty?"Save schedule":"Saved"}</button></div></div>
     </form>
   </div>`;
+  const HL=holidays().slice().sort((a,b)=>a.date.localeCompare(b.date)), yr=String(new Date().getFullYear());
+  const upcoming=HL.filter(x=>x.date>=todayKey), past=HL.filter(x=>x.date<todayKey&&x.date.slice(0,4)===yr).reverse();
+  const hli=x=>`<li><span class="hd"><b>${esc(dateOf(x.date).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"}))}</b><span>${esc(x.name||"Public holiday")}</span></span>${S.canWrite?`<button class="btn ghost sm" type="button" data-act="holrm" data-date="${x.date}">Remove</button>`:""}</li>`;
+  const holPanel=`<div class="panel holp"><h2>Public holidays</h2><p class="sub">Holidays count as days off: nobody shows as out of office and no daily email is sent.</p>
+    ${S.canWrite?`<form class="holform" id="holForm" autocomplete="off"><input class="inp" type="date" id="holDate" value="${esc(S.draft.holDate||"")}" aria-label="Holiday date">
+      <input class="inp" id="holName" maxlength="40" placeholder="e.g. National Day" value="${esc(S.draft.holName||"")}" aria-label="Holiday name"><button class="btn sm" type="submit">Add holiday</button></form>`:""}
+    ${upcoming.length?`<ul class="hollist">${upcoming.map(hli).join("")}</ul>`:`<p class="upnone">No upcoming holidays added.</p>`}
+    ${past.length?`<details class="holpast"><summary>Earlier this year (${past.length})</summary><ul class="hollist">${past.map(hli).join("")}</ul></details>`:""}</div>`;
   h+=`<div class="panel"><h2>Work from home</h2><p class="sub">Tap the days each person works from home. On those days their card says WFH day and Present records them as working from home.</p>`;
-  if(!S.people.length){h+=`<div class="empty" style="padding:24px"><p style="margin:0">Add people on the Team tab first.</p></div></div></div>`;return h}
+  if(!S.people.length){h+=`<div class="empty" style="padding:24px"><p style="margin:0">Add people on the Team tab first.</p></div></div></div>`+holPanel;return h}
   const cnt=DAYS.map((_,i)=>S.people.filter(p=>Array.isArray(p.wfhDays)&&p.wfhDays.includes(i)).length);
   h+=`<div class="scroll"><table class="wg"><thead><tr><th>Name</th>${DAYS.map((d,i)=>`<th class="${H[i].on?"":"offc"}${i===tdow?" today":""}">${d}</th>`).join("")}</tr></thead><tbody>
     ${S.people.map(p=>`<tr><td class="nm"><span class="person"><span class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</span>${esc(p.name)}</span></td>
@@ -1600,7 +1799,7 @@ function renderSchedule(){
     </tbody><tfoot><tr><td>From home</td>${cnt.map((c,i)=>`<td>${H[i].on?c:"–"}</td>`).join("")}</tr>
     <tr><td>In office</td>${cnt.map((c,i)=>`<td>${H[i].on?S.people.length-c:"–"}</td>`).join("")}</tr></tfoot></table></div>
     <div class="legend" style="margin-top:12px"><span><i style="background:var(--home)"></i>Works from home</span><span><i style="background:var(--surface-2);border:1px solid var(--line-2)"></i>In the office</span></div>
-  </div></div>`;
+  </div></div>`+holPanel;
   return h;
 }
 /* ---------- main render ---------- */
@@ -1640,6 +1839,8 @@ view.addEventListener("input",e=>{
   if(id==="mSel"){S.month=e.target.value;return}
   if(id==="dSel"){if(e.target.value){S.day=e.target.value;S.mail=null;render()}return}
   if(id==="e-note"&&S.edit){S.edit.note=e.target.value;return}
+  const mm=/^m-(to|on|at|remind|remindAt)$/.exec(id);
+  if(mm){const was=!!S.draft.mail;const M=S.draft.mail||(S.draft.mail={...mailCfg()});M[mm[1]]=e.target.type==="checkbox"?e.target.checked:e.target.value;if(!was||e.target.type==="checkbox")render();return}
   if(id==="rn-name"&&S.rename){S.rename.name=e.target.value;return}
   if(id==="rn-role"&&S.rename){S.rename.role=e.target.value;return}
   const m=/^h-on-(\d)$/.exec(id);
@@ -1656,6 +1857,10 @@ view.addEventListener("click",e=>{
   const id=b.dataset.id;
   switch(b.dataset.act){
     case "present":markPresent(id,b.dataset.loc);break;
+    case "hist":tip.hidden=true;openPh(id);break;
+    case "holrm":{const dt=b.dataset.date,prev=holidays();saveSettings({holidays:prev.filter(x=>x.date!==dt)},"Holiday removed",()=>saveSettings({holidays:prev}));break}
+    case "mailreset":S.draft.mail=null;render();break;
+    case "mailtest":mailTest();break;
     case "all":S.confirm="__all";render();break;
     case "allok":markAll();break;
     case "edit":startEdit(id);break;
@@ -1706,7 +1911,22 @@ view.addEventListener("submit",async e=>{
       const x=document.getElementById("pName");x&&x.focus();toast(name+" added")}catch(err){fail(err)}
   }
   const D=S.draft,s=S.settings;
-  const base=()=>({teamName:String(s.teamName||""),grace:grace(),hours:hoursTable()});
+  const base=()=>({...S.settings,teamName:String(s.teamName||""),grace:grace(),hours:hoursTable()});
+  if(e.target.id==="holForm"){
+    const dt=String(D.holDate||""), nm=String(D.holName||"").trim()||"Public holiday";
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)){toast("Pick the holiday date first.");return}
+    const list=holidays().filter(x=>x.date!==dt).concat([{date:dt,name:nm}]).sort((a,b)=>a.date.localeCompare(b.date));
+    await saveSettings({holidays:list},nm+" added");D.holDate="";D.holName="";render();
+  }
+  if(e.target.id==="mailForm"){
+    const M=mailCfg(), to=String(M.to||"").split(/[,;\s]+/).map(x=>x.trim()).filter(Boolean);
+    const bad=to.filter(x=>!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
+    if(bad.length){toast("Check this address: "+bad[0]);return}
+    if((M.on||M.remind)&&!to.length){toast("Add at least one email address.");return}
+    const cfg={on:!!M.on,to:to.join(", "),at:M.at||"17:30",remind:!!M.remind,remindAt:M.remindAt||"10:00",
+      tz:(Intl.DateTimeFormat().resolvedOptions().timeZone||""),app:location.origin+location.pathname};
+    if(await saveSettings({autoMail:cfg},"Email settings saved"))D.mail=null;render();
+  }
   if(e.target.id==="teamForm"){
     try{await db.doc("settings/main").set({...base(),teamName:String(D.sTeam==null?s.teamName:D.sTeam).trim()});D.sTeam=null;toast("Team name saved")}catch(err){fail(err)}
   }
@@ -1717,6 +1937,10 @@ view.addEventListener("submit",async e=>{
   }
 });
 
+async function saveSettings(patch,msg,undo){
+  if(!db){noDb();return false} if(!S.canWrite)return false;
+  try{await db.doc("settings/main").set({...DEFAULTS,...S.settings,hours:hoursTable(),...patch});if(msg)toast(msg,undo);return true}catch(e){fail(e);return false}
+}
 /* ---------- admin PIN ---------- */
 const pinov=document.getElementById("pinov");
 function openPin(){pinov.hidden=false;document.getElementById("pinErr").hidden=true;const i=document.getElementById("pinIn");i.value="";setTimeout(()=>i.focus(),30)}
@@ -1777,7 +2001,7 @@ async function start(){
     S.people=s.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.name).sort((a,b)=>a.name.localeCompare(b.name));
     S.ready=true;render();
   },()=>{S.ready=true;render()});
-  db.doc("settings/main").onSnapshot(s=>{S.settings={...DEFAULTS,...(s.exists?s.data():{})};render()},()=>{});
+  db.doc("settings/main").onSnapshot(s=>{S.settings={...DEFAULTS,...(s.exists?s.data():{})};render();if(S.ph&&S.ph.recs)renderPh()},()=>{});
   subToday(); subWeek(); subHist();
 }
 start();
