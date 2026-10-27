@@ -1464,7 +1464,8 @@ function xlSignoff(ws,row,cols,C,solid){
   n.font={size:8.5,italic:true,color:{argb:C.muted}};
   return row+6;
 }
-function byName(a,b){const A=(a.p||a).name||"",B=(b.p||b).name||"";return A.localeCompare(B,undefined,{sensitivity:"base",numeric:true})}
+function sortKey(n){return String(n||"").replace(/^[^\p{L}\p{N}]+/u,"").trim()}
+function byName(a,b){const A=sortKey((a.p||a).name),B=sortKey((b.p||b).name);return A.localeCompare(B,undefined,{sensitivity:"base",numeric:true})}
 function stamp(){const d=new Date();return " ("+pad(d.getHours())+"."+pad(d.getMinutes())+"."+pad(d.getSeconds())+")"}
 /* dropdowns + colour rules so the Excel stays editable and recolours itself */
 const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"]];
@@ -1686,7 +1687,7 @@ async function exportExcel(){
 /* ---------- daily report ---------- */
 const GROUP_ORDER={p:0,wfh:1,annual:2,sick:2,emergency:2,half:2,other:2,ooo:3,off:4,"":5};
 function dayRecsCached(k){
-  if(k===todayKey)return S.today;
+  if(k===vKey())return S.today;
   const m={},d=dateOf(k),from=daysBack(30)[0];
   if(d<from)return null;
   S.people.forEach(p=>{const r=S.hist[k+"_"+p.id];if(r)m[p.id]=r});
