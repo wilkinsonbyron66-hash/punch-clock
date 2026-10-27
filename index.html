@@ -546,8 +546,8 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
   }
   let notifyQueued=false;
   function notify(){if(notifyQueued)return;notifyQueued=true;Promise.resolve().then(()=>{notifyQueued=false;listeners.forEach(f=>{try{f()}catch(e){console.error(e)}})})}
-  async function refresh(){
-    if(pending)return; // never overwrite local changes that are still saving
+  async function refresh(force){
+    if(pending&&!force)return; // never overwrite local changes that are still saving
     const all=JSON.parse(await call("getAll"));
     if(pending)return;
     let changed=Object.keys(store).length!==Object.keys(all).length;
@@ -556,13 +556,28 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
       if(JSON.stringify(store[k])!==JSON.stringify(v)){store[k]=v;changed=true}});
     if(changed)notify();
   }
-  async function write(fn,path,body,local){
-    const before=path in store?clone(store[path]):undefined;
-    local(); notify(); pending++;
-    try{await (body==null?call(fn,path,PIN||""):call(fn,path,JSON.stringify(body),PIN||""))}
-    catch(e){if(before===undefined)delete store[path];else store[path]=before;notify();throw e}
-    finally{pending--}
+  /* Saves are instant on screen. They go to the sheet one at a time in the background,
+     in the order they were made. If one fails, the screen is brought back in line with the sheet. */
+  let queue=Promise.resolve(), failed=false;
+  const pill=document.createElement("div"); pill.className="syncpill"; pill.setAttribute("role","status"); pill.hidden=true;
+  const st=document.createElement("style"); st.textContent=".syncpill{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:8px;background:var(--surface,#fff);color:var(--muted,#6B6178);border:1px solid var(--line,#E8E3EE);border-radius:999px;padding:6px 12px 6px 10px;font:600 12.5px/1.2 Figtree,system-ui,sans-serif;box-shadow:0 6px 20px rgba(28,19,38,.12)}.syncpill i{width:8px;height:8px;border-radius:50%;background:var(--accent,#6A2E8E);animation:pcpulse 1s ease-in-out infinite}.syncpill.ok i{background:var(--in,#11885A);animation:none}@keyframes pcpulse{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.syncpill i{animation:none}}";
+  document.head.appendChild(st);
+  let pillT=null,okT=null;
+  function showSync(){
+    clearTimeout(okT);
+    if(pending){if(pill.hidden&&!pillT)pillT=setTimeout(()=>{pillT=null;if(pending){pill.className="syncpill";pill.innerHTML="<i></i>Saving…";pill.hidden=false}},500);return}
+    clearTimeout(pillT);pillT=null;
+    if(!pill.hidden){pill.className="syncpill ok";pill.innerHTML="<i></i>Saved";okT=setTimeout(()=>{pill.hidden=true},1200)}
   }
+  (document.body?Promise.resolve():new Promise(r=>document.addEventListener("DOMContentLoaded",r))).then(()=>document.body.appendChild(pill));
+  function write(fn,path,body,local){
+    local(); notify(); pending++; showSync();
+    const job=()=>(body==null?call(fn,path,PIN||""):call(fn,path,JSON.stringify(body),PIN||""));
+    queue=queue.then(job).catch(e=>{failed=true;window.dispatchEvent(new CustomEvent("pc-save-error",{detail:e}))})
+      .finally(()=>{pending--;showSync();if(!pending&&failed){failed=false;refresh(true).catch(()=>{})}});
+    return Promise.resolve();
+  }
+  window.addEventListener("beforeunload",e=>{if(pending){e.preventDefault();e.returnValue=""}});
   function snapDoc(path){const v=store[path];return {id:path.split("/").pop(),exists:v!==undefined,data:()=>v===undefined?undefined:clone(v),metadata:{fromCache:false,hasPendingWrites:pending>0}}}
   function docRef(path){
     return {id:path.split("/").pop(),path,
@@ -738,7 +753,7 @@ document.addEventListener("pointerleave",()=>{tip.hidden=true});
 function noDb(){toast("Still connecting. Try again in a moment.")}
 async function guarded(pid,fn){
   if(!db){noDb();return} if(!S.canWrite||S.busy.has(pid))return;
-  S.busy.add(pid);render();
+  S.busy.add(pid);
   try{await fn()}catch(e){fail(e)}finally{S.busy.delete(pid);render()}
 }
 function logRef(pid,k){return db.doc("log/"+(k||vKey())+"_"+pid)}
@@ -1923,6 +1938,7 @@ async function saveSettings(patch,msg,undo){
   if(!db){noDb();return false} if(!S.canWrite)return false;
   try{await db.doc("settings/main").set({...DEFAULTS,...S.settings,hours:hoursTable(),...patch});if(msg)toast(msg,undo);return true}catch(e){fail(e);return false}
 }
+window.addEventListener("pc-save-error",e=>fail(e.detail));
 /* ---------- admin PIN ---------- */
 const pinov=document.getElementById("pinov");
 function openPin(){pinov.hidden=false;document.getElementById("pinErr").hidden=true;const i=document.getElementById("pinIn");i.value="";setTimeout(()=>i.focus(),30)}
