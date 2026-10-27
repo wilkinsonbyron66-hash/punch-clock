@@ -1055,24 +1055,12 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.ph){S.ph=null;ren
 function mailCfg(){return {on:false,to:"",at:"17:30",remind:false,remindAt:"10:00",...(S.settings.autoMail||{}),...(S.draft.mail||{})}}
 function mailPanel(){
   const M=mailCfg(), ro=S.canWrite?"":"disabled", dirty=!!S.draft.mail;
-  return `<div class="panel mailp"><h2>Daily emails</h2><p class="sub">Sent from your Google account by the attendance sheet, even when nobody has the app open.</p>
+  return `<div class="panel mailp"><h2>Reminder</h2><p class="sub">A banner on the Today tab if attendance isn't finished by a set time.</p>
     <form class="mform" id="mailForm" autocomplete="off">
-      <div class="field"><label for="m-to">Send to</label><input class="inp" id="m-to" type="text" inputmode="email" placeholder="e.g. hr@b3international.com, you@b3international.com" value="${esc(M.to)}" ${ro}><span class="hint">Separate addresses with commas.</span></div>
-      <div class="mrow"><label class="switch"><input type="checkbox" id="m-on" ${M.on?"checked":""} ${ro} aria-label="Email the daily report"><span></span></label>
-        <div><b>Email the daily report</b><span>Sent on working days, not on days off or public holidays</span></div><input class="inp tm" type="time" id="m-at" value="${esc(M.at)}" ${ro} aria-label="Time to send the daily report"></div>
-      <div class="mrow"><label class="switch"><input type="checkbox" id="m-remind" ${M.remind?"checked":""} ${ro} aria-label="Reminder if attendance isn't finished"><span></span></label>
-        <div><b>Reminder if attendance isn't finished</b><span>Shows on the Today tab and emails a reminder listing who isn't marked</span></div><input class="inp tm" type="time" id="m-remindAt" value="${esc(M.remindAt)}" ${ro} aria-label="Reminder time"></div>
-      <div class="acts">${dirty?`<button class="btn ghost sm" type="button" data-act="mailreset">Discard</button>`:""}<button class="btn sm" type="submit" ${ro}>${dirty?"Save":"Saved"}</button>
-        <button class="btn ghost sm" type="button" data-act="mailtest" ${ro||(!M.to?"disabled":"")}>${IC.mail}Send today's report now</button></div>
+      <div class="mrow"><label class="switch"><input type="checkbox" id="m-remind" ${M.remind?"checked":""} ${ro} aria-label="Remind me if attendance isn't finished"><span></span></label>
+        <div><b>Remind me if attendance isn't finished</b><span>Shows on working days until everyone is marked</span></div><input class="inp tm" type="time" id="m-remindAt" value="${esc(M.remindAt)}" ${ro} aria-label="Reminder time"></div>
+      <div class="acts">${dirty?`<button class="btn ghost sm" type="button" data-act="mailreset">Discard</button>`:""}<button class="btn sm" type="submit" ${ro}>${dirty?"Save":"Saved"}</button></div>
     </form></div>`;
-}
-async function mailTest(){
-  if(!window.PC_ADMIN||!window.PC_ADMIN.run){toast("Sending email works on the shared app only.");return}
-  if(S.draft.mail){toast("Save your email settings first.");return}
-  toast("Sending…");
-  try{await window.PC_ADMIN.run("sendReportNow");toast("Sent. Check the inbox in a minute.")}
-  catch(e){const m=String(e&&e.message||"");
-    toast(/unknown action/.test(m)?"Update the Google script first (see the steps I sent).":/permission|authoriz/i.test(m)?"Run setupEmails once in the Google script to allow email.":m.replace(/^invalid_argument:\s*/,"")||"Couldn't send. Try again.")}
 }
 function dailyChart(daily){
   const W=720,H=230,L=30,B=26,T=8,R=6, n=daily.length, max=Math.max(1,S.people.length);
@@ -1860,7 +1848,6 @@ view.addEventListener("click",e=>{
     case "hist":tip.hidden=true;openPh(id);break;
     case "holrm":{const dt=b.dataset.date,prev=holidays();saveSettings({holidays:prev.filter(x=>x.date!==dt)},"Holiday removed",()=>saveSettings({holidays:prev}));break}
     case "mailreset":S.draft.mail=null;render();break;
-    case "mailtest":mailTest();break;
     case "all":S.confirm="__all";render();break;
     case "allok":markAll();break;
     case "edit":startEdit(id);break;
@@ -1919,13 +1906,8 @@ view.addEventListener("submit",async e=>{
     await saveSettings({holidays:list},nm+" added");D.holDate="";D.holName="";render();
   }
   if(e.target.id==="mailForm"){
-    const M=mailCfg(), to=String(M.to||"").split(/[,;\s]+/).map(x=>x.trim()).filter(Boolean);
-    const bad=to.filter(x=>!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
-    if(bad.length){toast("Check this address: "+bad[0]);return}
-    if((M.on||M.remind)&&!to.length){toast("Add at least one email address.");return}
-    const cfg={on:!!M.on,to:to.join(", "),at:M.at||"17:30",remind:!!M.remind,remindAt:M.remindAt||"10:00",
-      tz:(Intl.DateTimeFormat().resolvedOptions().timeZone||""),app:location.origin+location.pathname};
-    if(await saveSettings({autoMail:cfg},"Email settings saved"))D.mail=null;render();
+    const M=mailCfg(), cfg={...(S.settings.autoMail||{}),remind:!!M.remind,remindAt:M.remindAt||"10:00"};
+    if(await saveSettings({autoMail:cfg},"Reminder saved"))D.mail=null;render();
   }
   if(e.target.id==="teamForm"){
     try{await db.doc("settings/main").set({...base(),teamName:String(D.sTeam==null?s.teamName:D.sTeam).trim()});D.sTeam=null;toast("Team name saved")}catch(err){fail(err)}
