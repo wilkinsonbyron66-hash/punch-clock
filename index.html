@@ -498,6 +498,9 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
 .link.danger{color:var(--leave)}
 .upr small .link{font-size:12px}
 @media (prefers-reduced-motion:no-preference){#bkov .bkbox{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}#bkov{animation:fadein .2s ease both}}
+.uaebox{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border-radius:12px;padding:12px 14px;margin:4px 0 12px}
+.uaebox>div{flex:1;min-width:0}.uaebox b{display:block;font-weight:800}.uaebox span{font-size:12.5px;color:var(--muted)}
+@media (max-width:560px){.uaebox{flex-direction:column;align-items:flex-start}}
 </style>
 
 <header>
@@ -676,6 +679,13 @@ function hmm(m){m=Math.round(m);return pad(Math.floor(m/60)%24)+":"+pad(((m%60)+
 function mins(iso){const d=new Date(iso);return d.getHours()*60+d.getMinutes()}
 function toMin(t){const p=String(t||"0:0").split(":").map(Number);return (p[0]||0)*60+(p[1]||0)}
 function hoursTable(){const h=S.settings.hours;return DEF_HOURS.map((d,i)=>{const x=(Array.isArray(h)&&h[i])||{...d,start:S.settings.start||d.start};return {on:!!x.on,start:x.start||"09:00",end:x.end||"18:00"}})}
+/* UAE public holidays (private sector). 2026 as confirmed; 2027 Islamic dates are expected until moon sighting. */
+const UAE_HOL=[["2026-01-01","New Year's Day"],["2026-03-19","Eid Al Fitr"],["2026-03-20","Eid Al Fitr"],["2026-03-21","Eid Al Fitr"],
+  ["2026-05-26","Arafat Day"],["2026-05-27","Eid Al Adha"],["2026-05-28","Eid Al Adha"],["2026-05-29","Eid Al Adha"],["2026-06-15","Islamic New Year"],
+  ["2026-08-28","Prophet's Birthday"],["2026-12-02","UAE National Day"],["2026-12-03","UAE National Day"],
+  ["2027-01-01","New Year's Day"],["2027-03-09","Eid Al Fitr (expected)"],["2027-03-10","Eid Al Fitr (expected)"],["2027-03-11","Eid Al Fitr (expected)"],
+  ["2027-05-15","Arafat Day (expected)"],["2027-05-16","Eid Al Adha (expected)"],["2027-05-17","Eid Al Adha (expected)"],["2027-05-18","Eid Al Adha (expected)"],
+  ["2027-06-06","Islamic New Year (expected)"],["2027-08-14","Prophet's Birthday (expected)"],["2027-12-02","UAE National Day"],["2027-12-03","UAE National Day"]];
 function holidays(){return (Array.isArray(S.settings.holidays)?S.settings.holidays:[]).filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date))}
 function holidayOf(d){const k=typeof d==="string"?d:key(d||new Date());const h=holidays().find(x=>x.date===k);return h?(h.name||"Public holiday"):null}
 function sched(d){const x=hoursTable()[dow(d)],h=holidayOf(d);return h?{...x,on:false,holiday:h}:x}
@@ -1862,11 +1872,13 @@ function renderSchedule(){
     </form>
   </div>`;
   const HL=holidays().slice().sort((a,b)=>a.date.localeCompare(b.date)), yr=String(new Date().getFullYear());
+  const missingUae=UAE_HOL.filter(([d])=>!HL.some(x=>x.date===d));
   const upcoming=HL.filter(x=>x.date>=todayKey), past=HL.filter(x=>x.date<todayKey&&x.date.slice(0,4)===yr).reverse();
   const hli=x=>`<li><span class="hd"><b>${esc(dateOf(x.date).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"}))}</b><span>${esc(x.name||"Public holiday")}</span></span>${S.canWrite?`<button class="btn ghost sm" type="button" data-act="holrm" data-date="${x.date}">Remove</button>`:""}</li>`;
-  const holPanel=`<div class="panel holp"><h2>Public holidays</h2><p class="sub">Holidays count as days off: nobody shows as out of office and no daily email is sent.</p>
+  const holPanel=`<div class="panel holp"><h2>Public holidays</h2><p class="sub">Holidays count as days off: nobody shows as out of office on reports.</p>
     ${S.canWrite?`<form class="holform" id="holForm" autocomplete="off"><input class="inp" type="date" id="holDate" value="${esc(S.draft.holDate||"")}" aria-label="Holiday date">
       <input class="inp" id="holName" maxlength="40" placeholder="e.g. National Day" value="${esc(S.draft.holName||"")}" aria-label="Holiday name"><button class="btn sm" type="submit">Add holiday</button></form>`:""}
+    ${S.canWrite&&missingUae.length?`<div class="uaebox"><div><b>UAE public holidays 2026–2027</b><span>Adds ${missingUae.length} day${missingUae.length===1?"":"s"}: Eid Al Fitr, Arafat Day, Eid Al Adha, Islamic New Year, Prophet's Birthday, National Day and New Year. 2027 Islamic dates are expected; adjust them when they're announced.</span></div><button class="btn sm" type="button" data-act="holuae">Add UAE holidays</button></div>`:""}
     ${upcoming.length?`<ul class="hollist">${upcoming.map(hli).join("")}</ul>`:`<p class="upnone">No upcoming holidays added.</p>`}
     ${past.length?`<details class="holpast"><summary>Earlier this year (${past.length})</summary><ul class="hollist">${past.map(hli).join("")}</ul></details>`:""}</div>`;
   h+=`<div class="panel"><h2>Work from home</h2><p class="sub">Tap the days each person works from home. On those days their card says WFH day and Present records them as working from home.</p>`;
@@ -1941,6 +1953,9 @@ view.addEventListener("click",e=>{
     case "book":openBook(null);break;
     case "ul":S.confirm="ul:"+id+b.dataset.from;render();break;
     case "ulok":S.confirm=null;cancelLeave(id,b.dataset.from,b.dataset.to,b.dataset.type);break;
+    case "holuae":{const prev=holidays(),have=new Set(prev.map(x=>x.date));
+      const list=prev.concat(UAE_HOL.filter(([d])=>!have.has(d)).map(([date,name])=>({date,name}))).sort((a,b)=>a.date.localeCompare(b.date));
+      saveSettings({holidays:list},"UAE public holidays added",()=>saveSettings({holidays:prev}));break}
     case "holrm":{const dt=b.dataset.date,prev=holidays();saveSettings({holidays:prev.filter(x=>x.date!==dt)},"Holiday removed",()=>saveSettings({holidays:prev}));break}
     case "mailreset":S.draft.mail=null;render();break;
     case "all":S.confirm="__all";render();break;
