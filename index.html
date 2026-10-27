@@ -1398,7 +1398,7 @@ async function exportCsv(){
     const ym=S.month, {days,recs}=await monthData(ym), tk=key(new Date());
     const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
     const lines=[["B3 International · Monthly attendance"],["Month",monthName(ym)],[],["Name","Role","Date","Day","Status","Location","Note"]];
-    S.people.forEach(p=>days.forEach(d=>{
+    S.people.slice().sort(byName).forEach(p=>days.forEach(d=>{
       const r=recs[key(d)+"_"+p.id], c=cellFor(r,d,tk,p);
       const status={p:"Present",wfh:"Present",ooo:"Out of Office",off:"Day off","":""}[c.code]??c.label;
       lines.push([p.name,p.role||"",key(d),d.toLocaleDateString("en-GB",{weekday:"short"}),status,isPresent(r)?(isHome(r)?"Home":"Office"):"",r&&r.note||""]);
@@ -1418,14 +1418,15 @@ function loadExcel(){
 function logoPng(){
   return new Promise(res=>{
     try{
-      const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 64 81" width="256" height="324"><path d="${MARK}" fill="#4B2163" stroke="#4B2163" stroke-width="0.9" stroke-linejoin="round" fill-rule="evenodd"/><text x="31" y="78.3" text-anchor="middle" font-family="Arial Narrow,Arial,sans-serif" font-size="10.6" textLength="61" lengthAdjust="spacingAndGlyphs" fill="#3A3A3F">International</text></svg>`;
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 64 81" width="512" height="648"><path d="${MARK}" fill="#4B2163" stroke="#4B2163" stroke-width="0.9" stroke-linejoin="round" fill-rule="evenodd"/><text x="31" y="78.3" text-anchor="middle" font-family="Arial Narrow,Arial,sans-serif" font-size="10.6" textLength="61" lengthAdjust="spacingAndGlyphs" fill="#3A3A3F">International</text></svg>`;
       const img=new Image();
-      img.onload=()=>{try{const c=document.createElement("canvas");c.width=256;c.height=324;c.getContext("2d").drawImage(img,0,0);res(c.toDataURL("image/png"))}catch(e){res(null)}};
+      img.onload=()=>{try{const c=document.createElement("canvas");c.width=512;c.height=648;c.getContext("2d").drawImage(img,0,0);res(c.toDataURL("image/png"))}catch(e){res(null)}};
       img.onerror=()=>res(null);
       img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
     }catch(e){res(null)}
   });
 }
+function byName(a,b){const A=(a.p||a).name||"",B=(b.p||b).name||"";return A.localeCompare(B,undefined,{sensitivity:"base",numeric:true})}
 function stamp(){const d=new Date();return " ("+pad(d.getHours())+"."+pad(d.getMinutes())+"."+pad(d.getSeconds())+")"}
 /* dropdowns + colour rules so the Excel stays editable and recolours itself */
 const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"]];
@@ -1443,7 +1444,7 @@ async function exportExcel(){
   exporting=true; toast("Preparing the "+monthName(S.month)+" report…");
   try{
     const ExcelJS=await loadExcel();
-    const ym=S.month, {days,recs}=await monthData(ym), now=new Date(), tk=key(now), N=days.length;
+    const ym=S.month, {days,recs}=await monthData(ym), now=new Date(), tk=key(now), N=days.length, PEOPLE=S.people.slice().sort(byName);
     const C={brand:"FF4B2163",brand2:"FF6A2E8E",brandSoft:"FFEEE5F6",ink:"FF1C1326",muted:"FF62576F",line:"FFDAD3E4",white:"FFFFFFFF",red:"FFC0392B",
       off:"FFF3F1F6",zebra:"FFFBFAFD",pInk:"FF0E7A50"};
     const ST={p:[null,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],emergency:["FFFCDCD6","FFA3261B"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"]};
@@ -1471,10 +1472,10 @@ async function exportExcel(){
     SUM.forEach((x,i)=>ws.getColumn(S0+i).width=x.k==="rate"?11.5:x.tot?10:9);
 
     // title band
-    ws.getRow(1).height=50;
-    if(logoId!=null)ws.addImage(logoId,{tl:{col:0.12,row:0.1},ext:{width:42,height:53}});
+    ws.getRow(1).height=86;
+    if(logoId!=null)ws.addImage(logoId,{tl:{col:0.25,row:0.05},ext:{width:84,height:106}});
     ws.mergeCells(1,2,1,SL);
-    const t=ws.getCell(1,2); t.value="Monthly Attendance Report"; t.font={size:20,bold:true,color:{argb:C.white}};
+    const t=ws.getCell(1,2); t.value="Monthly Attendance Report"; t.font={size:24,bold:true,color:{argb:C.white}};
     t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]};
     t.alignment={vertical:"middle",indent:1};
     ws.getRow(2).height=22;
@@ -1523,7 +1524,7 @@ async function exportExcel(){
 
     // body
     const first=R_H+1;
-    S.people.forEach((p,pi)=>{
+    PEOPLE.forEach((p,pi)=>{
       const R=first+pi, row=ws.getRow(R); row.height=22;
       const nc=row.getCell(1); nc.value=p.name; nc.font={bold:true,size:10.5,color:{argb:C.ink}}; nc.alignment={vertical:"middle",indent:1};
       nc.border=box; if(pi%2)nc.fill=solid(C.zebra);
@@ -1608,7 +1609,7 @@ async function exportExcel(){
     const hr=lg.getRow(3); hr.height=22;
     cols.forEach((l,i)=>{const c=hr.getCell(1+i);c.value=l;c.font={bold:true,color:{argb:C.brand}};c.fill=solid(C.brandSoft);c.border={...box,bottom:med};c.alignment={vertical:"middle",horizontal:i<2||i===6?"left":"center"}});
     let lr=4;
-    S.people.forEach(p=>days.forEach(d=>{
+    PEOPLE.forEach(p=>days.forEach(d=>{
       const r=recs[key(d)+"_"+p.id], cf=cellFor(r,d,tk,p); if(!cf.code||cf.code==="off")return;
       const R=lr++, row=lg.getRow(R);
       const status=cf.code==="p"?"Present":cf.code==="wfh"?"Present (WFH)":cf.code==="ooo"?"Out of Office":cf.label;
@@ -1690,7 +1691,7 @@ async function exportDaily(k){
   exporting=true; toast("Preparing the daily report…");
   try{
     const ExcelJS=await loadExcel();
-    const recs=await dayRecsFetch(k), sum=daySummary(k,recs), {d,rows,c,sc}=sum, now=new Date();
+    const recs=await dayRecsFetch(k), sum=daySummary(k,recs), {d,c,sc}=sum, rows=sum.rows.slice().sort(byName), now=new Date();
     const C={brand:"FF4B2163",brand2:"FF6A2E8E",brandSoft:"FFEEE5F6",ink:"FF1C1326",muted:"FF62576F",line:"FFDAD3E4",white:"FFFFFFFF",zebra:"FFFBFAFD",pInk:"FF0E7A50",pSoft:"FFDDF2E8"};
     const ST={p:[C.pSoft,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],emergency:["FFFCDCD6","FFA3261B"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"],off:["FFF3F1F6","FF62576F"]};
     const hair={style:"thin",color:{argb:C.line}}, box={top:hair,left:hair,bottom:hair,right:hair}, med={style:"medium",color:{argb:C.brand}};
@@ -1700,10 +1701,10 @@ async function exportDaily(k){
     const ws=wb.addWorksheet("Daily report",{views:[{showGridLines:false}],pageSetup:{paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.5,bottom:.5,header:.2,footer:.2}}});
     const W=[26,16,18,14,58]; W.forEach((w,i)=>ws.getColumn(i+1).width=w);
     const NC=W.length;
-    ws.getRow(1).height=50;
-    if(logoId!=null)ws.addImage(logoId,{tl:{col:0.12,row:0.1},ext:{width:42,height:53}});
+    ws.getRow(1).height=86;
+    if(logoId!=null)ws.addImage(logoId,{tl:{col:0.25,row:0.05},ext:{width:84,height:106}});
     ws.mergeCells(1,2,1,NC);
-    const t=ws.getCell(1,2); t.value="Daily Attendance Report"; t.font={size:20,bold:true,color:{argb:C.white}};
+    const t=ws.getCell(1,2); t.value="Daily Attendance Report"; t.font={size:24,bold:true,color:{argb:C.white}};
     t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]}; t.alignment={vertical:"middle",indent:1};
     ws.getRow(2).height=24; ws.mergeCells(2,1,2,3);
     const a2=ws.getCell(2,1); a2.value=dayLong(d); a2.font={bold:true,size:13,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
