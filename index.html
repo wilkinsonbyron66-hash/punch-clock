@@ -177,11 +177,11 @@ body.viewer .card .acts,body.viewer .card .links,body.viewer .card>.link,body.vi
 .mailtxt{font-family:var(--f-mono);font-size:13px;line-height:1.5;min-height:220px;background:var(--surface-2)}
 .inp.sel{width:auto;padding:8px 10px;font-size:13px;font-weight:700;background:var(--surface)}
 .lvgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.lvbtn.lv-ooo{grid-column:1/-1}
+
 .lvbtn{border:1px solid var(--line);border-radius:10px;padding:9px 6px;font-weight:800;font-size:13px;background:var(--surface-2);color:var(--ink)}
-.lv-ooo{--lv:#8A6400;--lvs:#FFF1BF} .lv-annual{--lv:#1F5A96;--lvs:#DCEAFA} .lv-sick{--lv:#B0304F;--lvs:#FBDDE4} .lv-half{--lv:#A4520A;--lvs:#FDDCBC} .lv-other{--lv:#4F4760;--lvs:#E9E5EF}
-.lvbtn.lv-ooo,.lvbtn.lv-annual,.lvbtn.lv-sick,.lvbtn.lv-half,.lvbtn.lv-other{background:var(--lvs);color:var(--lv);border-color:transparent}
-.pill.leave.lv-ooo,.pill.leave.lv-annual,.pill.leave.lv-sick,.pill.leave.lv-half,.pill.leave.lv-other,.wk td.cell.leave span[class^="lv-"]{background:var(--lvs);color:var(--lv)}
+.lv-ooo{--lv:#8A6400;--lvs:#FFF1BF} .lv-annual{--lv:#1F5A96;--lvs:#DCEAFA} .lv-sick{--lv:#B0304F;--lvs:#FBDDE4} .lv-half{--lv:#A4520A;--lvs:#FDDCBC} .lv-emergency{--lv:#A3261B;--lvs:#FCDCD6} .lv-other{--lv:#4F4760;--lvs:#E9E5EF}
+.lvbtn.lv-ooo,.lvbtn.lv-annual,.lvbtn.lv-sick,.lvbtn.lv-half,.lvbtn.lv-emergency,.lvbtn.lv-other{background:var(--lvs);color:var(--lv);border-color:transparent}
+.pill.leave.lv-ooo,.pill.leave.lv-annual,.pill.leave.lv-sick,.pill.leave.lv-half,.pill.leave.lv-emergency,.pill.leave.lv-other,.wk td.cell.leave span[class^="lv-"]{background:var(--lvs);color:var(--lv)}
 .wk td.cell span{position:relative}
 .ndot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:6px;vertical-align:2px}
 /* schedule */
@@ -575,6 +575,13 @@ button.pill.tap:hover{filter:brightness(.97);box-shadow:0 0 0 2px color-mix(in s
   .btn{min-height:44px}.btn.sm{min-height:40px}.chipbtn{min-height:38px}.link{padding:6px 0}
   .card .acts .btn{min-height:48px}
 }
+.card .acts{flex-wrap:wrap}
+.btn.emer{flex-basis:100%;background:var(--lvs);color:var(--lv);border:1px solid color-mix(in srgb,var(--lv) 25%,transparent);--lv:#A3261B;--lvs:#FCDCD6}
+.btn.emer:hover{filter:brightness(.97)}
+.btn.emer svg{width:15px;height:15px}
+.grid.list .card .acts{flex-wrap:nowrap}.grid.list .btn.emer{flex-basis:auto}
+@media (max-width:760px){.grid.list .card .acts{flex-wrap:wrap;justify-content:flex-end}}
+.link.emerlink{color:#A3261B}
 </style>
 
 <div id="splash" class="splash" hidden><svg viewBox="-1 -1 64 70" aria-hidden="true"><path d="M56.69 3.56 L50.69 2.88 L33.19 5.75 L31.88 6.56 L31.62 18.25 L32.50 19.56 L48.50 17.06 L49.81 17.25 L50.44 18.31 L50.38 23.94 L49.62 26.38 L47.81 27.62 L41.81 28.62 L40.75 29.56 L40.69 41.00 L41.69 41.88 L47.56 40.94 L49.69 41.44 L49.88 49.75 L48.94 50.81 L31.69 54.25 L31.06 66.56 L31.94 67.69 L55.06 63.81 L57.81 61.62 L59.94 58.12 L61.25 52.44 L61.38 40.88 L60.56 37.31 L57.19 32.94 L59.69 29.75 L61.44 24.69 L61.62 10.94 L59.69 5.81 Z M0.88 0.38 L0.12 2.19 L0.94 63.12 L1.88 63.88 L19.19 67.75 L25.06 67.50 L27.38 65.94 L28.69 63.56 L29.62 58.00 L29.50 45.25 L28.69 41.12 L26.56 37.19 L28.81 32.75 L29.56 26.75 L29.12 15.25 L27.88 9.75 L25.88 6.81 L23.31 4.94 L2.75 0.19 Z M10.62 41.12 L16.25 42.00 L18.56 43.62 L19.31 47.25 L19.25 51.88 L18.62 53.06 L15.38 52.81 L10.44 51.25 L10.12 42.06 Z M10.31 16.31 L16.06 17.25 L18.38 18.88 L19.00 20.62 L19.06 26.69 L18.56 28.00 L15.56 27.88 L10.31 26.31 Z" fill-rule="evenodd"/></svg><b>Punch Clock</b><span>B3 International</span></div>
@@ -826,6 +833,7 @@ const IC={
   auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
   cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>',
   list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.1"/></svg>',
   office:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M15 9h3a1 1 0 0 1 1 1v10M3 20h18M9 8h2M9 12h2M9 16h2"/></svg>'
 };
 
@@ -906,7 +914,7 @@ async function saveRename(){
     toast(prev.name!==name?prev.name+" renamed to "+name:"Details saved",()=>db.doc("people/"+R.pid).update(prev))}catch(e){fail(e)}
 }
 function clearDay(pid){return guarded(pid,async()=>{const ref=logRef(pid),prev={...S.today[pid]};await ref.delete();toast("Cleared today's entry for "+personName(pid),()=>ref.set(prev))})}
-const EDIT_CHOICES=[["office","In office","in"],["home","From home","home"],["annual","Annual Leave","lv-annual"],["sick","Sick Leave","lv-sick"],["half","Half Day","lv-half"],["other","On Leave","lv-other"],["ooo","Out of Office","lv-ooo"],["none","Not marked","none"]];
+const EDIT_CHOICES=[["office","In office","in"],["home","From home","home"],["annual","Annual Leave","lv-annual"],["sick","Sick Leave","lv-sick"],["emergency","Emergency Leave","lv-emergency"],["half","Half Day","lv-half"],["other","On Leave","lv-other"],["ooo","Out of Office","lv-ooo"],["none","Not marked","none"]];
 function currentChoice(r){if(!r)return "none";if(r.status==="leave")return LEAVE_CHOICES[r.leaveType]?r.leaveType:"other";if(isPresent(r))return isHome(r)?"home":"office";return "none"}
 function startEdit(pid){const r=S.today[pid];S.edit={pid,st:currentChoice(r),note:(r&&r.note)||""};S.confirm=null;render();
   setTimeout(()=>{const x=document.getElementById("e-note");x&&x.focus()},0)}
@@ -1035,7 +1043,8 @@ function card(p,now){
       ?`<div class="editbox"><span class="eyebrow">Type of leave</span><div class="lvgrid">${Object.entries(LEAVE_CHOICES).map(([k,l])=>`<button class="lvbtn lv-${k}" type="button" data-act="leavetype" data-type="${k}" data-id="${p.id}" ${dis}>${l}</button>`).join("")}</div>
         <button class="btn ghost sm" type="button" data-act="cancel">Cancel</button></div>`
       :`<button class="btn${plan?" home":""}" type="button" data-act="present" data-loc="${loc}" data-id="${p.id}" ${dis}>${plan?IC.home:IC.check}Present</button>
-      <button class="btn ghost sm" type="button" data-act="leave" data-id="${p.id}" ${dis}>Leave</button>`;
+      <button class="btn ghost sm" type="button" data-act="leave" data-id="${p.id}" ${dis}>Leave</button>
+      ${S.canWrite?`<button class="btn sm emer" type="button" data-act="leavetype" data-type="emergency" data-id="${p.id}" ${dis}>${IC.alert}Emergency leave</button>`:""}`;
     if(S.canWrite&&S.confirm!=="lv:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="present" data-loc="${plan?"office":"home"}" data-id="${p.id}">${plan?"Present in the office instead":"Present, working from home"}</button><button class="link" type="button" data-act="edit" data-id="${p.id}">${r&&r.note?"Edit note":"Add note"}</button></div>`;
   }else if(st==="leave"){pill=S.canWrite?`<button type="button" class="pill leave tap lv-${esc(r.leaveType||"other")}" data-act="cycle" data-id="${p.id}" title="Tap to mark present in the office">${esc(leaveLabel(r))}</button>`:`<span class="pill leave lv-${esc(r.leaveType||"other")}">${esc(leaveLabel(r))}</span>`;
     acts=`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit</button><button class="btn ghost sm" type="button" data-act="clearleave" data-id="${p.id}" ${dis}>Clear leave</button>`;
@@ -1048,7 +1057,7 @@ function card(p,now){
       :S.confirm==="clr:"+p.id
       ?`<button class="btn warn" type="button" data-act="clrok" data-id="${p.id}" ${dis}>Clear this entry</button><button class="btn ghost sm" type="button" data-act="cancel">Keep</button>`
       :`<button class="btn ghost" type="button" data-act="edit" data-id="${p.id}" ${dis}>${IC.pen}Edit attendance${r.note?" or note":" / add note"}</button>`;
-    if(S.canWrite&&S.confirm!=="clr:"+p.id&&S.confirm!=="lv:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="switch" data-id="${p.id}">${home?"Change to in office":"Change to working from home"}</button><button class="link" type="button" data-act="clr" data-id="${p.id}">Clear</button></div>`;
+    if(S.canWrite&&S.confirm!=="clr:"+p.id&&S.confirm!=="lv:"+p.id)extra=`<div class="links"><button class="link" type="button" data-act="switch" data-id="${p.id}">${home?"Change to in office":"Change to working from home"}</button><button class="link emerlink" type="button" data-act="leavetype" data-type="emergency" data-id="${p.id}">Emergency leave</button><button class="link" type="button" data-act="clr" data-id="${p.id}">Clear</button></div>`;
   }
   const RN=S.rename&&S.rename.pid===p.id?S.rename:null;
   const who=RN?`<div class="rename"><div class="field"><label for="rn-name">Name</label><input class="inp" id="rn-name" maxlength="60" value="${esc(RN.name)}"></div>
@@ -1078,7 +1087,7 @@ function card(p,now){
 function dashStats(){
   const days=daysBack(S.range), tk=key(new Date());
   const per={}; S.people.forEach(p=>per[p.id]={present:0,home:0,leave:0,ooo:0});
-  const types={ooo:0,sick:0,annual:0,half:0,other:0};
+  const types={ooo:0,sick:0,annual:0,emergency:0,half:0,other:0};
   const daily=days.map(d=>{
     const k=key(d); let leave=0,office=0,home=0,ooo=0;
     S.people.forEach(p=>{
@@ -1112,7 +1121,7 @@ function renderDash(){
     <div class="kpi"><div class="eyebrow">Days away</div><b>${s.away}</b><p>${s.away-s.types.ooo} leave · ${s.types.ooo} out of office</p></div>
   </div>`;
   h+=`<div class="panels p2">${weekPanel()}${upcomingPanel()}</div>`;
-  const T=[["Out of office",s.types.ooo,"var(--late)"],["Sick leave",s.types.sick,"#C2386F"],["Annual leave",s.types.annual,"#2F6FB0"],["Half day",s.types.half,"#C76A12"],["Other leave",s.types.other,"var(--muted)"]];
+  const T=[["Out of office",s.types.ooo,"var(--late)"],["Sick leave",s.types.sick,"#C2386F"],["Annual leave",s.types.annual,"#2F6FB0"],["Emergency leave",s.types.emergency,"#B83227"],["Half day",s.types.half,"#C76A12"],["Other leave",s.types.other,"var(--muted)"]];
   const mx=Math.max(1,...T.map(t=>t[1]));
   h+=`<div class="panels">
     <div class="panel"><h3>Daily attendance</h3><p class="sub">Where people were each day, out of ${S.people.length} people</p>
@@ -1237,7 +1246,7 @@ async function cancelLeave(pid,from,to,type){
   }catch(e){fail(e)}
 }
 /* ---------- person history ---------- */
-const PH_LABEL={p:"Office",wfh:"Home",annual:"Annual",sick:"Sick",half:"Half day",other:"Leave",ooo:"Out"};
+const PH_LABEL={p:"Office",wfh:"Home",annual:"Annual",sick:"Sick",emergency:"Emergency",half:"Half day",other:"Leave",ooo:"Out"};
 async function openPh(pid,ym){
   if(!db){noDb();return}
   S.ph={pid,ym:ym||(S.ph&&S.ph.pid===pid?S.ph.ym:ymOf(new Date())),recs:null}; renderPh();
@@ -1351,7 +1360,7 @@ function renderWeek(){
   return h+`</tbody></table></div>`;
 }
 /* ---------- monthly report data (shared by both exports) ---------- */
-const LEAVE={annual:"Annual Leave",sick:"Sick Leave",half:"Half Day",other:"On Leave"};
+const LEAVE={annual:"Annual Leave",sick:"Sick Leave",emergency:"Emergency Leave",half:"Half Day",other:"On Leave"};
 const LEAVE_CHOICES={...LEAVE,ooo:"Out of Office"};
 function leaveLabel(r){return LEAVE_CHOICES[r&&r.leaveType]||"On Leave"}
 function ymOf(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)}
@@ -1411,8 +1420,8 @@ function logoPng(){
 }
 function stamp(){const d=new Date();return " ("+pad(d.getHours())+"."+pad(d.getMinutes())+"."+pad(d.getSeconds())+")"}
 /* dropdowns + colour rules so the Excel stays editable and recolours itself */
-const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Half Day","half"],["On Leave","other"]];
-const STATUS_VALUES=[["Present","p"],["Present (WFH)","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Half Day","half"],["On Leave","other"],["Day off","off"]];
+const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"]];
+const STATUS_VALUES=[["Present","p"],["Present (WFH)","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"],["Day off","off"]];
 function listRule(values,title){return {type:"list",allowBlank:true,formulae:['"'+values.join(",")+'"'],showErrorMessage:true,errorStyle:"warning",errorTitle:title||"Not in the list",error:"Pick a value from the dropdown, or press Yes to keep what you typed."}}
 function colourRules(ws,ref,values,ST){
   ws.addConditionalFormatting({ref,rules:values.map(([v,code],i)=>{const st=ST[code]||[null,"FF1C1326"];const style={font:{bold:true,color:{argb:st[1]}}};
@@ -1429,7 +1438,7 @@ async function exportExcel(){
     const ym=S.month, {days,recs}=await monthData(ym), now=new Date(), tk=key(now), N=days.length;
     const C={brand:"FF4B2163",brand2:"FF6A2E8E",brandSoft:"FFEEE5F6",ink:"FF1C1326",muted:"FF62576F",line:"FFDAD3E4",white:"FFFFFFFF",red:"FFC0392B",
       off:"FFF3F1F6",zebra:"FFFBFAFD",pInk:"FF0E7A50"};
-    const ST={p:[null,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"]};
+    const ST={p:[null,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],emergency:["FFFCDCD6","FFA3261B"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"]};
     const BANDS=["FFDDF0DC","FFD8EAF7","FFFBE3D6","FFD9F1EF","FFF2DFF1","FFE4E1F7"];
     const hair={style:"thin",color:{argb:C.line}}, box={top:hair,left:hair,bottom:hair,right:hair};
     const med={style:"medium",color:{argb:C.brand}};
@@ -1575,7 +1584,7 @@ async function exportExcel(){
     // key
     let kr=last+4; ws.getCell(kr,1).value="Key"; ws.getCell(kr,1).font={bold:true,color:{argb:C.muted}};
     const key_=[["P","Present in office",null,C.pInk],["WFH","Worked from home",...ST.wfh],["Out of Office","Not marked present",...ST.ooo],
-      ["Sick Leave","Sick leave",...ST.sick],["Annual Leave","Annual leave",...ST.annual],["Half Day","Half day",...ST.half],["On Leave","Other leave",...ST.other]];
+      ["Sick Leave","Sick leave",...ST.sick],["Annual Leave","Annual leave",...ST.annual],["Emergency Leave","Emergency leave",...ST.emergency],["Half Day","Half day",...ST.half],["On Leave","Other leave",...ST.other]];
     key_.forEach(([v,l,f,ink],i)=>{const r=kr+i, a=ws.getCell(r,2); a.value=v; a.font={bold:true,size:9,color:{argb:ink}}; if(f)a.fill=solid(f);
       a.alignment={horizontal:"center",vertical:"middle"}; a.border=box; if(i)ws.getCell(r,1).value=null;
       ws.mergeCells(r,3,r,5); const b=ws.getCell(r,3); b.value=l; b.font={size:9.5,color:{argb:C.ink}}; b.alignment={vertical:"middle",indent:1}});
@@ -1616,7 +1625,7 @@ async function exportExcel(){
 }
 
 /* ---------- daily report ---------- */
-const GROUP_ORDER={p:0,wfh:1,annual:2,sick:2,half:2,other:2,ooo:3,off:4,"":5};
+const GROUP_ORDER={p:0,wfh:1,annual:2,sick:2,emergency:2,half:2,other:2,ooo:3,off:4,"":5};
 function dayRecsCached(k){
   if(k===todayKey)return S.today;
   const m={},d=dateOf(k),from=daysBack(30)[0];
@@ -1675,7 +1684,7 @@ async function exportDaily(k){
     const ExcelJS=await loadExcel();
     const recs=await dayRecsFetch(k), sum=daySummary(k,recs), {d,rows,c,sc}=sum, now=new Date();
     const C={brand:"FF4B2163",brand2:"FF6A2E8E",brandSoft:"FFEEE5F6",ink:"FF1C1326",muted:"FF62576F",line:"FFDAD3E4",white:"FFFFFFFF",zebra:"FFFBFAFD",pInk:"FF0E7A50",pSoft:"FFDDF2E8"};
-    const ST={p:[C.pSoft,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"],off:["FFF3F1F6","FF62576F"]};
+    const ST={p:[C.pSoft,C.pInk],wfh:["FFE9DDF7","FF5B2A86"],ooo:["FFFFF3C4","FF7A5A00"],sick:["FFFBDDE4","FFB0304F"],annual:["FFDCEAFA","FF1F5A96"],emergency:["FFFCDCD6","FFA3261B"],half:["FFFDDCBC","FFA4520A"],other:["FFE9E5EF","FF4F4760"],off:["FFF3F1F6","FF62576F"]};
     const hair={style:"thin",color:{argb:C.line}}, box={top:hair,left:hair,bottom:hair,right:hair}, med={style:"medium",color:{argb:C.brand}};
     const solid=a=>({type:"pattern",pattern:"solid",fgColor:{argb:a}});
     const wb=new ExcelJS.Workbook(); wb.creator="B3 International · Punch Clock"; wb.created=now; wb.calcProperties.fullCalcOnLoad=true;
@@ -1698,7 +1707,7 @@ async function exportDaily(k){
     const HR=7, lastRow=HR+Math.max(1,rows.length), SR=`$C$${HR+1}:$C$${lastRow}`, cnt=v=>`COUNTIF(${SR},"${v}")`;
     const fx=(f,r)=>({formula:f,result:r});
     const tiles=[["In office",fx(cnt("Present"),c.p),ST.p],["From home",fx(cnt("Present (WFH)"),c.wfh),ST.wfh],
-      ["On leave",fx(["Sick Leave","Annual Leave","Half Day","On Leave"].map(cnt).join("+"),c.leave),ST.annual],["Out of office",fx(cnt("Out of Office"),c.ooo),ST.ooo],
+      ["On leave",fx(["Sick Leave","Annual Leave","Emergency Leave","Half Day","On Leave"].map(cnt).join("+"),c.leave),ST.annual],["Out of office",fx(cnt("Out of Office"),c.ooo),ST.ooo],
       ["Present",fx(cnt("Present")+"+"+cnt("Present (WFH)"),c.p+c.wfh),[C.brand,C.white]],["Team",fx(`COUNTA($A$${HR+1}:$A$${lastRow})`,c.total),[C.brandSoft,C.brand]]];
     const tiles2=tiles.filter(t=>t[0]!=="Team"); tiles.length=0; tiles.push(...tiles2);
     const tileCols=[[1,1],[2,2],[3,3],[4,4],[5,5]];
@@ -1767,7 +1776,7 @@ function reportsPanel(){
 /* ---------- one-page PDF reports (drawn on a canvas, wrapped as an A4 PDF) ---------- */
 const PC={brand:"#4B2163",brand2:"#6A2E8E",ink:"#1C1326",muted:"#6B6178",faint:"#A39AAF",line:"#E8E3EE",soft:"#F6F3F9",white:"#FFFFFF",
   office:"#12895B",home:"#0B8C99",leave:"#C2386F",ooo:"#E3A008",off:"#DDD8E3",
-  annual:"#2F6FB0",sick:"#C2386F",half:"#C76A12",other:"#6B6178"};
+  annual:"#2F6FB0",sick:"#C2386F",emergency:"#B83227",half:"#C76A12",other:"#6B6178"};
 const PF_D='"Bricolage Grotesque","Figtree",Arial,sans-serif', PF_B='"Figtree",Arial,sans-serif', PF_M='"IBM Plex Mono",Consolas,monospace';
 const PX_MM=200/25.4;
 function pdfPage(){const W=Math.round(210*PX_MM),H=Math.round(297*PX_MM),cv=document.createElement("canvas");cv.width=W;cv.height=H;
@@ -1843,7 +1852,7 @@ function columns(g,x,y,w,h,cols,max,opts={}){
   });
 }
 function pill(g,x,y,text,c){g.font=`800 ${6.6*0.3528}px ${PF_B}`;const w=g.measureText(text).width+4;g.globalAlpha=.14;rr(g,x,y-2.9,w,4,2,c);g.globalAlpha=1;tx(g,text,x+2,y,{pt:6.6,w:800,c});return w}
-const CODE_COLOR={p:PC.office,wfh:PC.home,ooo:PC.ooo,annual:PC.annual,sick:PC.sick,half:PC.half,other:PC.other,off:PC.faint};
+const CODE_COLOR={p:PC.office,wfh:PC.home,ooo:PC.ooo,annual:PC.annual,sick:PC.sick,emergency:PC.emergency,half:PC.half,other:PC.other,off:PC.faint};
 async function rangeRecs(from,to){
   if(!db)return {};
   const snap=await db.collection("log").where("date",">=",from).where("date","<=",to).limit(1000).get();
@@ -1892,10 +1901,10 @@ async function buildDailyPdf(k){
 async function buildMonthlyPdf(ym){
   await pdfFonts();
   const {days,recs}=await monthData(ym), tk=key(new Date());
-  const per=S.people.map(p=>{const v={p,office:0,home:0,ooo:0,sick:0,annual:0,half:0,other:0};
+  const per=S.people.map(p=>{const v={p,office:0,home:0,ooo:0,sick:0,annual:0,emergency:0,half:0,other:0};
     days.forEach(d=>{const cf=cellFor(recs[key(d)+"_"+p.id],d,tk,p);if(cf.code==="p")v.office++;else if(cf.code==="wfh")v.home++;else if(v[cf.code]!=null)v[cf.code]++});
-    v.worked=v.office+v.home; v.away=v.ooo+v.sick+v.annual+v.half+v.other; v.rate=v.worked+v.away?v.worked/(v.worked+v.away):null; return v});
-  const T=per.reduce((a,v)=>{["office","home","ooo","sick","annual","half","other","worked","away"].forEach(k=>a[k]=(a[k]||0)+v[k]);return a},{});
+    v.worked=v.office+v.home; v.away=v.ooo+v.sick+v.annual+v.emergency+v.half+v.other; v.rate=v.worked+v.away?v.worked/(v.worked+v.away):null; return v});
+  const T=per.reduce((a,v)=>{["office","home","ooo","sick","annual","emergency","half","other","worked","away"].forEach(k=>a[k]=(a[k]||0)+v[k]);return a},{});
   const rate=T.worked+T.away?Math.round(T.worked/(T.worked+T.away)*100):null;
   const {cv,g}=pdfPage();
   const wd=days.filter(d=>sched(d).on).length;
@@ -1911,7 +1920,7 @@ async function buildMonthlyPdf(ym){
   legend(g,14,133,[["In office",PC.office],["From home",PC.home],["Day off",PC.off]]);
   // absence by type + where people worked
   sectionTitle(g,145,"Days away by type");
-  const types=[["Out of office",T.ooo||0,PC.ooo],["Sick leave",T.sick||0,PC.sick],["Annual leave",T.annual||0,PC.annual],["Half day",T.half||0,PC.half],["Other leave",T.other||0,PC.other]];
+  const types=[["Out of office",T.ooo||0,PC.ooo],["Sick leave",T.sick||0,PC.sick],["Annual leave",T.annual||0,PC.annual],["Emergency leave",T.emergency||0,PC.emergency],["Half day",T.half||0,PC.half],["Other leave",T.other||0,PC.other]];
   const mx=Math.max(1,...types.map(t=>t[1]));
   types.forEach(([l,v,col],i)=>{const y=150+i*6.2;tx(g,l,14,y+2.8,{pt:7.2,w:600,c:PC.muted});rr(g,40,y,56,3.6,1.8,PC.soft);if(v)rr(g,40,y,Math.max(3.6,56*v/mx),3.6,1.8,col);tx(g,v,99,y+2.9,{pt:7.2,w:800,f:PF_M})});
   tx(g,"Where days were spent",112,145,{pt:10.5,w:800,f:PF_D});
