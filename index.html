@@ -485,6 +485,19 @@ table.wk{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px}
   .phbox .phd{animation:fadein .3s ease both}
   .remind{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
 }
+.bkbox{width:min(520px,100%)}
+.bkbody{padding:16px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.bkbody .lvgrid{display:flex;flex-wrap:wrap;gap:6px}
+.bkbody .lvbtn{border:1.5px solid transparent;border-radius:10px;padding:8px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.bkbody .lvbtn.on{border-color:var(--lv);box-shadow:0 0 0 2px var(--lvs)}
+.bkdates{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bksum{background:var(--surface-2);border-radius:12px;padding:11px 13px;font-size:13.5px;display:flex;flex-direction:column;gap:2px}
+.bksum b{font-weight:800}.bksum span{color:var(--muted)}.bksum .bkerr{color:var(--leave);font-weight:700}
+.bkfoot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.bkfoot .btn{flex:none}
+.link.danger{color:var(--leave)}
+.upr small .link{font-size:12px}
+@media (prefers-reduced-motion:no-preference){#bkov .bkbox{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}#bkov{animation:fadein .2s ease both}}
 </style>
 
 <header>
@@ -715,6 +728,7 @@ const IC={
   bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
   up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M12 13v5M9.5 15.5h5"/></svg>',
   office:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M15 9h3a1 1 0 0 1 1 1v10M3 20h18M9 8h2M9 12h2M9 16h2"/></svg>'
 };
 
@@ -858,7 +872,7 @@ function renderToday(){
   h+=`<div class="tools"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Find a name" value="${esc(S.q)}" aria-label="Find a name" autocomplete="off"></label>
     <div class="filters">${F.map(([k,l])=>`<button type="button" class="chipbtn" data-filter="${k}" aria-pressed="${S.filter===k}">${l}</button>`).join("")}</div>
-    <button class="btn ghost sm" type="button" data-act="goreport">${IC.day}${today?"Today's report":"Report for this day"}</button></div>`;
+    ${S.canWrite?`<button class="btn ghost sm" type="button" data-act="book">${IC.cal}Book leave</button>`:""}<button class="btn ghost sm" type="button" data-act="goreport">${IC.day}${today?"Today's report":"Report for this day"}</button></div>`;
   const q=S.q.trim().toLowerCase(), now=new Date();
   const list=S.people.filter(p=>{
     const st=statusOf(p.id);
@@ -1012,8 +1026,70 @@ function upcomingPanel(){
   return `<div class="panel"><h3>Upcoming leave</h3><p class="sub">Next 2 weeks</p>
     ${runs.length?`<ul class="upl">${runs.map(x=>{const p=S.people.find(y=>y.id===x.pid);return `<li>
       <button class="nmlink person" type="button" data-act="hist" data-id="${x.pid}"><span class="av" style="background:${colorFor(x.pid)}">${avHtml(p)}</span><span><b>${esc(p.name)}</b><small>${esc(sd(x.from))}${x.to!==x.from?" – "+esc(sd(x.to)):""}</small></span></button>
-      <span class="upr"><span class="pill leave lv-${esc(x.type)}">${esc(LEAVE_CHOICES[x.type]||"On Leave")}${x.n>1?" · "+x.n+" days":""}</span><small>${when(x.from)}</small></span></li>`}).join("")}</ul>`
-    :`<p class="upnone">No leave booked for the next 2 weeks. To book ahead, pick a future date on the Today tab and mark Leave.</p>`}</div>`;
+      <span class="upr"><span class="pill leave lv-${esc(x.type)}">${esc(LEAVE_CHOICES[x.type]||"On Leave")}${x.n>1?" · "+x.n+" days":""}</span><small>${when(x.from)}${S.canWrite?(S.confirm==="ul:"+x.pid+x.from?` · <button class="link danger" type="button" data-act="ulok" data-id="${x.pid}" data-from="${x.from}" data-to="${x.to}" data-type="${x.type}">Yes, cancel it</button> <button class="link" type="button" data-act="cancel">Keep</button>`:` · <button class="link" type="button" data-act="ul" data-id="${x.pid}" data-from="${x.from}">Cancel leave</button>`):""}</small></span></li>`}).join("")}</ul>`
+    :`<p class="upnone">No leave booked for the next 2 weeks.</p>`}
+    ${S.canWrite?`<button class="btn ghost sm" type="button" data-act="book" style="margin-top:12px">${IC.cal}Book leave</button>`:""}</div>`;
+}
+/* ---------- book leave (a range of days at once) ---------- */
+function bookDays(from,to){const out=[];if(!from||!to||to<from)return out;const d=dateOf(from);
+  for(let i=0;i<120&&key(d)<=to;i++){if(sched(d).on)out.push(key(d));d.setDate(d.getDate()+1)}return out}
+function openBook(pid){if(!S.canWrite)return;const t=new Date();t.setDate(t.getDate()+1);const k=key(t);
+  S.bk={pid:pid||"",type:"annual",from:k,to:k,note:"",busy:false};renderBook();setTimeout(()=>{const x=document.getElementById(pid?"bkFrom":"bkWho");x&&x.focus()},40)}
+function renderBook(){
+  let ov=document.getElementById("bkov");
+  if(!S.bk){if(ov)ov.remove();return}
+  if(!ov){ov=document.createElement("div");ov.id="bkov";ov.className="pdfov";document.body.appendChild(ov);
+    ov.addEventListener("click",e=>{const b=e.target.closest("[data-bk]");if(e.target===ov||(b&&b.dataset.bk==="close")){S.bk=null;renderBook();return}
+      if(b&&b.dataset.bk==="type"){S.bk.type=b.dataset.type;renderBook()}
+      if(b&&b.dataset.bk==="save")saveBook()});
+    ov.addEventListener("input",e=>{const B=S.bk;if(!B)return;const id=e.target.id;
+      if(id==="bkWho"){B.pid=e.target.value;renderBook()}
+      else if(id==="bkFrom"){B.from=e.target.value;if(!B.to||B.to<B.from)B.to=B.from;renderBook()}
+      else if(id==="bkTo"){B.to=e.target.value;renderBook()}
+      else if(id==="bkNote"){B.note=e.target.value}});
+    ov.addEventListener("keydown",e=>{if(e.key==="Escape"){S.bk=null;renderBook()}})}
+  const B=S.bk, days=bookDays(B.from,B.to), sd=k=>dateOf(k).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+  const skipped=B.from&&B.to&&B.to>=B.from?Math.round((dateOf(B.to)-dateOf(B.from))/864e5)+1-days.length:0;
+  const hols=days.length||skipped?bookDaysAll(B.from,B.to).filter(k=>holidayOf(k)):[];
+  const err=!B.pid?"Pick who the leave is for.":!B.from||!B.to?"Pick the dates.":B.to<B.from?"The end date is before the start date.":!days.length?"There are no working days in these dates.":days.length>60?"That's more than 60 working days. Book it in smaller parts.":"";
+  const a=document.activeElement, aid=a&&ov.contains(a)?a.id:null;
+  ov.innerHTML=`<div class="pdfbox bkbox" role="dialog" aria-label="Book leave">
+    <div class="pdfbar"><div><b>Book leave</b><span>For approved leave, past or future</span></div><button class="btn ghost sm" type="button" data-bk="close">Close</button></div>
+    <div class="bkbody">
+      <div class="field"><label for="bkWho">Employee</label><select class="inp" id="bkWho"><option value="">Choose a person…</option>${S.people.map(p=>`<option value="${p.id}"${p.id===B.pid?" selected":""}>${esc(p.name)}</option>`).join("")}</select></div>
+      <div class="field"><label>Type of leave</label><div class="lvgrid">${Object.entries(LEAVE_CHOICES).map(([k,l])=>`<button type="button" class="lvbtn lv-${k}${B.type===k?" on":""}" data-bk="type" data-type="${k}" aria-pressed="${B.type===k}">${l}</button>`).join("")}</div></div>
+      <div class="bkdates"><div class="field"><label for="bkFrom">First day</label><input class="inp" type="date" id="bkFrom" value="${esc(B.from)}"></div>
+        <div class="field"><label for="bkTo">Last day</label><input class="inp" type="date" id="bkTo" value="${esc(B.to)}" min="${esc(B.from)}"></div></div>
+      <div class="field"><label for="bkNote">Note (optional)</label><input class="inp" id="bkNote" maxlength="300" placeholder="e.g. Approved by HR, family trip" value="${esc(B.note)}"></div>
+      <div class="bksum">${err?`<span class="bkerr">${esc(err)}</span>`:`<b>${days.length} working day${days.length===1?"":"s"}</b>
+        <span>${days.length<=6?days.map(sd).join(", "):sd(days[0])+" – "+sd(days[days.length-1])}${skipped?` · ${skipped} day${skipped===1?"":"s"} off skipped${hols.length?" (incl. "+hols.map(k=>esc(holidayOf(k))).join(", ")+")":""}`:""}</span>`}</div>
+    </div>
+    <div class="bkfoot"><button class="btn ghost sm" type="button" data-bk="close">Cancel</button><button class="btn" type="button" data-bk="save" ${err||B.busy?"disabled":""}>${IC.check}Book ${days.length&&!err?days.length+" day"+(days.length===1?"":"s"):"leave"}</button></div></div>`;
+  if(aid){const el=document.getElementById(aid);if(el)el.focus({preventScroll:true})}
+}
+function bookDaysAll(from,to){const out=[];if(!from||!to||to<from)return out;const d=dateOf(from);for(let i=0;i<180&&key(d)<=to;i++){out.push(key(d));d.setDate(d.getDate()+1)}return out}
+async function saveBook(){
+  const B=S.bk; if(!B||B.busy)return; if(!db){noDb();return}
+  const days=bookDays(B.from,B.to); if(!B.pid||!days.length||days.length>60)return;
+  B.busy=true; renderBook();
+  try{
+    const prev=await rangeRecs(days[0],days[days.length-1]), note=String(B.note||"").trim(), pid=B.pid, type=B.type, undo=[];
+    for(const k of days){const old=prev[k+"_"+pid]||null, doc={date:k,pid,status:"leave",leaveType:type,edited:new Date().toISOString()};
+      const n=note||(old&&old.note)||""; if(n)doc.note=n;
+      undo.push([k,old]); await logRef(pid,k).set(doc)}
+    S.bk=null; renderBook();
+    const sd=k=>dateOf(k).toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    toast(personName(pid)+": "+(LEAVE_CHOICES[type]||"Leave")+" booked, "+(days.length===1?sd(days[0]):sd(days[0])+" – "+sd(days[days.length-1])),
+      async()=>{for(const [k,old] of undo){if(old)await logRef(pid,k).set(old);else await logRef(pid,k).delete()}});
+  }catch(e){if(S.bk){S.bk.busy=false;renderBook()}fail(e)}
+}
+async function cancelLeave(pid,from,to,type){
+  if(!db){noDb();return} if(!S.canWrite)return;
+  try{const recs=await rangeRecs(from,to), undo=[];
+    for(const k of bookDaysAll(from,to)){const r=recs[k+"_"+pid]; if(!r||r.status!=="leave"||(r.leaveType||"other")!==type)continue;
+      undo.push([k,r]); await logRef(pid,k).delete()}
+    toast("Leave cancelled for "+personName(pid),async()=>{for(const [k,r] of undo)await logRef(pid,k).set(r)});
+  }catch(e){fail(e)}
 }
 /* ---------- person history ---------- */
 const PH_LABEL={p:"Office",wfh:"Home",annual:"Annual",sick:"Sick",half:"Half day",other:"Leave",ooo:"Out"};
@@ -1031,6 +1107,7 @@ function renderPh(){
   const P=S.ph, p=S.people.find(x=>x.id===P.pid); if(!p){S.ph=null;if(ov)ov.remove();return}
   if(!ov){ov=document.createElement("div");ov.id="phov";ov.className="pdfov";document.body.appendChild(ov);
     ov.addEventListener("click",e=>{const b=e.target.closest("[data-ph]");if(e.target===ov||(b&&b.dataset.ph==="close")){S.ph=null;renderPh();return}
+      if(b&&b.dataset.ph==="book"){const pid=S.ph.pid;S.ph=null;renderPh();openBook(pid);return}
       if(b&&b.dataset.ph==="prev")phShift(-1);if(b&&b.dataset.ph==="next")phShift(1);
       if(b&&b.dataset.ph==="day"&&S.canWrite){const k=b.dataset.k;S.ph=null;renderPh();S.tab="today";setView(k);window.scrollTo({top:0})}})}
   const isNow=P.ym>=ymOf(new Date());
@@ -1059,7 +1136,7 @@ function renderPh(){
   }
   ov.innerHTML=`<div class="pdfbox phbox" role="dialog" aria-label="${esc(p.name)}'s attendance history">
     <div class="pdfbar"><div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div><div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div></div>
-      <button class="btn ghost sm" type="button" data-ph="close">Close</button></div>
+      <div class="acts" style="flex:none">${S.canWrite?`<button class="btn ghost sm" type="button" data-ph="book">${IC.cal}Book leave</button>`:""}<button class="btn ghost sm" type="button" data-ph="close">Close</button></div></div>
     <div class="phbody"><div class="phmonth"><button class="icon" type="button" data-ph="prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
       <b>${esc(monthName(P.ym))}</b>
       <button class="icon" type="button" data-ph="next" aria-label="Next month" ${isNow?"disabled":""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>
@@ -1861,6 +1938,9 @@ view.addEventListener("click",e=>{
   switch(b.dataset.act){
     case "present":markPresent(id,b.dataset.loc);break;
     case "hist":tip.hidden=true;openPh(id);break;
+    case "book":openBook(null);break;
+    case "ul":S.confirm="ul:"+id+b.dataset.from;render();break;
+    case "ulok":S.confirm=null;cancelLeave(id,b.dataset.from,b.dataset.to,b.dataset.type);break;
     case "holrm":{const dt=b.dataset.date,prev=holidays();saveSettings({holidays:prev.filter(x=>x.date!==dt)},"Holiday removed",()=>saveSettings({holidays:prev}));break}
     case "mailreset":S.draft.mail=null;render();break;
     case "all":S.confirm="__all";render();break;
