@@ -1440,7 +1440,7 @@ function watermarkPng(){
 }
 /* letterhead pieces shared by the Excel reports */
 async function xlBrand(wb){
-  const [white,wm]=await Promise.all([logoPng("#FFFFFF","#E9DDF7"),watermarkPng()]);
+  const [white,wm]=await Promise.all([logoPng("#4B2163","#4B2163"),watermarkPng()]);
   return {white:white?wb.addImage({base64:white.split(",")[1],extension:"png"}):null, wm:wm?wb.addImage({base64:wm.split(",")[1],extension:"png"}):null};
 }
 function xlPrint(ws,title,when){
@@ -1514,12 +1514,12 @@ async function exportExcel(){
     ws.getRow(1).height=86;
     if(logoId!=null)ws.addImage(logoId,{tl:{col:0.25,row:0.05},ext:{width:84,height:106}});
     ws.mergeCells(1,2,1,SL);
-    const t=ws.getCell(1,2); t.value={richText:[{text:"Monthly Attendance Report\n",font:{size:24,bold:true,color:{argb:C.white}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:9.5,bold:true,color:{argb:"FFD9C6EC"}}}]};
-    t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]};
+    const t=ws.getCell(1,2); t.value={richText:[{text:"Monthly Attendance Report\n",font:{size:24,bold:true,color:{argb:C.brand}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:9.5,bold:true,color:{argb:"FF8A6BA8"}}}]};
+    t.fill=solid(C.white);
     t.alignment={vertical:"middle",indent:1,wrapText:true};
-    ws.getCell(1,1).fill=solid(C.brand);
+    ws.getCell(1,1).fill=solid(C.white);
     // thin accent rule under the letterhead
-    ws.getRow(2).height=4; for(let k=1;k<=SL;k++)ws.getCell(2,k).fill=solid("FFB58CE6");
+    ws.getRow(2).height=4; for(let k=1;k<=SL;k++)ws.getCell(2,k).fill=solid(C.brand);
     ws.getRow(3).height=24;
     const a2=ws.getCell(3,1); a2.value=monthName(ym); a2.font={bold:true,size:13,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
     ws.mergeCells(3,2,3,SL);
@@ -1648,11 +1648,11 @@ async function exportExcel(){
     const lg=wb.addWorksheet("Attendance log",{views:[{showGridLines:false,state:"frozen",ySplit:3}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
     const cols=["Name","Role","Date","Day","Status","Location","Note"];
     lg.mergeCells(1,1,1,cols.length); const lt=lg.getCell(1,1);
-    lt.value={richText:[{text:"Attendance log · "+monthName(ym)+"\n",font:{size:16,bold:true,color:{argb:C.white}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:8.5,bold:true,color:{argb:"FFD9C6EC"}}}]};
-    lt.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]};
+    lt.value={richText:[{text:"Attendance log · "+monthName(ym)+"\n",font:{size:16,bold:true,color:{argb:C.brand}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:8.5,bold:true,color:{argb:"FF8A6BA8"}}}]};
+    lt.fill=solid(C.white);
     lt.alignment={vertical:"middle",indent:7,wrapText:true}; lg.getRow(1).height=56;
     if(logoId!=null)lg.addImage(logoId,{tl:{col:0.12,row:0.1},ext:{width:48,height:61}});
-    lg.getRow(2).height=4; for(let k=1;k<=cols.length;k++)lg.getCell(2,k).fill=solid("FFB58CE6");
+    lg.getRow(2).height=4; for(let k=1;k<=cols.length;k++)lg.getCell(2,k).fill=solid(C.brand);
     xlPrint(lg,"Attendance log · "+monthName(ym),now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}));
     if(brand.wm!=null)lg.addBackgroundImage(brand.wm);
     [24,16,13,8,17,11,52].forEach((w,i)=>lg.getColumn(1+i).width=w);
@@ -1755,15 +1755,15 @@ async function exportDaily(k){
     ws.getRow(1).height=86;
     if(logoId!=null)ws.addImage(logoId,{tl:{col:0.25,row:0.05},ext:{width:84,height:106}});
     ws.mergeCells(1,2,1,NC);
-    const t=ws.getCell(1,2); t.value={richText:[{text:"Daily Attendance Report\n",font:{size:24,bold:true,color:{argb:C.white}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:9.5,bold:true,color:{argb:"FFD9C6EC"}}}]};
-    t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]}; t.alignment={vertical:"middle",indent:1,wrapText:true};
-    ws.getCell(1,1).fill=solid(C.brand);
-    ws.getRow(2).height=24; ws.mergeCells(2,1,2,3);
-    const a2=ws.getCell(2,1); a2.value=dayLong(d); a2.font={bold:true,size:13,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
-    ws.mergeCells(2,4,2,NC);
-    const b2=ws.getCell(2,4); b2.value=(S.settings.teamName||"B3 International")+"  ·  "+(sc.on?"Working day":"Non-working day")+"  ·  Generated "+now.toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    const t=ws.getCell(1,2); t.value={richText:[{text:"Daily Attendance Report\n",font:{size:24,bold:true,color:{argb:C.brand}}},{text:"B3 INTERNATIONAL  ·  OFFICIAL ATTENDANCE RECORD",font:{size:9.5,bold:true,color:{argb:"FF8A6BA8"}}}]};
+    t.fill=solid(C.white); t.alignment={vertical:"middle",indent:1,wrapText:true};
+    ws.getCell(1,1).fill=solid(C.white);
+    ws.getRow(2).height=4; for(let k=1;k<=NC;k++)ws.getCell(2,k).fill=solid(C.brand);
+    ws.getRow(3).height=26; ws.mergeCells(3,1,3,3);
+    const a2=ws.getCell(3,1); a2.value=dayLong(d); a2.font={bold:true,size:13,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
+    ws.mergeCells(3,4,3,NC);
+    const b2=ws.getCell(3,4); b2.value=(S.settings.teamName||"B3 International")+"  ·  "+(sc.on?"Working day":"Non-working day")+"  ·  Generated "+now.toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
     b2.font={size:10,color:{argb:C.muted}}; b2.alignment={vertical:"middle",horizontal:"right"};
-    ws.getRow(3).height=4; for(let k=1;k<=NC;k++)ws.getCell(3,k).fill=solid("FFB58CE6");
     // summary tiles (formulas over the Status column, so edits update them)
     const HR=7, lastRow=HR+Math.max(1,rows.length), SR=`$C$${HR+1}:$C$${lastRow}`, cnt=v=>`COUNTIF(${SR},"${v}")`;
     const fx=(f,r)=>({formula:f,result:r});
