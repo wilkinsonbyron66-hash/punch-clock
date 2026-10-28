@@ -509,7 +509,7 @@ function renderDrawer(){
   const ups=(t.updates||[]).slice().sort((a,b)=>(b.date+(b.at||"")).localeCompare(a.date+(a.at||"")));
   drawer.innerHTML=`<div class="dhead"><h2>${E.isNew?"New task":"Task"}</h2>${!E.isNew?`<span class="due ${dueInfo(t).c}">${esc(dueInfo(t).l)}</span>`:""}<button class="icon" data-d="close" title="Close (Esc)">${IC.x}</button></div>
   <div class="dbody">
-    <div><label class="lbl" for="d-title">Task</label><input class="inp" id="d-title" value="${esc(t.title)}" placeholder="e.g. Semco RMA 2 x MCD5000" maxlength="160" style="font-weight:700;font-size:16px"></div>
+    <div><label class="lbl" for="d-title">Task</label><input class="inp" id="d-title" value="${esc(t.title)}" placeholder="e.g. Follow up RMA for 2 radios" maxlength="160" style="font-weight:700;font-size:16px"></div>
     ${!E.isNew?`<div><span class="lbl">Updates</span>
       <div class="addu"><textarea class="inp" id="d-newu" rows="2" placeholder="What's the latest? (Ctrl + Enter to add)">${esc(E.newU)}</textarea>
         <div class="row2"><input class="inp" type="date" id="d-newud" value="${esc(E.newUDate)}" style="width:auto"><button class="btn sm" data-d="addu">${IC.plus}Add update</button><span class="hint">Dated and kept in order, newest first</span></div></div>
@@ -520,8 +520,8 @@ function renderDrawer(){
     <div class="g2"><div><label class="lbl" for="d-start">Start date</label><input class="inp" type="date" id="d-start" value="${esc(t.start||"")}"></div>
       <div><label class="lbl" for="d-target">Target date</label><input class="inp" type="date" id="d-target" value="${esc(t.target||"")}">
         <div class="quickdue">${[["Today",0],["+1 day",1],["+3 days",3],["+1 week",5],["+2 weeks",10]].map(([l,n])=>`<button data-d="due" data-n="${n}">${l}</button>`).join("")}<button data-d="due" data-n="-1">Clear</button></div></div></div>
-    <div class="g2"><div><label class="lbl" for="d-partner">Partner</label><input class="inp" id="d-partner" list="dl-partner" value="${esc(t.partner)}" placeholder="e.g. KTC"></div>
-      <div><label class="lbl" for="d-end">End user</label><input class="inp" id="d-end" list="dl-end" value="${esc(t.endUser)}" placeholder="e.g. ADNOC"></div></div>
+    <div class="g2"><div><label class="lbl" for="d-partner">Partner</label><input class="inp" id="d-partner" list="dl-partner" value="${esc(t.partner)}" placeholder="Reseller or partner"></div>
+      <div><label class="lbl" for="d-end">End user</label><input class="inp" id="d-end" list="dl-end" value="${esc(t.endUser)}" placeholder="End customer"></div></div>
     <div class="g2"><div><label class="lbl" for="d-country">Country</label><input class="inp" id="d-country" list="dl-country" value="${esc(t.country)}"></div>
       <div><label class="lbl" for="d-bdm">BDM</label><select class="inp" id="d-bdm"><option value="">—</option>${[...new Set([...D.staff,t.bdm].filter(Boolean))].sort(byName).map(n=>`<option${n===t.bdm?" selected":""}>${esc(n)}</option>`).join("")}</select></div></div>
     <datalist id="dl-partner">${L.partner.map(x=>`<option value="${esc(x)}">`).join("")}</datalist><datalist id="dl-end">${L.endUser.map(x=>`<option value="${esc(x)}">`).join("")}</datalist><datalist id="dl-country">${L.country.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>
