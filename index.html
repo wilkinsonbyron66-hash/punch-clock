@@ -1440,7 +1440,7 @@ function watermarkPng(){
 }
 /* letterhead pieces shared by the Excel reports */
 async function xlBrand(wb){
-  const [white,wm]=await Promise.all([logoPng("#4B2163","#4B2163"),watermarkPng()]);
+  const [white,wm]=await Promise.all([logoPng("#FFFFFF","#FFFFFF"),watermarkPng()]);
   return {white:white?wb.addImage({base64:white.split(",")[1],extension:"png"}):null, wm:wm?wb.addImage({base64:wm.split(",")[1],extension:"png"}):null};
 }
 function xlPrint(ws,title,when){
@@ -1517,7 +1517,7 @@ async function exportExcel(){
     const t=ws.getCell(1,2); t.value="Monthly Attendance Report"; t.font={size:20,bold:true,color:{argb:C.white}};
     t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]};
     t.alignment={vertical:"middle",indent:1};
-    ws.getCell(1,1).fill=solid(C.white);
+    ws.getCell(1,1).fill=solid(C.brand);
     ws.getRow(2).height=24;
     const a2=ws.getCell(2,1); a2.value=monthName(ym); a2.font={bold:true,size:12,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
     ws.mergeCells(2,2,2,SL);
@@ -1645,7 +1645,7 @@ async function exportExcel(){
     /* ---- Sheet 2: attendance log for the month ---- */
     const lg=wb.addWorksheet("Attendance log",{views:[{showGridLines:false,state:"frozen",ySplit:3}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
     const cols=["Name","Role","Date","Day","Status","Location","Note"];
-    lg.getRow(1).height=60; lg.getCell(1,1).fill=solid(C.white);
+    lg.getRow(1).height=60; lg.getCell(1,1).fill=solid(C.brand);
     if(logoId!=null)lg.addImage(logoId,{tl:{col:0.06,row:0.05},ext:{width:58,height:74}});
     lg.mergeCells(1,2,1,cols.length); const lt=lg.getCell(1,2); lt.value="Attendance log · "+monthName(ym); lt.font={size:18,bold:true,color:{argb:C.white}};
     lt.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]}; lt.alignment={vertical:"middle",indent:1};
@@ -1753,7 +1753,7 @@ async function exportDaily(k){
     ws.mergeCells(1,2,1,NC);
     const t=ws.getCell(1,2); t.value="Daily Attendance Report"; t.font={size:20,bold:true,color:{argb:C.white}};
     t.fill={type:"gradient",gradient:"angle",degree:0,stops:[{position:0,color:{argb:C.brand}},{position:1,color:{argb:C.brand2}}]}; t.alignment={vertical:"middle",indent:1};
-    ws.getCell(1,1).fill=solid(C.white);
+    ws.getCell(1,1).fill=solid(C.brand);
     ws.getRow(2).height=24; ws.mergeCells(2,1,2,3);
     const a2=ws.getCell(2,1); a2.value=dayLong(d); a2.font={bold:true,size:12,color:{argb:C.brand}}; a2.alignment={vertical:"middle"};
     ws.mergeCells(2,4,2,NC);
