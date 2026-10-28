@@ -308,6 +308,20 @@ td.bad{color:var(--bad);font-weight:700}
 #themeBtn{padding:7px 9px}
 :root[data-theme="dark"] .due.soon,:root[data-theme="dark"] .fu-last time,:root[data-theme="dark"] .newtag,:root[data-theme="dark"] .row .last time,:root[data-theme="dark"] .tl .u time{color:var(--cyan)}:root[data-theme="dark"] .st-on{color:var(--cyan)}:root[data-theme="dark"] .step.on .sn{background:var(--cyan);color:#062033}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .due.soon,:root:not([data-theme="light"]) .fu-last time,:root:not([data-theme="light"]) .newtag{color:var(--cyan)}:root:not([data-theme="light"]) .step.on .sn{background:var(--cyan);color:#062033}}
+#syncBtn .sl{font-size:13.5px}
+#syncBtn[data-st="off"],#syncBtn[data-st="err"]{background:#FDE7E4;color:#B42318;border-color:transparent}
+#syncBtn[data-st="wait"],#syncBtn[data-st="busy"]{color:#FFE7B0}
+@media (max-width:1500px){#presentBtn .pl{display:none}#presentBtn{padding:7px 9px}.brand .div,.brand>div{display:none}}
+@media (max-width:1180px){#syncBtn .sl{display:none}}
+.gp{grid-column:1/-1}
+.gsteps{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:14.5px}
+.gsteps li{padding-left:4px}
+.gdi{display:flex;gap:8px;margin-top:6px}.gdi .inp{flex:1}
+.gd{margin:8px 0}.gd summary{cursor:pointer;font-weight:700;color:var(--navy2);font-size:14px}
+:root[data-theme="dark"] .gd summary{color:var(--cyan)}
+.gstat{border-left:4px solid var(--gc);background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:14px;margin:6px 0 10px}
+.gstat span{color:var(--muted)}
+.gbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 @media (max-width:640px){.meet .mtxt{white-space:normal}.meet .mtxt small{display:none}.tools .eyebrow{display:none}.tools .seg{overflow-x:auto;max-width:100%}.search{max-width:none}
   .today h1{font-size:23px}.kpi{min-width:0;flex:1 1 30%;padding:7px 10px}.kpi b{font-size:20px}.focushead h2{font-size:20px}.focushead{flex-wrap:wrap}}
 body{overflow-x:hidden}
@@ -326,8 +340,9 @@ body{overflow-x:hidden}
       <button data-tab="done" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Completed</button>
       <button data-tab="set" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Data &amp; settings</button>
     </nav>
+    <button class="hbtn" id="syncBtn" type="button" title="Google Sheet backup"></button>
     <button class="hbtn" id="themeBtn" type="button" title="Light or dark mode"></button>
-    <button class="hbtn" id="presentBtn" type="button" aria-pressed="false" title="Bigger text for screen sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Present</button>
+    <button class="hbtn" id="presentBtn" type="button" aria-pressed="false" title="Bigger text for screen sharing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span class="pl">Present</span></button>
     <button class="hbtn" id="newBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New task</button>
   </div>
 </header>
@@ -337,6 +352,149 @@ body{overflow-x:hidden}
 <div id="modal" class="modal" hidden></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
+<script type="text/plain" id="gscript">/* Minerva Daily Priorities - Google Sheet backup (version 1)
+   1. Paste into the Google Sheet: Extensions > Apps Script (replace everything) and Save.
+   2. Deploy > New deployment > gear > Web app. Execute as "Me", Who has access "Anyone". Deploy, allow access.
+   3. Copy the Web app URL (ends with /exec) into the app: Data & settings > Google Sheet backup.
+   Updating later: paste the new script, Save, then Deploy > Manage deployments > Edit (pencil) > Version: New version > Deploy.
+   The full backup is a file in your Google Drive (next to this sheet), with a daily snapshot for 30 days.
+   The tabs "Open tasks", "Completed" and "Updates log" are readable copies, rebuilt on every save. */
+const KEY = '__KEY__';
+const SCRIPT_VERSION = 1;
+const KEEP_DAYS = 30;
+const BASE = 'minerva-priorities';
+const PRIO = { 1: 'Important and Urgent', 2: 'Important and Not Urgent', 3: 'Not Important but Urgent', 4: 'Not Important, Not Urgent' };
+const STATUS = { ns: 'Not Started', on: 'Ongoing', wait: 'Waiting', done: 'Completed' };
+
+function doPost(e) {
+  let res;
+  try {
+    const req = JSON.parse(e.postData.contents);
+    if (req.key !== KEY) res = { ok: false, error: 'key' };
+    else if (req.action === 'ping') res = Object.assign({ ok: true, script: SCRIPT_VERSION }, info_());
+    else if (req.action === 'restore') res = restore_(req.day);
+    else if (req.action === 'snapshots') res = { ok: true, list: snapList_() };
+    else if (req.action === 'save') res = locked_(function () { return save_(req); });
+    else res = { ok: false, error: 'action' };
+  } catch (err) {
+    res = { ok: false, error: String(err) };
+  }
+  return ContentService.createTextOutput(JSON.stringify(res)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet() { return ContentService.createTextOutput('Minerva Daily Priorities backup is running.'); }
+
+// Optional: run once from the editor to grant access before deploying.
+function setup() { folder_(); return 'Ready'; }
+
+function locked_(fn) {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(45000)) return { ok: false, error: 'busy' };
+  try { return fn(); } finally { lock.releaseLock(); }
+}
+function ss_() { return SpreadsheetApp.getActiveSpreadsheet(); }
+function props_() { return PropertiesService.getScriptProperties(); }
+function folder_() {
+  const parents = DriveApp.getFileById(ss_().getId()).getParents();
+  return parents.hasNext() ? parents.next() : DriveApp.getRootFolder();
+}
+function file_(name, create) {
+  const it = folder_().getFilesByName(name);
+  if (it.hasNext()) return it.next();
+  return create ? folder_().createFile(name, '', 'application/json') : null;
+}
+function info_() {
+  const p = props_().getProperties();
+  return { url: ss_().getUrl(), saved: Number(p.saved) || null, open: Number(p.open) || 0, total: Number(p.total) || 0, v: Number(p.v) || 0 };
+}
+function counts_(st) {
+  const t = (st && st.tasks) || [];
+  return { open: t.filter(function (x) { return x.status !== 'done'; }).length, total: t.length };
+}
+
+function save_(req) {
+  const st = req.state || {};
+  const c = counts_(st), prev = info_();
+  if (req.expect != null && Number(req.expect) !== prev.v) return { ok: false, error: 'stale', v: prev.v };
+  if (!req.force) {
+    if (c.total === 0 && prev.total > 0) return { ok: false, error: 'empty', prev: prev };
+    if (prev.total >= 10 && c.total < prev.total * 0.5) return { ok: false, error: 'shrink', prev: prev };
+  }
+  const now = new Date(), json = JSON.stringify(st), ver = prev.v + 1;
+  file_(BASE + '-backup.json', true).setContent(json);
+  const day = Utilities.formatDate(now, ss_().getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  const snap = file_(BASE + '-snapshot-' + day + '.json', true);
+  snap.setContent(json);
+  snap.setDescription(c.open + ' open, ' + c.total + ' total');
+  props_().setProperties({ v: String(ver), saved: String(now.getTime()), open: String(c.open), total: String(c.total) });
+  pruneSnapshots_();
+  try { readable_(st); } catch (x) {}
+  return { ok: true, saved: now.getTime(), open: c.open, total: c.total, v: ver, url: ss_().getUrl() };
+}
+
+function restore_(day) {
+  const f = day ? file_(BASE + '-snapshot-' + day + '.json', false) : file_(BASE + '-backup.json', false);
+  if (day && !f) return { ok: false, error: 'none' };
+  const json = f ? f.getBlob().getDataAsString() : '';
+  return { ok: true, state: json ? JSON.parse(json) : null, v: info_().v };
+}
+
+function snapList_() {
+  const out = [], it = folder_().getFiles(), re = new RegExp('^' + BASE + '-snapshot-(\\d{4}-\\d{2}-\\d{2})\\.json$');
+  while (it.hasNext()) {
+    const f = it.next(), m = f.getName().match(re);
+    if (m) out.push({ day: m[1], info: f.getDescription() || '' });
+  }
+  out.sort(function (a, b) { return a.day < b.day ? 1 : -1; });
+  return out;
+}
+function pruneSnapshots_() {
+  snapList_().slice(KEEP_DAYS).forEach(function (x) { const f = file_(BASE + '-snapshot-' + x.day + '.json', false); if (f) f.setTrashed(true); });
+}
+
+/* ---------- readable tabs (rebuilt on every save, so edits here are overwritten) ---------- */
+function d_(k) { if (!k) return ''; const p = String(k).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function owners_(t) { return (t.owners && t.owners.length ? t.owners.slice().sort() : ['Unassigned']).join(' / '); }
+function ups_(t) { return (t.updates || []).slice().sort(function (a, b) { return (b.date + (b.at || '')) < (a.date + (a.at || '')) ? -1 : 1; }); }
+function due_(t, today) {
+  if (!t.target) return 'No target date';
+  if (t.target === today) return 'Due today';
+  return t.target < today ? 'Overdue' : 'Due ' + t.target.slice(8, 10) + '/' + t.target.slice(5, 7);
+}
+function readable_(st) {
+  const tasks = st.tasks || [], today = Utilities.formatDate(new Date(), ss_().getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  const byOwner = function (a, b) { const x = owners_(a).toLowerCase(), y = owners_(b).toLowerCase(); return x < y ? -1 : x > y ? 1 : (a.prio - b.prio); };
+  const open = tasks.filter(function (t) { return t.status !== 'done'; }).sort(byOwner);
+  write_('Open tasks', ['Responsible', 'Priority', 'Task', 'Partner', 'End-user', 'Country', 'BDM', 'Status', 'Start date', 'Target date', 'Due', 'Latest update', 'All updates'],
+    open.map(function (t) { const u = ups_(t); return [owners_(t), PRIO[t.prio] || '', t.title, t.partner || '', t.endUser || '', t.country || '', t.bdm || '', STATUS[t.status] || '', d_(t.start), d_(t.target), due_(t, today),
+      u[0] ? u[0].date + ' ' + u[0].text : '', u.map(function (x) { return x.date + ' ' + x.text; }).join('\n')]; }),
+    [9, 10], [150, 170, 260, 140, 130, 80, 90, 95, 95, 95, 110, 320, 420]);
+  const done = tasks.filter(function (t) { return t.status === 'done'; }).sort(function (a, b) { return (b.doneAt || '') < (a.doneAt || '') ? -1 : 1; });
+  write_('Completed', ['Completed on', 'How', 'Responsible', 'Task', 'Partner', 'End-user', 'Country', 'Latest update'],
+    done.map(function (t) { const u = ups_(t); return [d_(t.doneAt), t.doneHow === 'removed' ? 'Removed' : 'Completed', owners_(t), t.title, t.partner || '', t.endUser || '', t.country || '', u[0] ? u[0].date + ' ' + u[0].text : '']; }),
+    [1], [100, 90, 150, 260, 140, 130, 80, 420]);
+  const log = [];
+  tasks.forEach(function (t) { (t.updates || []).forEach(function (u) { log.push([d_(u.date), owners_(t), t.title, u.text, STATUS[t.status] || '']); }); });
+  log.sort(function (a, b) { return b[0] - a[0]; });
+  write_('Updates log', ['Date', 'Responsible', 'Task', 'Update', 'Task status'], log, [1], [100, 150, 260, 480, 100]);
+  const s = ss_(), blank = s.getSheetByName('Sheet1');
+  if (blank && blank.getLastRow() === 0 && s.getSheets().length > 1) s.deleteSheet(blank);
+}
+function write_(name, head, data, dateCols, widths) {
+  const s = ss_().getSheetByName(name) || ss_().insertSheet(name);
+  s.clear();
+  const w = head.length, n = data.length;
+  if (s.getMaxRows() < n + 1) s.insertRowsAfter(s.getMaxRows(), n + 1 - s.getMaxRows());
+  if (s.getMaxColumns() < w) s.insertColumnsAfter(s.getMaxColumns(), w - s.getMaxColumns());
+  s.getRange(1, 1, 1, w).setValues([head]).setFontWeight('bold').setFontColor('#ffffff').setBackground('#004679');
+  s.setFrozenRows(1);
+  if (n) {
+    s.getRange(2, 1, n, w).setValues(data).setVerticalAlignment('top').setWrap(true);
+    dateCols.forEach(function (c) { s.getRange(2, c, n, 1).setNumberFormat('dd mmm yyyy'); });
+  }
+  widths.forEach(function (px, i) { if (i < w) s.setColumnWidth(i + 1, px); });
+}
+</script>
 <script>
 (()=>{
 "use strict";
@@ -349,7 +507,7 @@ let D=load();
 function blank(){return {v:1,tasks:[],staff:DEFAULT_STAFF.slice(),seen:{},meet:{},created:new Date().toISOString(),lastBackup:null}}
 function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&Array.isArray(o.tasks))return {...blank(),...o}}}catch(e){}return blank()}
 let saveT=null, storageOk=true;
-function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(D));storageOk=true}catch(e){storageOk=false;toast("Couldn't save on this computer. Download a backup from Data & settings.")}},120)}
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(D));storageOk=true;if(window.gChanged)gChanged()}catch(e){storageOk=false;toast("Couldn't save on this computer. Download a backup from Data & settings.")}},120)}
 // one automatic snapshot per day, last 14 kept
 function snapshot(){try{const s=JSON.parse(localStorage.getItem(SNAP)||"[]");const k=todayKey();if(s.length&&s[s.length-1].d===k)return;if(!D.tasks.length)return;s.push({d:k,data:D});while(s.length>14)s.shift();localStorage.setItem(SNAP,JSON.stringify(s))}catch(e){}}
 
@@ -408,6 +566,112 @@ const IC={
 const S={run:{stage:"follow",person:null,np:1,nd:1},tab:"meet",group:"prio",q:"",focus:null,quick:null,anim:true,edit:null,showDone:"",doneQ:""};
 try{const g=localStorage.getItem("minerva-tracker:group");if(g)S.group=g;if(localStorage.getItem("minerva-tracker:present")==="1")document.documentElement.classList.add("present")}catch(e){}
 const view=document.getElementById("view");
+
+/* ================= Google Sheet backup (same approach as the Minerva Dialler) ================= */
+const GKEY="minerva-tracker:gsync";
+const rkey=()=>Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>"abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b%56]).join("");
+let G=(()=>{let o={};try{o=JSON.parse(localStorage.getItem(GKEY)||"{}")||{}}catch(e){}return {url:"",key:o.key||rkey(),v:0,last:0,pending:false,sheet:"",open:0,total:0,...o}})();
+function gSave(){try{localStorage.setItem(GKEY,JSON.stringify(G))}catch(e){}}
+gSave();
+let gState=G.url?(G.pending?"wait":"ok"):"off", gMsg="", gBusy=false, gTimer=null, gConflict=null, gSnaps=null, gLastTry=0, gOld=false;
+const fmtT=t=>t?new Date(t).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}):"";
+const fmtDT=t=>t?new Date(t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
+function gStatus(st,msg){gState=st;gMsg=msg||"";const b=document.getElementById("syncBtn");if(!b)return;
+  const cloud='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>';
+  const alert='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>';
+  const L={off:[alert,"Not backed up"],ok:[cloud,"Saved "+fmtT(G.last)],busy:[cloud,"Saving…"],wait:[cloud,"Saving soon"],err:[alert,"Backup problem"]}[st];
+  b.innerHTML=L[0]+'<span class="sl">'+esc(L[1])+'</span>';b.dataset.st=st;b.title=st==="off"?"Set up the Google Sheet backup":gMsg||("Google Sheet backup · last saved "+fmtDT(G.last));
+  if(typeof S!=="undefined"&&S.tab==="set"&&!S.edit&&!(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)))render()}
+window.gChanged=function(){if(!G.url)return;G.pending=true;gSave();if(gState!=="busy"&&gState!=="err")gStatus("wait");clearTimeout(gTimer);gTimer=setTimeout(gSync,Math.max(4000,20000-(Date.now()-gLastTry)))};
+async function gPost(body){const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),body.action==="ping"?45000:180000);let r,t;
+  try{r=await fetch(G.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:G.key,...body}),redirect:"follow",signal:ac.signal});t=await r.text()}
+  catch(e){throw new TypeError(e.name==="AbortError"?"timeout":"network")}finally{clearTimeout(tm)}
+  try{return JSON.parse(t)}catch(e){const er=new Error(/<html/i.test(t)?"access":"bad");throw er}}
+function gState0(){return JSON.parse(JSON.stringify(D))}
+function applyRemote(st,v){D={...blank(),...st};try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}G.v=v;G.pending=false;gSave();if(!S.edit)render()}
+function mergeState(L,R){
+  const out={...blank(),...R,...L};const rm=new Map((R.tasks||[]).map(t=>[t.id,t]));const tasks=[];
+  (L.tasks||[]).forEach(t=>{const r=rm.get(t.id);if(r){const ups=new Map();[...(r.updates||[]),...(t.updates||[])].forEach(u=>ups.set(u.id||u.date+u.text,u));tasks.push({...t,updates:[...ups.values()]});rm.delete(t.id)}else tasks.push(t)});
+  rm.forEach(t=>tasks.push(t));out.tasks=tasks;out.staff=[...new Set([...(R.staff||[]),...(L.staff||[])])];
+  out.seen={...(R.seen||{}),...(L.seen||{})};const mt={...(R.meet||{})};Object.entries(L.meet||{}).forEach(([d,m])=>{const r=mt[d]||{f:{},added:[],skip:[]};mt[d]={f:{...r.f,...m.f},added:[...new Set([...(r.added||[]),...(m.added||[])])],skip:[...new Set([...(r.skip||[]),...(m.skip||[])])]}});out.meet=mt;return out}
+async function gPush(expect,force){const w=await gPost({action:"save",state:gState0(),expect,force:!!force});
+  if(w.ok){Object.assign(G,{v:w.v,last:w.saved,open:w.open,total:w.total,sheet:w.url||G.sheet,pending:false});gSave();gConflict=null;gStatus("ok");return "ok"}
+  if(w.error==="stale"||w.error==="busy")return "stale";
+  if(w.error==="empty"||w.error==="shrink"){gConflict=w.prev;gStatus("err","Your Google Sheet has many more tasks than this computer, so nothing was overwritten. Choose what to keep in Data & settings.");return "conflict"}
+  throw new Error(w.error||"bad")}
+async function gSync(){
+  if(!G.url||gBusy)return;
+  if(!navigator.onLine){gStatus(G.pending?"wait":"ok","You're offline. Changes are safe on this computer and will back up when you reconnect.");return}
+  clearTimeout(gTimer);gBusy=true;gLastTry=Date.now();if(G.pending)gStatus("busy");
+  try{
+    const p=await gPost({action:"ping"});if(!p.ok)throw new Error(p.error==="key"?"key":(p.error||"bad"));
+    G.sheet=p.url||G.sheet;
+    for(let i=0;i<3;i++){
+      if(p.v===G.v){if(!G.pending){Object.assign(G,{open:p.open,total:p.total});gSave();if(!gConflict)gStatus("ok");return}
+        const r=await gPush(G.v);if(r!=="stale")return;}
+      const j=await gPost({action:"restore"});if(!j.ok)throw new Error(j.error||"bad");
+      if(!j.state||!(j.state.tasks||[]).length){const r=await gPush(j.v);if(r!=="stale")return;p.v=j.v;continue}
+      if(!G.pending){applyRemote(j.state,j.v);Object.assign(G,{open:p.open,total:p.total,last:Date.now()});gSave();gStatus("ok");toast("Updated from the Google Sheet");return}
+      D=mergeState(gState0(),j.state);try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}if(!S.edit)render();
+      const r=await gPush(j.v);if(r!=="stale")return;p.v=-1;
+    }
+    gStatus("wait","Another computer is saving at the same time. Trying again shortly.");gTimer=setTimeout(gSync,15000);
+  }catch(e){
+    gStatus("err",e.message==="key"?"The key doesn't match the script in your Google Sheet. Use the setup code from the computer where it was set up.":e.message==="access"?"Google refused the request. In Apps Script, check the web app is deployed with “Who has access: Anyone”.":e instanceof TypeError?"Couldn't reach Google. Your tasks are safe on this computer and will back up when the connection is back.":"The Google Sheet script answered with an error.");
+    if(e.message!=="key"&&e.message!=="access")gTimer=setTimeout(()=>{if(gState==="err")gState="wait";gSync()},60000);
+  }finally{gBusy=false}
+}
+async function gConnect(u,k){const oldU=G.url,oldK=G.key;G.url=u;G.key=k||G.key;gStatus("busy");
+  try{const j=await gPost({action:"ping"});if(!j.ok){G.url=oldU;G.key=oldK;gSave();gStatus(G.url?"ok":"off");toast(j.error==="key"?"That key doesn't match the script. Copy the script again, or use the setup code.":"The script answered with an error.");return false}
+    G.sheet=j.url||"";G.v=-1;G.pending=!!D.tasks.length;gSave();
+    if(!j.total&&D.tasks.length){await gPush(j.v,true)}else{await gSync()}
+    toast(j.total?"Connected. Tasks combined with your Google Sheet":"Connected. Your tasks now back up automatically");return true}
+  catch(e){G.url=oldU;G.key=oldK;gSave();gStatus(G.url?"ok":"off");toast(e.message==="access"?"Google refused. Set “Who has access” to Anyone and deploy again":"Couldn't reach that link");return false}}
+const b64u=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const ub64=s=>decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
+const gCode=()=>"MP1."+b64u(JSON.stringify({u:G.url,k:G.key}));
+function gParse(c){try{const m=String(c).trim().match(/MP1\.([\w-]+)/);if(!m)return null;const o=JSON.parse(ub64(m[1]));return o&&o.u&&o.k?o:null}catch(e){return null}}
+const appLink=()=>location.origin+location.pathname;
+const gScript=()=>document.getElementById("gscript").textContent.replace("__KEY__",G.key).trim();
+async function copyText(t,msg){try{await navigator.clipboard.writeText(t);toast(msg)}catch(x){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();toast(ok?msg:"Copy blocked. Select the text and press Ctrl+C")}}
+async function gLoadSnaps(){gSnaps=null;try{const j=await gPost({action:"snapshots"});gSnaps=j.ok?j.list:[]}catch(e){gSnaps=[]}if(S.tab==="set")render()}
+async function gTakeSheet(day){toast("Loading from your Google Sheet…");
+  try{const j=await gPost({action:"restore",day:day||""});if(!j.ok||!j.state)throw new Error("none");const n=(j.state.tasks||[]).length;
+    confirmBox(day?"Restore "+day+"?":"Load the Google Sheet?",`Replace the tasks on this computer with the ${day?"snapshot from <b>"+esc(day)+"</b>":"Google Sheet"} (${n} tasks)?`,"Replace",async()=>{const prev=D;applyRemote(j.state,j.v);gConflict=null;if(day){G.pending=true;gSave();await gPush(j.v,true)}else{G.last=Date.now();gSave();gStatus("ok")}toast(day?"Restored "+day:"Loaded from the Google Sheet",()=>{D=prev})},true)}
+  catch(e){toast(e.message==="none"?"Nothing saved in the sheet yet":"Couldn't load from the Google Sheet")}}
+function gPanel(){
+  if(!G.url)return `<div class="panel gp"><h3>Google Sheet backup</h3><p class="sub">Every change saves to your own Google Sheet automatically, just like the dialler. It keeps a copy of each day for 30 days, plus readable tabs for open tasks, completed tasks and all updates.</p>
+    <details class="gd"><summary>Already set up on another computer?</summary><div class="gdi"><input class="inp" id="gcode" placeholder="Paste the setup code (starts with MP1.)"><button class="btn sm" data-g="code">Connect</button></div></details>
+    <ol class="gsteps"><li>Create a new Google Sheet: <a class="btn ghost sm" href="https://sheets.new" target="_blank" rel="noopener">Open a new sheet</a> and name it <b>Minerva Priorities Backup</b>.</li>
+      <li>In the sheet go to <b>Extensions › Apps Script</b>, delete what's there and paste this script: <button class="btn sm" data-g="copy">Copy script</button></li>
+      <li>Click <b>Save</b>, then <b>Deploy › New deployment</b>. Click the gear next to “Select type” and choose <b>Web app</b>. Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>, then <b>Deploy</b> and allow access (if Google says “unverified”, click <b>Advanced › Go to project</b>, it's your own script).</li>
+      <li>Copy the <b>Web app URL</b> (it ends with /exec) and paste it here:<div class="gdi"><input class="inp" id="gurl" placeholder="https://script.google.com/macros/s/…/exec"><button class="btn" data-g="connect">Connect</button></div></li></ol></div>`;
+  const col={ok:"var(--ok)",busy:"var(--navy2)",wait:"var(--warn)",err:"var(--bad)",off:"var(--muted)"}[gState];
+  const head={ok:"Backed up"+(G.last?" at "+fmtT(G.last):""),busy:"Saving to Google…",wait:"Changes waiting to save",err:"Backup needs attention",off:"Connected"}[gState];
+  return `<div class="panel gp"><h3>Google Sheet backup</h3>
+    <div class="gstat" style="--gc:${col}"><b style="color:${col}">${esc(head)}</b>${gMsg?`<span>${esc(gMsg)}</span>`:""}<span>This computer: ${open().length} open, ${D.tasks.length} total · Google Sheet: ${G.open} open, ${G.total} total</span></div>
+    ${gConflict?`<div class="gbtns"><button class="btn" data-g="take">Load the Google Sheet onto this computer</button><button class="btn danger" data-g="force">Overwrite the sheet with this computer</button></div>`:""}
+    <div class="gbtns">${G.sheet?`<a class="btn ghost sm" href="${esc(G.sheet)}" target="_blank" rel="noopener">Open Google Sheet</a>`:""}<button class="btn ghost sm" data-g="now">Back up now</button><button class="btn ghost sm" data-g="take">Load from the sheet</button></div>
+    <div><span class="lbl">Restore an earlier day</span><div class="gdi"><select class="inp" id="gday"><option value="">${gSnaps?gSnaps.length?"Choose a day":"No snapshots yet":"Loading…"}</option>${(gSnaps||[]).map(x=>`<option value="${esc(x.day)}">${esc(fmt(x.day,{weekday:"short",day:"numeric",month:"short"}))} · ${esc(x.info)}</option>`).join("")}</select><button class="btn ghost sm" data-g="day">Restore</button></div></div>
+    <details class="gd"><summary>Use it on another computer</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><p class="hint" style="margin:0">Open this link on the other computer and it connects to the same Google Sheet. Keep it private: anyone with it can read and change the backup.</p>
+      <div class="gdi"><input class="inp" readonly value="${esc(appLink()+"#pair="+gCode())}"><button class="btn sm" data-g="copylink">Copy link</button></div></div></details>
+    <details class="gd"><summary>Connection details</summary><p class="hint" style="overflow-wrap:anywhere">Web app: ${esc(G.url)}</p><div class="gbtns"><button class="btn ghost sm" data-g="copy">Copy script again</button><button class="btn danger sm" data-g="disc">Disconnect this computer</button></div></details></div>`;
+}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-g]");if(!b)return;const a=b.dataset.g;
+  if(a==="copy")copyText(gScript(),"Script copied. Paste it into Apps Script");
+  else if(a==="connect"){const u=(document.getElementById("gurl").value||"").trim();if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec/.test(u)){toast("Paste the Web app URL. It ends with /exec");return}b.disabled=true;b.textContent="Connecting…";await gConnect(u,G.key);render();gLoadSnaps()}
+  else if(a==="code"){const o=gParse(document.getElementById("gcode").value);if(!o){toast("That setup code isn't valid");return}await gConnect(o.u,o.k);render();gLoadSnaps()}
+  else if(a==="now"){G.pending=true;gSave();gSync()}
+  else if(a==="take")gTakeSheet();
+  else if(a==="day"){const d=document.getElementById("gday").value;if(!d){toast("Choose a day first");return}gTakeSheet(d)}
+  else if(a==="force")confirmBox("Overwrite the Google Sheet?","The sheet gets this computer's "+D.tasks.length+" tasks. Daily snapshots are kept, so earlier days can still be restored.","Overwrite",async()=>{try{await gPush(null,true)}catch(x){gStatus("err","Couldn't save to the Google Sheet. Try again.")}},true);
+  else if(a==="copylink")copyText(appLink()+"#pair="+gCode(),"Link copied. Open it on the other computer");
+  else if(a==="disc")confirmBox("Stop backing up this computer?","Your Google Sheet and everything in it stays as it is.","Disconnect",()=>{G.url="";G.pending=false;G.v=0;gSave();gConflict=null;gStatus("off");render()},true);
+});
+window.addEventListener("online",()=>{if(G.url)gSync()});
+document.addEventListener("visibilitychange",()=>{if(!G.url||gBusy)return;if(document.visibilityState==="visible"&&Date.now()-gLastTry>20000)gSync();else if(document.visibilityState==="hidden"&&G.pending)gSync()});
+setInterval(()=>{if(G.url&&!gBusy&&document.visibilityState==="visible"&&gState!=="err"&&Date.now()-gLastTry>90000)gSync()},30000);
+window.addEventListener("beforeunload",e=>{if(G.url&&G.pending){e.preventDefault();e.returnValue=""}});
 
 /* ================= toast + modal ================= */
 let tT=null,tUndo=null;
@@ -533,11 +797,12 @@ function renderSet(){
   const staff=D.staff.slice().sort(byName), lb=D.lastBackup?new Date(D.lastBackup).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"never";
   return `<div class="today"><div><div class="eyebrow">Data &amp; settings</div><h1>Import, export and team</h1></div></div>
   <div class="settings">
+    ${gPanel()}
     <div class="panel"><h3>Import your Excel sheet</h3><p class="sub">Brings in the “Main sheet” and “Removed from List” tabs. Notes are split into dated updates, names are tidied up, and anything marked Completed goes straight to the Completed list.</p>
       <div class="drop" id="dropzone"><p style="margin:0 0 10px">Drop the .xlsx file here, or</p><label class="btn" style="cursor:pointer">${IC.up}Choose file<input type="file" id="xlfile" accept=".xlsx,.xlsm,.xls" hidden></label></div></div>
     <div class="panel"><h3>Export</h3><p class="sub">An Excel file in the same layout as your current sheet, with Minerva branding: open tasks, completed tasks and a summary. Names are in A–Z order.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="xlsx">${IC.dl}Download Excel</button><button class="btn ghost" data-act="print">Print the list</button></div></div>
-    <div class="panel"><h3>Backup</h3><p class="sub">Tasks are saved on this computer, in this browser. Download a backup now and then, especially before clearing the browser. Last backup: <b>${esc(lb)}</b>.</p>
+    <div class="panel"><h3>Backup file</h3><p class="sub">Tasks are saved in this browser${G.url?" and in your Google Sheet":""}. You can also download a backup file. Last file backup: <b>${esc(lb)}</b>.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="backup">${IC.dl}Download backup</button><label class="btn ghost" style="cursor:pointer">${IC.up}Restore a backup<input type="file" id="bkfile" accept=".json" hidden></label><button class="btn ghost" data-act="snaps">Daily snapshots</button></div></div>
     <div class="panel"><h3>Team</h3><p class="sub">People who can own tasks. Names you pick from here always match, so the summary counts are right.</p>
       <form class="addrow" id="staffForm" autocomplete="off"><input class="inp" id="staffName" placeholder="Add a person, e.g. Byron" maxlength="40"><button class="btn" type="submit">${IC.plus}Add</button></form>
@@ -703,7 +968,7 @@ drawer.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)
 scrim.addEventListener("click",()=>{if(S.edit){readDrawer();const E=S.edit;const orig=E.t.id&&find(E.t.id);const dirty=E.isNew?E.t.title:orig&&JSON.stringify({...orig,updates:0})!==JSON.stringify({...E.t,updates:0});if(dirty){saveDrawer(true)}else closeDrawer()}});
 
 /* ================= events ================= */
-document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.anim=true;render();window.scrollTo({top:0})});
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.anim=true;render();window.scrollTo({top:0});if(S.tab==="set"&&G.url&&!gSnaps)gLoadSnaps()});
 document.getElementById("newBtn").addEventListener("click",()=>openTask(null));
 document.getElementById("presentBtn").addEventListener("click",()=>{const on=document.documentElement.classList.toggle("present");try{localStorage.setItem("minerva-tracker:present",on?"1":"0")}catch(e){}document.getElementById("presentBtn").setAttribute("aria-pressed",String(on))});
 document.getElementById("presentBtn").setAttribute("aria-pressed",String(document.documentElement.classList.contains("present")));
@@ -911,6 +1176,12 @@ async function exportExcel(){
 
 /* ================= start ================= */
 window.addEventListener("storage",e=>{if(e.key===KEY){D=load();render()}});
+document.getElementById("syncBtn").addEventListener("click",()=>{S.tab="set";S.anim=true;render();window.scrollTo({top:0});if(G.url)gLoadSnaps()});
+gStatus(gState);
+(async()=>{const m=location.hash.match(/^#pair=(.+)$/);
+  if(m){history.replaceState(null,"",location.pathname+location.search);const o=gParse(m[1]);
+    if(o&&(o.u!==G.url||o.k!==G.key))confirmBox("Connect to the Google Sheet?","This computer will use the same Google Sheet backup. Tasks here are combined with the ones in the sheet.","Connect",async()=>{await gConnect(o.u,o.k);render()});else if(!o)toast("That setup link isn't valid")}
+  if(G.url)setTimeout(gSync,1200)})();
 snapshot();
 render();
 // keep due labels fresh when the day changes
