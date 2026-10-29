@@ -1444,11 +1444,7 @@ async function xlBrand(wb){
   const [white,wm]=await Promise.all([logoPng("#FFFFFF","#FFFFFF"),watermarkPng()]);
   return {white:white?wb.addImage({base64:white.split(",")[1],extension:"png"}):null, wm:wm?wb.addImage({base64:wm.split(",")[1],extension:"png"}):null};
 }
-function xlPrint(ws,title,when){
-  ws.headerFooter={differentFirst:false,
-    oddHeader:`&L&"Arial,Bold"&9&K4B2163B3 INTERNATIONAL&R&"Arial"&8&K6B6178${title}`,
-    oddFooter:`&L&"Arial"&8&K6B6178Official attendance record · Confidential, internal use only&C&"Arial"&8&K6B6178Page &P of &N&R&"Arial"&8&K6B6178Generated ${when}`};
-}
+function xlPrint(ws,title,when){/* no printed header or footer text on the reports */}
 function xlSignoff(ws,row,cols,C,solid){
   // cols: [labelCol, lineFrom, lineTo, label2Col, line2From, line2To]
   const [a,b1,b2,c,d1,d2]=cols, ink={style:"thin",color:{argb:C.ink}};
