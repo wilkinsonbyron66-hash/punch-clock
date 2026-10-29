@@ -606,7 +606,7 @@ button.pill.tap:hover{filter:brightness(.97);box-shadow:0 0 0 2px color-mix(in s
 
 /* ===== iOS-style motion pass ===== */
 :root{--spring:cubic-bezier(.32,.72,0,1);--ease-out:cubic-bezier(.22,1,.36,1)}
-.tabs{position:relative}
+@media (min-width:641px){.tabs{position:relative}}
 .tabs .tabpill{position:absolute;top:3px;left:0;height:calc(100% - 6px);width:0;border-radius:9px;background:var(--hero);box-shadow:0 2px 8px rgba(44,18,64,.18);pointer-events:none;z-index:0;opacity:0}
 .tabs button{position:relative;z-index:1}
 .tabs.haspill button[aria-selected="true"]{background:none}
@@ -646,7 +646,7 @@ button.pill.tap:hover{filter:brightness(.97);box-shadow:0 0 0 2px color-mix(in s
 
 /* ===== colour continuity pass: one purple for actions, brand-family avatars, theme-aware leave colours ===== */
 html,body{margin:0}
-header{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5)}
+@media (min-width:641px){header{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5)}}
 header::after{height:1px;bottom:-1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 45%,transparent) 30%,color-mix(in srgb,var(--accent) 45%,transparent) 70%,transparent)}
 .tabs .tabpill,.chipbtn[aria-pressed="true"],.seg button[aria-pressed="true"],.btn.pdfbtn,.btn.out{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tabs button[aria-selected="true"]{color:var(--accent-ink)}
@@ -660,6 +660,73 @@ header::after{height:1px;bottom:-1px;background:linear-gradient(90deg,transparen
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lv-ooo{--lv:#F2C94C;--lvs:#3A3010}:root:not([data-theme="light"]) .lv-annual{--lv:#A9A0F5;--lvs:#262145}:root:not([data-theme="light"]) .lv-sick,:root:not([data-theme="light"]) .lv-emergency{--lv:#F27AA8;--lvs:#3E1A2A}:root:not([data-theme="light"]) .lv-half{--lv:#F4A945;--lvs:#3A2911}:root:not([data-theme="light"]) .lv-other{--lv:#B3A9C2;--lvs:#2A2238}}
 :root[data-theme="dark"] .lv-ooo{--lv:#F2C94C;--lvs:#3A3010}:root[data-theme="dark"] .lv-annual{--lv:#A9A0F5;--lvs:#262145}:root[data-theme="dark"] .lv-sick,:root[data-theme="dark"] .lv-emergency{--lv:#F27AA8;--lvs:#3E1A2A}:root[data-theme="dark"] .lv-half{--lv:#F4A945;--lvs:#3A2911}:root[data-theme="dark"] .lv-other{--lv:#B3A9C2;--lvs:#2A2238}
 .face{background:radial-gradient(120% 140% at 100% 0%,var(--hero-2) 0%,var(--hero) 60%);box-shadow:0 10px 30px color-mix(in srgb,var(--hero) 22%,transparent)}
+
+/* ===== holidays, month-end, live clock, all-done, year view, multi-day fix ===== */
+.liveclock{display:inline-flex;align-items:baseline;margin-top:14px;padding:6px 13px 6px 11px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--hero-line);font-family:var(--f-mono);font-weight:600;font-size:15px;color:var(--hero-fg);font-variant-numeric:tabular-nums;line-height:1}
+.liveclock::before{content:"";width:7px;height:7px;border-radius:50%;background:#45D196;align-self:center;margin-right:9px;box-shadow:0 0 0 3px rgba(69,209,150,.22)}
+.liveclock small{color:var(--hero-muted);font-size:.86em}.liveclock em{font-style:normal;color:var(--hero-muted);font-size:.72em;margin-left:6px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-body);font-weight:800}
+.donemark{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:#2DBE7E;color:#fff;margin-right:8px;vertical-align:-5px}
+.donemark svg{width:12px;height:12px}
+.face.done .track-fill{background:linear-gradient(90deg,#1E9E6A,#45D196)}
+.face.done .track-note{color:#9BE8C2}
+.face.done .track-note:first-child{font-weight:800}
+.holbanner,.mrep{display:flex;align-items:center;gap:12px;border-radius:16px;padding:13px 15px;margin-bottom:14px}
+.holbanner{background:var(--home-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--home) 25%,transparent)}
+.holbanner .ricon,.mrep .ricon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none}
+.holbanner .ricon{background:var(--home);color:#fff}.holbanner b{color:var(--home)}
+.holbanner b,.mrep b{display:block;font-size:15px}.holbanner span,.mrep span{font-size:13px;color:var(--muted)}
+.holbanner .ricon svg,.mrep .ricon svg{width:19px;height:19px}
+.mrep{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent)}
+.mrep .ricon{background:var(--accent);color:var(--accent-ink)}
+.mrep>div:nth-child(2){flex:1;min-width:0}.mrep .acts{display:flex;gap:6px;align-items:center;flex:none}.mrep .acts .btn{flex:none}
+@media (max-width:640px){.mrep{flex-wrap:wrap}.mrep .acts{width:100%}.mrep .acts .btn{flex:1}}
+.holnext{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);padding:2px 4px 12px}
+.holnext i{width:8px;height:8px;border-radius:50%;background:var(--home);flex:none}.holnext b{color:var(--ink)}
+.holnext em{margin-left:auto;font-style:normal;font-weight:800;font-size:11.5px;color:var(--home);background:var(--home-soft);padding:3px 9px;border-radius:99px;white-space:nowrap}
+.wk th.hol{color:var(--home)}.wk th small{display:block;font-size:9.5px;letter-spacing:.06em;font-weight:800;margin-top:1px}
+.wk td.cell.hol{color:var(--home);font-weight:700;font-size:12px;background:color-mix(in srgb,var(--home) 6%,transparent)}
+.phd.hol.c-off,.phd.hol.c-empty{color:var(--home);opacity:1;background:color-mix(in srgb,var(--home) 9%,transparent)}
+.phseg{margin:0 auto 14px;width:max-content;display:flex}
+.phtools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}.phtools .btn{flex:none}
+.phsel{margin-top:12px;padding:12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.phcount{font-size:13.5px;font-weight:700}.phcount b{font-family:var(--f-mono)}
+.phsel-r{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}.phsel-r .btn{flex:none}.phsel-r .inp{min-width:170px}
+.phd.nosel{opacity:.35;cursor:not-allowed}
+.phd.selable{box-shadow:inset 0 0 0 1px var(--line-2)}
+.phd.sel{box-shadow:inset 0 0 0 2px var(--accent),0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent);position:relative}
+.phd.sel::after{content:"";position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:50%;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/8px no-repeat}
+.phd{position:relative}
+.ystats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.yr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.yr{grid-template-columns:repeat(3,minmax(0,1fr))}.ystats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ym{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px;font:inherit;color:inherit;cursor:pointer;text-align:left}
+.ym:hover{border-color:var(--accent)}
+.ymh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}.ymh b{font-size:12.5px}.ymh em{font-style:normal;font-family:var(--f-mono);font-size:11px;color:var(--muted);font-weight:600}
+.ygrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.yd{display:block;aspect-ratio:1;border-radius:2.5px;background:var(--surface-2)}
+.yd.blank{background:none}.yd.c-p{background:var(--in)}.yd.c-wfh{background:var(--home)}.yd.c-lv{background:var(--lv)}.yd.c-off{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.yd.c-hol{background:color-mix(in srgb,var(--home) 30%,transparent)}.yd.now{outline:1.5px solid var(--accent);outline-offset:1px}
+.ykey{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:11.5px;font-weight:700;color:var(--muted)}.ykey span{display:flex;align-items:center;gap:5px}.ykey .yd{width:10px;height:10px}
+.pdfov.settled:not(.closing) .pdfbox,.pdfov.settled:not(.closing) .bkbox{animation:none!important}
+@media (prefers-reduced-motion:no-preference){
+  .liveclock::before{animation:lcPulse 2s ease-in-out infinite}
+  @keyframes lcPulse{50%{box-shadow:0 0 0 6px rgba(69,209,150,0)}}
+  .face .track-fill{transition:width .7s var(--spring),background .6s ease}
+  .face.celebrate .donemark{animation:tickPop .7s var(--spring) both}
+  .face.celebrate .donemark path{stroke-dasharray:1;stroke-dashoffset:1;animation:tickDraw .45s .25s ease-out forwards}
+  .face.celebrate .track-bar{overflow:hidden}
+  .face.celebrate .track-fill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);background-size:220% 100%;animation:sheen 1.1s .2s ease-out both}
+  .face.celebrate .track-note:first-child{animation:rise .55s var(--spring) both}
+  @keyframes tickPop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+  @keyframes tickDraw{to{stroke-dashoffset:0}}
+  @keyframes sheen{from{background-position:120% 0}to{background-position:-120% 0}}
+  .holbanner,.mrep,.holnext{animation:rise .55s var(--spring) both}
+  .phd{transition:box-shadow .25s var(--spring),transform .25s var(--spring),opacity .2s}
+  .phd.sel{transform:scale(.96)}
+  .phsel{animation:rise .4s var(--spring) both}
+  .ym{transition:border-color .2s,transform .3s var(--spring)}.ym:hover{transform:translateY(-1px)}
+}
+@media (max-width:640px){.tabs button[aria-selected="true"]{color:var(--accent)}}
 </style>
 
 <div id="splash" aria-hidden="true"><i class="sg sg1"></i><i class="sg sg2"></i><i class="sg sg3"></i><div class="spc"><svg viewBox="-1 -1 64 81">
@@ -976,7 +1043,7 @@ function holdOrder(){
 }
 async function guarded(pid,fn){
   if(!db){noDb();return} if(!S.canWrite||S.busy.has(pid))return;
-  S.busy.add(pid); holdOrder();
+  S.busy.add(pid); holdOrder(); S.lastAct=Date.now();
   try{await fn()}catch(e){fail(e)}finally{S.busy.delete(pid);render()}
 }
 function logRef(pid,k){return db.doc("log/"+(k||vKey())+"_"+pid)}
@@ -987,7 +1054,7 @@ function markPresent(pid,loc){return guarded(pid,async()=>{const p=S.people.find
   await ref.set(presentDoc(pid,l));toast(personName(pid)+" marked present"+(l==="home"?" (from home)":" (in office)"),()=>ref.delete())})}
 async function markAll(){
   if(!db){noDb();return} if(!S.canWrite)return; S.confirm=null;
-  const todo=S.people.filter(p=>statusOf(p.id)==="none"); let n=0;
+  const todo=S.people.filter(p=>statusOf(p.id)==="none"); let n=0; S.lastAct=Date.now();
   for(const p of todo){try{await logRef(p.id).set(presentDoc(p.id,planLoc(p)));n++}catch(e){fail(e);break}}
   if(n)toast(n+(n===1?" person":" people")+" marked present");
 }
@@ -1042,16 +1109,20 @@ function celebrations(p,d){const md=key(d).slice(5),out=[];if(!p)return out;
   return out}
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 /* ---------- clock face ---------- */
+function clockHtml(d){const h=d.getHours();return `<span id="lcT">${(h%12)||12}:${pad(d.getMinutes())}</span><small id="lcS">:${pad(d.getSeconds())}</small><em id="lcA">${h>=12?"pm":"am"}</em>`}
+function tickClock(){const t=document.getElementById("lcT");if(!t)return;const d=new Date(),h=d.getHours();t.textContent=((h%12)||12)+":"+pad(d.getMinutes());
+  document.getElementById("lcS").textContent=":"+pad(d.getSeconds());document.getElementById("lcA").textContent=h>=12?"pm":"am"}
 function face(){
   const now=new Date();
   const counts={in:0,none:0,leave:0}; let office=0,home=0;
   S.people.forEach(p=>{const s=statusOf(p.id);counts[s]++;if(s==="in"){if(isHome(S.today[p.id]))home++;else office++}});
   const vd=vDate(), today=isViewToday(), total=S.people.length, marked=total-counts.none, sc=sched(vd), pct=total?Math.round(marked/total*100):0;
-  return `<div class="face">
+  const done=total>0&&marked===total;
+  return `<div class="face${done?" done":""}">
     <svg class="watermark" viewBox="0 0 62 68" aria-hidden="true"><path d="${MARK}" fill-rule="evenodd"/></svg>
     <div class="face-top">
       <div><div class="eyebrow">${today?"Today · ":vKey()<todayKey?"Past day · ":"Upcoming day · "}${sc.holiday?"Public holiday · "+esc(sc.holiday):sc.on?"Working day":"Day off"}</div>
-        <div class="clock dateclock">${esc(vd.toLocaleDateString(undefined,{weekday:"long"}))}<span class="sec">${esc(vd.toLocaleDateString(undefined,{day:"numeric",month:"long",year:vd.getFullYear()!==now.getFullYear()?"numeric":undefined}))}</span></div></div>
+        <div class="clock dateclock">${esc(vd.toLocaleDateString(undefined,{weekday:"long"}))}<span class="sec">${esc(vd.toLocaleDateString(undefined,{day:"numeric",month:"long",year:vd.getFullYear()!==now.getFullYear()?"numeric":undefined}))}</span></div>${today?`<div class="liveclock" aria-label="Current time">${clockHtml(now)}</div>`:""}</div>
       <div class="tally t4" aria-label="Today at a glance">
         <div><b>${office}</b><span><i style="background:var(--in)"></i>In office</span></div>
         <div><b>${home}</b><span><i style="background:var(--home)"></i>From home</span></div>
@@ -1061,12 +1132,18 @@ function face(){
     </div>
     <div class="track" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
-        <span class="track-note">${total?marked+" of "+total+" marked "+(today?"today":"on this day"):"No one on the team yet"}</span><span class="track-note">${pct}%</span></div>
+        <span class="track-note">${done?`<span class="donemark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>Everyone's marked${today?" – nice work":""}`:sc.holiday&&!marked?"Public holiday – no one needs marking":total?marked+" of "+total+" marked "+(today?"today":"on this day"):"No one on the team yet"}</span><span class="track-note">${sc.holiday&&!marked?"":pct+"%"}</span></div>
       <div class="track-bar"><div class="track-fill" style="width:${pct}%"></div></div>
     </div>
   </div>`;
 }
 /* ---------- today ---------- */
+function nextHoliday(n){const t=dateOf(todayKey);for(let i=1;i<=n;i++){const d=new Date(t);d.setDate(t.getDate()+i);const nm=holidayOf(d);
+  if(nm){let len=1;const e=new Date(d);for(;;){e.setDate(e.getDate()+1);if(holidayOf(e)===nm)len++;else break}return {name:nm,date:key(d),in:i,len}}}return null}
+function prevYm(){const n=new Date();return ymOf(new Date(n.getFullYear(),n.getMonth()-1,1))}
+function monthEndBanner(today){if(!today||!S.canWrite||!S.people.length)return "";const pm=prevYm();if(LS.get("mrep-"+pm))return "";
+  return `<div class="mrep" role="status"><span class="ricon">${IC.month}</span><div><b>${esc(monthName(pm))} report is ready</b><span>Last month has closed. Download the report for HR.</span></div>
+    <div class="acts">${downloads?`<button class="btn sm" type="button" data-act="mrepx" data-ym="${pm}">${IC.dl}Excel</button>`:""}<button class="btn sm pdfbtn" type="button" data-act="mrepp" data-ym="${pm}">${IC.pdf}PDF</button><button class="icon" type="button" data-act="mrepdone" data-ym="${pm}" aria-label="Dismiss" title="Done – hide this"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>`}
 function renderToday(){
   let h=face();
   if(!S.ready)return h+skeleton();
@@ -1078,10 +1155,13 @@ function renderToday(){
     <button class="icon" type="button" data-act="daynext" aria-label="Next day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
     ${today?`<span class="daynote">Today</span>`:`<button class="btn ghost sm" type="button" data-act="daytoday">Back to today</button><span class="daynote warn">${S.canWrite?"Changes you make now are saved to "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})):"You're looking at "+esc(vDate().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</span>`}
   </div>`;
+  if(sc.holiday)h+=`<div class="holbanner" role="status"><span class="ricon">${IC.cal}</span><div><b>Public holiday · ${esc(sc.holiday)}</b><span>The office is closed${today?" today":" on this day"}. No one needs marking.</span></div></div>`;
+  else if(today){const nx=nextHoliday(14);if(nx)h+=`<div class="holnext"><i></i><span>Coming up: <b>${esc(nx.name)}</b> · ${esc(dateOf(nx.date).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}${nx.len>1?" ("+nx.len+" days)":""}</span><em>${nx.in===1?"tomorrow":"in "+nx.in+" days"}</em></div>`}
+  h+=monthEndBanner(today);
   const M=mailCfg(), nowHm=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
   if(left&&S.canWrite&&today&&sc.on&&M.remind&&M.remindAt&&nowHm>=M.remindAt)
     h+=`<div class="remind" role="status"><span class="ricon">${IC.bell}</span><div><b>Reminder: attendance isn't finished</b><span>It's past ${esc(fmt12(M.remindAt))} and ${left} ${left===1?"person isn't":"people aren't"} marked yet.</span></div></div>`;
-  if(left&&S.canWrite){
+  if(left&&S.canWrite&&!sc.holiday){
     h+=`<div class="bulk"><div><b>${left} ${left===1?"person":"people"} not marked ${today?"yet":"on this day"}</b><span>${sc.on?"Present marks the day and picks office or home from each person's schedule.":(sc.holiday?esc(sc.holiday)+" is a public holiday on the Schedule tab.":"This day is set as a day off on the Schedule tab.")}</span></div>
       ${S.confirm==="__all"
         ?`<div class="acts"><button class="btn" type="button" data-act="allok">${IC.check}Mark ${left} present</button><button class="btn ghost sm" type="button" data-act="cancel">Cancel</button></div>`
@@ -1279,7 +1359,7 @@ function openBook(pid){if(!S.canWrite)return;const t=new Date();t.setDate(t.getD
 function renderBook(){
   let ov=document.getElementById("bkov");
   if(!S.bk){if(ov)closeOv(ov);return}
-  if(!ov){ov=document.createElement("div");ov.id="bkov";ov.className="pdfov";document.body.appendChild(ov);
+  if(!ov){ov=document.createElement("div");ov.id="bkov";ov.className="pdfov";document.body.appendChild(ov);setTimeout(()=>ov.classList.add("settled"),650);
     ov.addEventListener("click",e=>{const b=e.target.closest("[data-bk]");if(e.target===ov||(b&&b.dataset.bk==="close")){S.bk=null;renderBook();return}
       if(b&&b.dataset.bk==="type"){S.bk.type=b.dataset.type;renderBook()}
       if(b&&b.dataset.bk==="save")saveBook()});
@@ -1336,24 +1416,61 @@ async function cancelLeave(pid,from,to,type){
 const PH_LABEL={p:"Office",wfh:"Home",annual:"Annual",sick:"Sick",emergency:"Emergency",half:"Half day",other:"Leave",ooo:"Out"};
 async function openPh(pid,ym){
   if(!db){noDb();return}
-  S.ph={pid,ym:ym||(S.ph&&S.ph.pid===pid?S.ph.ym:ymOf(new Date())),recs:null}; renderPh();
+  const keepSt=S.ph&&S.ph.selSt;
+  S.ph={pid,view:"month",ym:ym||(S.ph&&S.ph.pid===pid?S.ph.ym:ymOf(new Date())),recs:null,sel:null,selSt:keepSt||"office"}; renderPh();
   const want=S.ph.ym;
   try{const {days,recs}=await monthData(want); if(S.ph&&S.ph.pid===pid&&S.ph.ym===want){S.ph.days=days;S.ph.recs=recs;renderPh()}}
   catch(e){toast("Couldn't load the history. Try again.")}
+}
+async function openPhYear(pid,y){
+  if(!db){noDb();return}
+  const now=new Date(); y=Math.min(y||now.getFullYear(),now.getFullYear());
+  S.ph={pid,view:"year",y,ym:S.ph&&S.ph.ym||ymOf(now),yrecs:null,sel:null,selSt:S.ph&&S.ph.selSt||"office"}; renderPh();
+  const last=y===now.getFullYear()?now.getMonth():11, yms=Array.from({length:last+1},(_,i)=>y+"-"+pad(i+1));
+  try{const parts=await Promise.all(yms.map(monthData));const recs={};parts.forEach(x=>Object.assign(recs,x.recs));
+    if(S.ph&&S.ph.pid===pid&&S.ph.view==="year"&&S.ph.y===y){S.ph.yrecs=recs;S.ph.ymonths=parts.map(x=>x.days);renderPh()}}
+  catch(e){toast("Couldn't load the year. Try again.")}
+}
+function phCanSel(p,d,tk){const k=key(d);return k<=tk&&joined(p,k)}
+async function phApply(){
+  const P=S.ph;if(!P||!P.sel||!P.sel.size||!S.canWrite)return;if(!db){noDb();return}
+  const pid=P.pid,st=P.selSt,keys=[...P.sel].sort(),undo=[];
+  try{for(const k of keys){const ref=logRef(pid,k),had=P.recs&&P.recs[k+"_"+pid];undo.push([k,had?{...had}:null]);
+      const base={date:k,pid,edited:new Date().toISOString()};let doc;
+      if(st==="office"||st==="home")doc={...base,status:"present",loc:st};else if(st==="none")doc=had&&had.note?{...base,status:"none"}:null;else doc={...base,status:"leave",leaveType:st};
+      if(doc&&had&&had.note)doc.note=had.note;
+      if(doc)await ref.set(doc);else if(had)await ref.delete()}
+    const label=(EDIT_CHOICES.find(c=>c[0]===st)||[])[1]||"";
+    toast(personName(pid)+": "+keys.length+(keys.length===1?" day":" days")+" set to "+label,async()=>{for(const [k,r] of undo){const ref=logRef(pid,k);if(r)await ref.set(r);else await ref.delete()}if(S.ph&&S.ph.pid===pid)openPh(pid,S.ph.ym)});
+    openPh(pid,P.ym)}
+  catch(e){fail(e)}
 }
 function phShift(n){if(!S.ph)return;const [y,m]=S.ph.ym.split("-").map(Number),d=new Date(y,m-1+n,1);if(ymOf(d)>ymOf(new Date()))return;openPh(S.ph.pid,ymOf(d))}
 function renderPh(){
   let ov=document.getElementById("phov");
   if(!S.ph){if(ov)closeOv(ov);return}
   const P=S.ph, p=S.people.find(x=>x.id===P.pid); if(!p){S.ph=null;if(ov)closeOv(ov);return}
-  if(!ov){ov=document.createElement("div");ov.id="phov";ov.className="pdfov";document.body.appendChild(ov);
+  if(!ov){ov=document.createElement("div");ov.id="phov";ov.className="pdfov";document.body.appendChild(ov);setTimeout(()=>ov.classList.add("settled"),650);
     ov.addEventListener("click",e=>{const b=e.target.closest("[data-ph]");if(e.target===ov||(b&&b.dataset.ph==="close")){S.ph=null;renderPh();return}
       if(b&&b.dataset.ph==="book"){const pid=S.ph.pid;S.ph=null;renderPh();openBook(pid);return}
-      if(b&&b.dataset.ph==="prev")phShift(-1);if(b&&b.dataset.ph==="next")phShift(1);
-      if(b&&b.dataset.ph==="day"&&S.canWrite){const k=b.dataset.k;S.ph=null;renderPh();S.tab="today";setView(k);window.scrollTo({top:0})}})}
-  const isNow=P.ym>=ymOf(new Date());
-  let body=`<div class="phload">Loading ${esc(monthName(P.ym))}…</div>`;
-  if(P.recs){
+      const a=b&&b.dataset.ph, P=S.ph;
+      if(a==="prev"){if(P.view==="year")openPhYear(P.pid,P.y-1);else phShift(-1)}
+      if(a==="next"){if(P.view==="year")openPhYear(P.pid,P.y+1);else phShift(1)}
+      if(a==="vm"&&P.view!=="month")openPh(P.pid,P.ym);
+      if(a==="vy"&&P.view!=="year")openPhYear(P.pid,+P.ym.slice(0,4));
+      if(a==="mon")openPh(P.pid,b.dataset.ym);
+      if(a==="selmode"){P.sel=new Set();renderPh()}
+      if(a==="selcancel"){P.sel=null;renderPh()}
+      if(a==="apply")phApply();
+      if(a==="selunmarked"&&P.recs){const p=S.people.find(x=>x.id===P.pid),tk=key(new Date());P.days.forEach(d=>{const k=key(d);if(phCanSel(p,d,tk)&&sched(d).on&&!P.recs[k+"_"+P.pid])P.sel.add(k)});renderPh()}
+      if(a==="day"){const k=b.dataset.k;
+        if(P.sel){if(b.classList.contains("nosel"))return;if(P.sel.has(k))P.sel.delete(k);else P.sel.add(k);renderPh();return}
+        if(S.canWrite){S.ph=null;renderPh();S.tab="today";setView(k);window.scrollTo({top:0})}}});
+    ov.addEventListener("change",e=>{if(e.target.id==="phSt"&&S.ph)S.ph.selSt=e.target.value})}
+  const isNow=P.view==="year"?P.y>=new Date().getFullYear():P.ym>=ymOf(new Date());
+  let body=`<div class="phload">Loading ${esc(P.view==="year"?String(P.y):monthName(P.ym))}…</div>`;
+  if(P.view==="year"&&P.yrecs)body=phYearBody(p,P);
+  if(P.view!=="year"&&P.recs){
     const tk=key(new Date()), c={p:0,wfh:0,leave:0,ooo:0}, notes=[];
     const cells=P.days.map(d=>{const k=key(d), r=P.recs[k+"_"+p.id], cf=cellFor(r,d,tk,p), sc=sched(d);
       if(cf.code==="p")c.p++;else if(cf.code==="wfh")c.wfh++;else if(LEAVE[cf.code])c.leave++;else if(cf.code==="ooo"&&(k<tk||r))c.ooo++;
@@ -1362,7 +1479,8 @@ function renderPh(){
       const lab=sc.holiday&&(code==="off"||!code)?"Holiday":code==="off"?"Off":PH_LABEL[code]||"";
       const cls=code==="p"?"c-p":code==="wfh"?"c-wfh":code==="off"?"c-off":code==="ooo"?"lv-ooo c-lv":code?"lv-"+code+" c-lv":"c-empty";
       const tipT=esc(d.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}))+(sc.holiday?"<br>"+esc(sc.holiday):"")+(cf.label&&code!=="off"?"<br><b>"+esc(cf.code==="p"?"In office":cf.code==="wfh"?"From home":cf.label)+"</b>":"")+(cf.note?"<br>Note: "+esc(cf.note):"");
-      return `<button type="button" class="phd ${cls}${k===tk?" now":""}" data-ph="day" data-k="${k}" data-tip="${esc(tipT)}"${S.canWrite?"":" tabindex=\"-1\""}><b>${d.getDate()}</b><span>${lab}${cf.note?'<i class="ndot"></i>':""}</span></button>`});
+      const selable=!P.sel||phCanSel(p,d,tk), on=P.sel&&P.sel.has(k);
+      return `<button type="button" class="phd ${cls}${k===tk?" now":""}${P.sel?(selable?" selable":" nosel"):""}${on?" sel":""}${sc.holiday?" hol":""}" data-ph="day" data-k="${k}" data-tip="${esc(tipT)}"${S.canWrite?"":" tabindex=\"-1\""}${on?' aria-pressed="true"':""}><b>${d.getDate()}</b><span>${lab}${cf.note?'<i class="ndot"></i>':""}</span></button>`});
     const lead=Array.from({length:dow(P.days[0])},()=>`<span class="phd blank"></span>`).join("");
     const pr=c.p+c.wfh, all=pr+c.leave+c.ooo, rate=all?Math.round(pr/all*100):null;
     body=`<div class="phstats">
@@ -1372,16 +1490,47 @@ function renderPh(){
         <div><b>${c.leave}</b><span><i style="background:var(--leave)"></i>Leave</span></div>
         <div><b>${c.ooo}</b><span><i style="background:var(--late)"></i>Out of office</span></div></div>
       <div class="phcal">${DAYS.map(x=>`<span class="phh">${x}</span>`).join("")}${lead}${cells.join("")}</div>
-      ${S.canWrite?`<p class="hint" style="margin:8px 0 0">Tap a day to open it on the Today tab and edit it.</p>`:""}
+      ${S.canWrite?(P.sel?`<div class="phsel"><span class="phcount"><b>${P.sel.size}</b> ${P.sel.size===1?"day":"days"} selected</span>
+          <button class="link" type="button" data-ph="selunmarked">Select unmarked working days</button>
+          <div class="phsel-r"><select class="inp sel" id="phSt" aria-label="Set the selected days to">${EDIT_CHOICES.map(([v,l])=>`<option value="${v}" ${v===P.selSt?"selected":""}>${v==="none"?"Clear (not marked)":l}</option>`).join("")}</select>
+          <button class="btn sm" type="button" data-ph="apply" ${P.sel.size?"":"disabled"}>Apply</button><button class="btn ghost sm" type="button" data-ph="selcancel">Cancel</button></div></div>`
+        :`<div class="phtools"><p class="hint" style="margin:0">Tap a day to open it on the Today tab.</p><button class="btn ghost sm" type="button" data-ph="selmode">${IC.check}Fix several days</button></div>`):""}
       ${notes.length?`<h4>Notes</h4><ul class="phnotes">${notes.map(([d,n])=>`<li><b>${esc(d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</b><span>${esc(n)}</span></li>`).join("")}</ul>`:""}`;
   }
   ov.innerHTML=`<div class="pdfbox phbox" role="dialog" aria-label="${esc(p.name)}'s attendance history">
     <div class="pdfbar"><div class="who"><div class="av" style="background:${colorFor(p.id)}">${avHtml(p)}</div><div><strong>${esc(p.name)}</strong><small>${esc(p.role||"Team member")}</small></div></div>
       <div class="acts" style="flex:none">${S.canWrite?`<button class="btn ghost sm" type="button" data-ph="book">${IC.cal}Book leave</button>`:""}<button class="btn ghost sm" type="button" data-ph="close">Close</button></div></div>
     <div class="phbody"><div class="phmonth"><button class="icon" type="button" data-ph="prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
-      <b>${esc(monthName(P.ym))}</b>
+      <b>${esc(P.view==="year"?String(P.y):monthName(P.ym))}</b>
       <button class="icon" type="button" data-ph="next" aria-label="Next month" ${isNow?"disabled":""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button></div>
+      <div class="seg phseg" role="group" aria-label="View"><button type="button" data-ph="vm" aria-pressed="${P.view!=="year"}">Month</button><button type="button" data-ph="vy" aria-pressed="${P.view==="year"}">Year</button></div>
       ${body}</div></div>`;
+}
+function phYearBody(p,P){
+  const tk=key(new Date()), c={p:0,wfh:0,annual:0,sick:0,emergency:0,half:0,other:0,ooo:0};
+  const months=P.ymonths.map(days=>{const ym=ymOf(days[0]);let mp=0,ma=0;
+    const cells=days.map(d=>{const k=key(d),r=P.yrecs[k+"_"+p.id],cf=cellFor(r,d,tk,p),hn=holidayOf(d);
+      let code=cf.code==="ooo"&&k>=tk&&!r?"":cf.code;
+      if(code&&code!=="off"&&c[code]!=null){c[code]++;if(code==="p"||code==="wfh")mp++;else ma++}
+      const cls=code==="p"?"c-p":code==="wfh"?"c-wfh":code==="off"?(hn?"c-hol":"c-off"):code==="ooo"?"lv-ooo c-lv":code?"lv-"+code+" c-lv":"c-empty";
+      const t=d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})+(hn?" · "+hn:"")+(code&&code!=="off"?" · "+(code==="p"?"In office":code==="wfh"?"From home":cf.label):"");
+      return `<i class="yd ${cls}${k===tk?" now":""}" data-tip="${esc(esc(t))}"></i>`}).join("");
+    const lead=Array.from({length:dow(days[0])},()=>`<i class="yd blank"></i>`).join("");
+    const rt=mp+ma?Math.round(mp/(mp+ma)*100):null;
+    return `<button type="button" class="ym" data-ph="mon" data-ym="${ym}"><span class="ymh"><b>${esc(days[0].toLocaleDateString("en-GB",{month:"short"}))}</b><em>${rt==null?"":rt+"%"}</em></span><span class="ygrid">${lead}${cells}</span></button>`});
+  const pr=c.p+c.wfh, away=c.annual+c.sick+c.emergency+c.half+c.other+c.ooo, rate=pr+away?Math.round(pr/(pr+away)*100):null;
+  return `<div class="phstats ystats">
+      <div><b>${rate==null?"—":rate+"%"}</b><span>Attendance</span></div>
+      <div><b>${c.p}</b><span><i style="background:var(--in)"></i>In office</span></div>
+      <div><b>${c.wfh}</b><span><i style="background:var(--home)"></i>From home</span></div>
+      <div><b>${c.annual}</b><span><i class="lv-annual" style="background:var(--lv)"></i>Annual leave</span></div>
+      <div><b>${c.sick}</b><span><i class="lv-sick" style="background:var(--lv)"></i>Sick leave</span></div>
+      <div><b>${c.emergency}</b><span><i class="lv-emergency" style="background:var(--lv)"></i>Emergency</span></div>
+      <div><b>${c.half+c.other}</b><span><i class="lv-half" style="background:var(--lv)"></i>Half day / other</span></div>
+      <div><b>${c.ooo}</b><span><i style="background:var(--late)"></i>Out of office</span></div></div>
+    <div class="yr">${months.join("")}</div>
+    <div class="ykey"><span><i class="yd c-p"></i>Office</span><span><i class="yd c-wfh"></i>Home</span><span><i class="yd lv-sick c-lv"></i>Leave</span><span><i class="yd lv-ooo c-lv"></i>Out</span><span><i class="yd c-hol"></i>Holiday</span><span><i class="yd c-off"></i>Day off</span></div>
+    <p class="hint" style="margin:8px 0 0">Tap a month to see its days${S.canWrite?" or fix several at once":""}.</p>`;
 }
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.ph){S.ph=null;renderPh()}});
 /* ---------- automatic emails ---------- */
@@ -1432,11 +1581,12 @@ function renderWeek(){
       <button class="icon" type="button" data-act="next" aria-label="Next week" ${S.weekOffset>=0?"disabled":""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
     </div></div>`;
   if(!S.people.length)return h+`<div class="empty"><h2>No team yet</h2><p>Add people on the Team tab and their attendance will build up here.</p></div>`;
-  h+=`<div class="tablewrap"><table class="wk"><thead><tr><th>Name</th>${days.map(d=>`<th class="${key(d)===tk?"today":""}">${d.toLocaleDateString(undefined,{weekday:"short"})} ${d.getDate()}</th>`).join("")}<th class="num">Days in</th><th class="num">WFH</th></tr></thead><tbody>`;
+  h+=`<div class="tablewrap"><table class="wk"><thead><tr><th>Name</th>${days.map(d=>{const hn=holidayOf(d);return `<th class="${key(d)===tk?"today":""}${hn?" hol":""}"${hn?` data-tip="${esc(hn)}"`:""}>${d.toLocaleDateString(undefined,{weekday:"short"})} ${d.getDate()}${hn?"<small>Holiday</small>":""}</th>`}).join("")}<th class="num">Days in</th><th class="num">WFH</th></tr></thead><tbody>`;
   S.people.forEach(p=>{
     let inD=0,wfh=0;
     const cells=days.map(d=>{
       const r=S.week[key(d)+"_"+p.id];
+      if((!r||(!isPresent(r)&&r.status!=="leave"))&&holidayOf(d))return `<td class="cell hol">Holiday</td>`;
       if(!r||(!isPresent(r)&&r.status!=="leave"))return `<td class="cell none">${sched(d).on?(key(d)<=tk&&joined(p,key(d))?"Out":"—"):"Off"}</td>`;
       if(r.status==="leave")return `<td class="cell leave"><span class="lv-${esc(r.leaveType||"other")}">${esc(leaveLabel(r))}</span></td>`;
       const hm_=isHome(r); inD++; if(hm_)wfh++;
@@ -1982,10 +2132,11 @@ function columns(g,x,y,w,h,cols,max,opts={}){
   const ticks=max<=5?Array.from({length:max+1},(_,i)=>i):[0,Math.round(max/2),max];
   ticks.forEach(t=>{const ty=y+h-h*t/max;hline(g,x,x+w,ty,PC.line,0.2);tx(g,t,x-1.5,ty+1,{pt:6,c:PC.faint,al:"right",f:PF_M})});
   cols.forEach((c,i)=>{const cx=x+cw*i+cw/2;
-    if(c.off){hline(g,cx-1.2,cx+1.2,y+h-0.6,PC.off,0.8)}
+    if(c.hol)rr(g,x+cw*i+0.3,y,cw-0.6,h,0.8,"#E2F3F5");
+    if(c.off){hline(g,cx-1.2,cx+1.2,y+h-0.6,c.hol?PC.home:PC.off,0.8)}
     else{let acc=0;c.parts.forEach(([v,col])=>{if(!v)return;const bh=h*v/max;g.save();rr(g,cx-bw/2,y+h-(acc+v)*h/max,bw,bh,acc?0:Math.min(1.2,bw/3),col);g.restore();acc+=v});
       const tot=c.parts.reduce((a,p)=>a+p[0],0); if(opts.values&&tot)tx(g,tot,cx,y+h-acc*h/max-1.4,{pt:6.5,w:800,al:"center",f:PF_M})}
-    if(c.label!=null&&(!opts.every||i%opts.every===0||i===n-1))tx(g,c.label,cx,y+h+4,{pt:opts.lpt||6.5,w:c.today?800:600,c:c.today?PC.brand:c.off?PC.faint:PC.muted,al:"center"});
+    if(c.label!=null&&(!opts.every||i%opts.every===0||i===n-1))tx(g,c.label,cx,y+h+4,{pt:opts.lpt||6.5,w:c.today?800:600,c:c.today?PC.brand:c.hol?PC.home:c.off?PC.faint:PC.muted,al:"center"});
   });
 }
 function pill(g,x,y,text,c){g.font=`800 ${6.6*0.3528}px ${PF_B}`;const w=g.measureText(text).width+4;g.globalAlpha=.14;rr(g,x,y-2.9,w,4,2,c);g.globalAlpha=1;tx(g,text,x+2,y,{pt:6.6,w:800,c});return w}
@@ -2002,7 +2153,7 @@ async function buildDailyPdf(k){
   const tdays=[]; for(let i=0;i<40&&tdays.length<7;i++){const x=dateOf(k);x.setDate(x.getDate()-i);if(sched(x).on||i===0)tdays.unshift(x)}
   const hist=await rangeRecs(key(tdays[0]),k), tk=key(new Date());
   const {cv,g}=pdfPage();
-  await pdfHeader(g,"Daily Attendance Report",dayLong(d),S.settings.teamName||"B3 International",sc.on?"Working day":"Non-working day");
+  await pdfHeader(g,"Daily Attendance Report",dayLong(d),S.settings.teamName||"B3 International",sc.holiday?"Public holiday · "+sc.holiday:sc.on?"Working day":"Non-working day");
   const present=c.p+c.wfh, pct=c.total?Math.round(present/c.total*100):0;
   kpis(g,44,[{label:"Present",value:present+" / "+c.total,sub:pct+"% of the team",dark:true},
     {label:"In office",value:String(c.p),sub:c.total?Math.round(c.p/c.total*100)+"% of team":"",c:PC.office},
@@ -2052,9 +2203,11 @@ async function buildMonthlyPdf(ym){
     {label:"Days away",value:String(T.away||0),sub:(T.away-T.ooo||0)+" leave · "+(T.ooo||0)+" out of office",c:PC.leave}]);
   sectionTitle(g,82,"Daily attendance","People present each day");
   const cols=days.map(d=>{const k=key(d);let o=0,h=0;S.people.forEach(p=>{const cf=cellFor(recs[k+"_"+p.id],d,tk,p);if(cf.code==="p")o++;if(cf.code==="wfh")h++});
-    return {label:d.getDate(),parts:[[o,PC.office],[h,PC.home]],off:!sched(d).on&&!(o+h),today:k===tk}});
+    return {label:d.getDate(),parts:[[o,PC.office],[h,PC.home]],off:!sched(d).on&&!(o+h),hol:!!holidayOf(d),today:k===tk}});
   columns(g,22,87,174,36,cols,Math.max(1,S.people.length),{bw:3.6,lpt:5.8});
-  legend(g,14,133,[["In office",PC.office],["From home",PC.home],["Day off",PC.off]]);
+  const mh=[];days.forEach(d=>{const nm=holidayOf(d);if(!nm)return;const last=mh[mh.length-1];if(last&&last.nm===nm&&last.to.getDate()===d.getDate()-1)last.to=d;else mh.push({nm,from:d,to:d})});
+  legend(g,14,133,[["In office",PC.office],["From home",PC.home],["Day off",PC.off]].concat(mh.length?[["Public holiday","#9ED6DC"]]:[]));
+  if(mh.length)tx(g,"Public holidays: "+mh.map(x=>x.from.getDate()+(x.to>x.from?"–"+x.to.getDate():"")+" "+x.from.toLocaleDateString("en-GB",{month:"short"})+" "+x.nm).join(" · "),196,133,{pt:6.6,w:700,c:PC.home,al:"right",max:105});
   // absence by type + where people worked
   sectionTitle(g,145,"Days away by type");
   const types=[["Out of office",T.ooo||0,PC.ooo],["Sick leave",T.sick||0,PC.sick],["Annual leave",T.annual||0,PC.annual],["Emergency leave",T.emergency||0,PC.emergency],["Half day",T.half||0,PC.half],["Other leave",T.other||0,PC.other]];
@@ -2101,7 +2254,7 @@ async function makePdf(kind){
 function renderPdf(){
   let ov=document.getElementById("pdfov");
   if(!S.pdf){if(ov)closeOv(ov);return}
-  if(!ov){ov=document.createElement("div");ov.id="pdfov";ov.className="pdfov";document.body.appendChild(ov);
+  if(!ov){ov=document.createElement("div");ov.id="pdfov";ov.className="pdfov";document.body.appendChild(ov);setTimeout(()=>ov.classList.add("settled"),650);
     ov.addEventListener("click",async e=>{const b=e.target.closest("[data-pdf]");if(e.target===ov||b&&b.dataset.pdf==="close"){S.pdf=null;renderPdf();return}
       if(b&&b.dataset.pdf==="save"&&S.pdf){try{await downloads.save({filename:S.pdf.name,data:S.pdf.bytes.slice()});toast("PDF saved")}catch(err){if(!err||err.code!=="declined")toast("Saving isn't available here.")}}})}
   ov.innerHTML=`<div class="pdfbox" role="dialog" aria-label="PDF preview"><div class="pdfbar"><div><b>${esc(S.pdf.title)}</b><span>A4 · one page · ${Math.round(S.pdf.bytes.length/1024)} KB</span></div>
@@ -2208,6 +2361,10 @@ function render(){
   if(flip)view.querySelectorAll(".card[data-pid]").forEach(c=>{const a=flip[c.dataset.pid];if(!a)return;const b=c.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;
     if(Math.abs(dx)<2&&Math.abs(dy)<2)return;c.style.transition="none";c.style.transform=`translate(${dx}px,${dy}px)`;c.style.zIndex="2";
     requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transition="transform .55s cubic-bezier(.32,.72,0,1)";c.style.transform="";setTimeout(()=>{c.style.transition="";c.style.zIndex=""},420)}))});
+  {const f=view.querySelector(".face"),dn=!!(f&&f.classList.contains("done"));
+    if(f&&dn&&S.wasDone===false&&S.wasDoneKey===vKey()&&Date.now()-(S.lastAct||0)<5000&&!REDUCED){S.celUntil=Date.now()+1800;f.classList.add("celebrate");clearTimeout(S.celT);S.celT=setTimeout(()=>{const g=view.querySelector(".face");g&&g.classList.remove("celebrate")},1800)}
+    else if(f&&dn&&Date.now()<(S.celUntil||0))f.classList.add("celebrate");
+    if(S.ready&&f){S.wasDone=dn;S.wasDoneKey=vKey()}}
   watchFace(); updMini();
   if(S.ready&&!S.splashDone){S.splashDone=true;hideSplash()}
 }
@@ -2305,6 +2462,9 @@ view.addEventListener("click",e=>{
     case "prev":S.weekOffset--;subWeek();render();break;
     case "next":if(S.weekOffset<0){S.weekOffset++;subWeek();render()}break;
     case "csv":exportCsv();break;
+    case "mrepx":S.month=b.dataset.ym;exportExcel();LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
+    case "mrepp":S.month=b.dataset.ym;makePdf("month");LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
+    case "mrepdone":LS.set("mrep-"+b.dataset.ym,"1");render();toast(monthName(b.dataset.ym)+" report hidden. It's always on the Reports tab.");break;
     case "dpdf":makePdf("day");break;
     case "mpdf":makePdf("month");break;
     case "dxlsx":exportDaily(S.day||todayKey);break;
@@ -2416,6 +2576,7 @@ setInterval(()=>{
   const now=new Date();
   const k=key(now); if(k!==todayKey){todayKey=k;if(!viewKey)subToday();subHist()}
   if(now.getMinutes()!==lastMin){lastMin=now.getMinutes();if(!typing())render()}
+  tickClock();
 },1000);
 
 /* ---------- data ---------- */
