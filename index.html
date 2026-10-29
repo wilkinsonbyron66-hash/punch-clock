@@ -1567,7 +1567,6 @@ async function exportExcel(){
       const R=first+pi, row=ws.getRow(R); row.height=22;
       const nc=row.getCell(1); nc.value=p.name; nc.font={bold:true,size:10.5,color:{argb:C.ink}}; nc.alignment={vertical:"middle",indent:1};
       nc.border=box; if(pi%2)nc.fill=solid(C.zebra);
-      if(p.role)nc.note={texts:[{text:p.role}]};
       days.forEach((d,i)=>{
         const r=recs[key(d)+"_"+p.id], cf=cellFor(r,d,tk,p), c=row.getCell(D0+i);
         c.value=cf.code==="p"?"P":cf.code==="wfh"?"WFH":cf.code==="off"?"":cf.label; c.border=box; c.dataValidation=listRule(GRID_VALUES.map(x=>x[0]),"Attendance"); c.alignment={horizontal:"center",vertical:"middle",wrapText:true,shrinkToFit:false};
