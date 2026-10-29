@@ -1469,8 +1469,8 @@ function sortKey(n){return String(n||"").replace(/^[^\p{L}\p{N}]+/u,"").trim()}
 function byName(a,b){const A=sortKey((a.p||a).name),B=sortKey((b.p||b).name);return A.localeCompare(B,undefined,{sensitivity:"base",numeric:true})}
 function stamp(){const d=new Date();return " ("+pad(d.getHours())+"."+pad(d.getMinutes())+"."+pad(d.getSeconds())+")"}
 /* dropdowns + colour rules so the Excel stays editable and recolours itself */
-const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"],["Public Holiday","hol"]];
-const STATUS_VALUES=[["Present","p"],["Present (WFH)","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"],["Public Holiday","hol"],["Day off","off"]];
+const GRID_VALUES=[["P","p"],["WFH","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"]];
+const STATUS_VALUES=[["Present","p"],["Present (WFH)","wfh"],["Out of Office","ooo"],["Sick Leave","sick"],["Annual Leave","annual"],["Emergency Leave","emergency"],["Half Day","half"],["On Leave","other"],["Day off","off"]];
 function listRule(values,title){return {type:"list",allowBlank:true,formulae:['"'+values.join(",")+'"'],showErrorMessage:true,errorStyle:"warning",errorTitle:title||"Not in the list",error:"Pick a value from the dropdown, or press Yes to keep what you typed."}}
 function colourRules(ws,ref,values,ST){
   ws.addConditionalFormatting({ref,rules:values.map(([v,code],i)=>{const st=ST[code]||[null,"FF1C1326"];const style={font:{bold:true,color:{argb:st[1]}}};
@@ -1542,9 +1542,11 @@ async function exportExcel(){
     days.forEach((d,i)=>{
       const col=D0+i, band=BANDS[bandOf[i]%BANDS.length], off=!sched(d).on, today=key(d)===tk;
       const dc=ws.getCell(R_D,col); dc.value=d.getDate(); dc.font={bold:true,size:11,color:{argb:off?C.red:C.ink}};
-      const nc=ws.getCell(R_N,col); nc.value=d.toLocaleDateString("en-GB",{weekday:"long"}); nc.font={size:10,bold:off,color:{argb:off?C.red:C.ink}};
+      const hol=holidayOf(d);
+      const nc=ws.getCell(R_N,col); nc.value=hol?"Public Holiday":d.toLocaleDateString("en-GB",{weekday:"long"}); nc.font={size:10,bold:off,color:{argb:hol?"FF0F6E64":off?C.red:C.ink}};
       nc.alignment={textRotation:90,horizontal:"center",vertical:"middle"};
-      [dc,nc].forEach(c=>{c.fill=solid(band);c.border=box;if(!nc.alignment||c===dc)c.alignment={horizontal:"center",vertical:"middle"}});
+      [dc,nc].forEach(c=>{c.fill=solid(hol?"FFD6F0EC":band);c.border=box;if(!nc.alignment||c===dc)c.alignment={horizontal:"center",vertical:"middle"}});
+      if(hol)dc.font={bold:true,size:11,color:{argb:"FF0F6E64"}};
       dc.border={...box,top:med};
       nc.alignment={textRotation:90,horizontal:"center",vertical:"middle"};
       const hc=ws.getCell(R_H,col); hc.fill=solid(C.brand); hc.border={top:hair,bottom:hair,left:{style:"thin",color:{argb:C.brand2}},right:{style:"thin",color:{argb:C.brand2}}};
@@ -1570,11 +1572,10 @@ async function exportExcel(){
       const nc=row.getCell(1); nc.value=p.name; nc.font={bold:true,size:10.5,color:{argb:C.ink}}; nc.alignment={vertical:"middle",indent:1};
       nc.border=box; if(pi%2)nc.fill=solid(C.zebra);
       days.forEach((d,i)=>{
-        const r=recs[key(d)+"_"+p.id], cf0=cellFor(r,d,tk,p), hn=holidayOf(d), cf=hn&&(cf0.code==="off"||!cf0.code)?{code:"hol",label:"Public Holiday",note:""}:cf0, c=row.getCell(D0+i);
+        const r=recs[key(d)+"_"+p.id], cf=cellFor(r,d,tk,p), c=row.getCell(D0+i);
         c.value=cf.code==="p"?"P":cf.code==="wfh"?"WFH":cf.code==="off"?"":cf.label; c.border=box; c.dataValidation=listRule(GRID_VALUES.map(x=>x[0]),"Attendance"); c.alignment={horizontal:"center",vertical:"middle",wrapText:true,shrinkToFit:false};
         const st=ST[cf.code];
-        if(cf.code==="hol")c.fill=solid(ST.hol[0]);
-        else if(cf.code==="off"||!sched(d).on)c.fill=solid(C.off);
+        if(cf.code==="off"||!sched(d).on)c.fill=solid(C.off);
         else if(pi%2)c.fill=solid(C.zebra);
         c.font={size:9,bold:cf.code==="p"||cf.code==="wfh",color:{argb:st?st[1]:C.ink}};
         if(cf.note){c.note={texts:[{text:"Note: "+cf.note}]};c.font={...c.font,italic:false}}
@@ -1634,7 +1635,7 @@ async function exportExcel(){
     // key
     let kr=last+4; ws.getCell(kr,1).value="Key"; ws.getCell(kr,1).font={bold:true,color:{argb:C.muted}};
     const key_=[["P","Present in office",null,C.pInk],["WFH","Worked from home",...ST.wfh],["Out of Office","Not marked present",...ST.ooo],
-      ["Sick Leave","Sick leave",...ST.sick],["Annual Leave","Annual leave",...ST.annual],["Emergency Leave","Emergency leave",...ST.emergency],["Half Day","Half day",...ST.half],["On Leave","Other leave",...ST.other],["Public Holiday","Public holiday",...ST.hol]];
+      ["Sick Leave","Sick leave",...ST.sick],["Annual Leave","Annual leave",...ST.annual],["Emergency Leave","Emergency leave",...ST.emergency],["Half Day","Half day",...ST.half],["On Leave","Other leave",...ST.other]];
     key_.forEach(([v,l,f,ink],i)=>{const r=kr+i, a=ws.getCell(r,2); a.value=v; a.font={bold:true,size:9,color:{argb:ink}}; if(f)a.fill=solid(f);
       a.alignment={horizontal:"center",vertical:"middle"}; a.border=box; if(i)ws.getCell(r,1).value=null;
       ws.mergeCells(r,3,r,5); const b=ws.getCell(r,3); b.value=l; b.font={size:9.5,color:{argb:C.ink}}; b.alignment={vertical:"middle",indent:1}});
@@ -1787,7 +1788,7 @@ async function exportDaily(k){
     rows.forEach((x,i)=>{
       const R=HR+1+i, row=ws.getRow(R); row.height=x.cf.note&&x.cf.note.length>50?34:21;
       const r=x.r;
-      const vals=[x.p.name,x.p.role||"—",sc.holiday&&(x.cf.code==="off"||!x.cf.code)?"Public Holiday":statusText(x),isPresent(r)?(isHome(r)?"Home":"Office"):"—",x.cf.note||""];
+      const vals=[x.p.name,x.p.role||"—",statusText(x),isPresent(r)?(isHome(r)?"Home":"Office"):"—",x.cf.note||""];
       vals.forEach((v,j)=>{const cell=row.getCell(j+1);cell.value=v==null?"":v;cell.border=box;
         cell.alignment={vertical:"middle",horizontal:j<2||j===4?"left":"center",wrapText:j===4,indent:j===0?1:0};
         cell.font={size:10.5,bold:j===0,color:{argb:j===1?C.muted:C.ink}};
