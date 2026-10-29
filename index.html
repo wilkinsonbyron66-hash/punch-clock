@@ -727,6 +727,32 @@ header::after{height:1px;bottom:-1px;background:linear-gradient(90deg,transparen
   .ym{transition:border-color .2s,transform .3s var(--spring)}.ym:hover{transform:translateY(-1px)}
 }
 @media (max-width:640px){.tabs button[aria-selected="true"]{color:var(--accent)}}
+
+/* ===== send to HR ===== */
+.hrbar{display:flex;align-items:center;gap:12px;border-radius:16px;padding:12px 14px;margin-bottom:14px;background:var(--surface);border:1px solid var(--line)}
+.hrbar .ricon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--accent-soft);color:var(--accent)}
+.hrbar .ricon svg{width:18px;height:18px}
+.hrbar>div{flex:1;min-width:0}.hrbar b{display:block;font-size:15px}.hrbar span{font-size:13px;color:var(--muted)}
+.hrbar .btn{flex:none}
+.hrbar.ready{border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:linear-gradient(90deg,var(--accent-soft),var(--surface) 70%)}
+.hrbar.sent .ricon{background:var(--in-soft);color:var(--in)}.hrbar.sent b{color:var(--in)}
+@media (max-width:640px){.hrbar{flex-wrap:wrap}.hrbar .btn{width:100%}}
+.hrbox{width:min(860px,100%)}
+.hrgrid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;padding:16px}
+@media (max-width:680px){.hrgrid{grid-template-columns:1fr}.hrprev{max-height:220px}}
+.hrprev{border-radius:12px;overflow:auto;background:var(--surface-2);border:1px solid var(--line);max-height:430px}
+.hrprev img{display:block;width:100%;height:auto}
+.hrform{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hrform label{display:flex;flex-direction:column;gap:5px}.hrform .eyebrow em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:600}
+.hrform .inp{width:100%}
+.hrsub{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}.hrsub b{font-size:13.5px}
+.hrform .btn{width:100%;flex:none;min-height:46px}
+.hrform .hint{margin:0;font-size:12.5px;color:var(--muted)}
+.hrdone{display:flex;gap:12px;padding:14px;border-radius:14px;background:var(--in-soft)}
+.hrdone .ricon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--in);color:#fff;flex:none}.hrdone .ricon svg{width:18px;height:18px}
+.hrdone b{display:block;margin-bottom:6px}.hrdone ol b{display:inline;margin:0;word-break:break-all}.hrdone ol{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:4px}
+.btn.hrbtn{background:var(--accent);color:var(--accent-ink)}
+@media (prefers-reduced-motion:no-preference){.hrbar{animation:rise .55s var(--spring) both}.hrdone{animation:rise .5s var(--spring) both}}
 </style>
 
 <div id="splash" aria-hidden="true"><i class="sg sg1"></i><i class="sg sg2"></i><i class="sg sg3"></i><div class="spc"><svg viewBox="-1 -1 64 81">
@@ -963,6 +989,7 @@ function weekDays(offset){
   return Array.from({length:7},(_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return x});
 }
 const IC={
+  send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg>',
   in:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/></svg>',
   out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 17l5-5-5-5M21 12H9"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6.5 8 6.5M6 9.5V20h12V9.5M10 20v-5h4v5"/></svg>',
@@ -1158,6 +1185,7 @@ function renderToday(){
   if(sc.holiday)h+=`<div class="holbanner" role="status"><span class="ricon">${IC.cal}</span><div><b>Public holiday · ${esc(sc.holiday)}</b><span>The office is closed${today?" today":" on this day"}. No one needs marking.</span></div></div>`;
   else if(today){const nx=nextHoliday(14);if(nx)h+=`<div class="holnext"><i></i><span>Coming up: <b>${esc(nx.name)}</b> · ${esc(dateOf(nx.date).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}${nx.len>1?" ("+nx.len+" days)":""}</span><em>${nx.in===1?"tomorrow":"in "+nx.in+" days"}</em></div>`}
   h+=monthEndBanner(today);
+  if(S.canWrite&&S.people.length&&!sc.holiday&&vKey()<=todayKey)h+=hrBar(vKey(),left);
   const M=mailCfg(), nowHm=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
   if(left&&S.canWrite&&today&&sc.on&&M.remind&&M.remindAt&&nowHm>=M.remindAt)
     h+=`<div class="remind" role="status"><span class="ricon">${IC.bell}</span><div><b>Reminder: attendance isn't finished</b><span>It's past ${esc(fmt12(M.remindAt))} and ${left} ${left===1?"person isn't":"people aren't"} marked yet.</span></div></div>`;
@@ -1533,6 +1561,81 @@ function phYearBody(p,P){
     <p class="hint" style="margin:8px 0 0">Tap a month to see its days${S.canWrite?" or fix several at once":""}.</p>`;
 }
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.ph){S.ph=null;renderPh()}});
+
+/* ---------- send the daily report to HR: one PDF + a ready-made email ---------- */
+function hrCfg(){const h=S.settings.hr||{};return {to:h.to||"",cc:h.cc||""}}
+function hrSentAt(k){const m=S.settings.hrSent||{};return m[k]||null}
+function hrBar(k,left){
+  const at=hrSentAt(k), d=dateOf(k), isT=k===todayKey;
+  const when=at?new Date(at):null;
+  return `<div class="hrbar${at?" sent":""}${!at&&!left?" ready":""}"><span class="ricon">${at?IC.check:IC.send}</span>
+    <div><b>${at?"Sent to HR":isT?"Today's report for HR":"Report for HR · "+esc(d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}))}</b>
+      <span>${at?"Sent at "+esc(fmt12(pad(when.getHours())+":"+pad(when.getMinutes())))+(when.toDateString()!==new Date().toDateString()?" on "+esc(when.toLocaleDateString(undefined,{day:"numeric",month:"short"})):"")+". You can send it again if anything changed."
+        :left?left+(left===1?" person isn't":" people aren't")+" marked yet. You can still send it now.":"Everyone's marked. One tap sends the PDF to HR."}</span></div>
+    <button class="btn sm${at?" ghost":""}" type="button" data-act="hrsend" data-k="${k}">${IC.send}${at?"Send again":"Send to HR"}</button></div>`;
+}
+function hrSubject(k){return (S.settings.teamName||"B3 International")+" – Daily Attendance – "+dateOf(k).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
+function hrBody(k,sum){const c=sum.c, away=sum.rows.filter(x=>LEAVE[x.cf.code]||x.cf.code==="ooo");
+  return "Hi,\n\nPlease find attached the daily attendance report for "+dayLong(dateOf(k))+".\n\n"
+    +"Present: "+(c.p+c.wfh)+" of "+c.total+" ("+c.p+" in office, "+c.wfh+" from home)\n"
+    +"Away: "+(c.leave+c.ooo)+(away.length?" – "+away.map(x=>x.p.name+" ("+statusText(x)+")").join(", "):"")+"\n\nBest regards,"}
+function hrFile(k){return "B3-Daily-Attendance-"+k+".pdf"}
+function canShareFiles(){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare({files:[new File([new Uint8Array(1)],"t.pdf",{type:"application/pdf"})]}))}catch(e){return false}}
+async function openHR(k){
+  if(!S.canWrite)return; if(!db){noDb();return}
+  S.hr={k,busy:true,...hrCfg()}; renderHR();
+  try{const r=await buildDailyPdf(k), sum=daySummary(k,await dayRecsFetch(k)), jpg=r.cv.toDataURL("image/jpeg",0.92);
+    if(!S.hr||S.hr.k!==k)return;
+    Object.assign(S.hr,{busy:false,img:jpg,bytes:jpegToPdf(jpg,r.cv.width,r.cv.height),sum});renderHR();
+    setTimeout(()=>{const x=document.getElementById("hrTo");if(x&&!x.value)x.focus()},300)}
+  catch(e){console.error(e);S.hr=null;renderHR();toast("Couldn't build the report. Try again.")}
+}
+async function hrMarkSent(k){const m={...(S.settings.hrSent||{})};m[k]=new Date().toISOString();
+  const keys=Object.keys(m).sort();while(keys.length>60)delete m[keys.shift()];
+  const H=S.hr, hr={to:H.to.trim(),cc:H.cc.trim()};
+  await saveSettings({hrSent:m,hr})}
+function hrValid(){const H=S.hr;return H&&/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(H.to.trim().split(/[,;]\s*/)[0]||"")}
+async function hrGo(how){
+  const H=S.hr; if(!H||H.busy)return;
+  if(!hrValid()){toast("Add HR's email address first.");const x=document.getElementById("hrTo");x&&x.focus();return}
+  const k=H.k, subj=hrSubject(k), body=hrBody(k,H.sum);
+  if(how==="share"){
+    try{await navigator.share({files:[new File([H.bytes],hrFile(k),{type:"application/pdf"})],title:subj,text:body});
+      await hrMarkSent(k);S.hr=null;renderHR();toast("Report shared with HR");}
+    catch(e){if(e&&e.name!=="AbortError")toast("Sharing didn't work here. Use Download + email instead.")}
+    return}
+  try{if(downloads)await downloads.save({filename:hrFile(k),data:H.bytes.slice()})}catch(e){if(e&&e.code==="declined")return}
+  const q="subject="+encodeURIComponent(subj)+(H.cc.trim()?"&cc="+encodeURIComponent(H.cc.trim()):"")+"&body="+encodeURIComponent(body);
+  const a=document.createElement("a");a.href="mailto:"+encodeURIComponent(H.to.trim()).replace(/%40/g,"@").replace(/%2C/gi,",")+"?"+q;document.body.appendChild(a);a.click();a.remove();
+  await hrMarkSent(k);
+  H.done=true;renderHR();
+}
+function renderHR(){
+  let ov=document.getElementById("hrov");
+  if(!S.hr){if(ov)closeOv(ov);return}
+  if(!ov){ov=document.createElement("div");ov.id="hrov";ov.className="pdfov";document.body.appendChild(ov);setTimeout(()=>ov.classList.add("settled"),650);
+    ov.addEventListener("click",e=>{const b=e.target.closest("[data-hr]");if(e.target===ov||b&&b.dataset.hr==="close"){S.hr=null;renderHR();render();return}
+      if(b&&b.dataset.hr==="mail")hrGo("mail");if(b&&b.dataset.hr==="share")hrGo("share")});
+    ov.addEventListener("input",e=>{if(!S.hr)return;if(e.target.id==="hrTo")S.hr.to=e.target.value;if(e.target.id==="hrCc")S.hr.cc=e.target.value})}
+  const H=S.hr, d=dateOf(H.k), share=canShareFiles();
+  const done=H.done?`<div class="hrdone"><span class="ricon">${IC.check}</span><div><b>Almost done – just attach and send</b>
+      <ol><li>Your email is open, addressed to HR, with the subject and message filled in.</li><li>Drag <b>${esc(hrFile(H.k))}</b> from your Downloads into the email.</li><li>Press Send.</li></ol></div></div>
+      <div class="acts"><button class="btn" type="button" data-hr="close">Done</button></div>`:"";
+  ov.innerHTML=`<div class="pdfbox hrbox" role="dialog" aria-label="Send the daily report to HR">
+    <div class="pdfbar"><div><b>Send to HR</b><span>${esc(dayLong(d))}</span></div><div class="acts" style="flex:none"><button class="btn ghost sm" type="button" data-hr="close">Close</button></div></div>
+    <div class="hrgrid"><div class="hrprev">${H.busy?`<div class="phload">Preparing the PDF…</div>`:`<img src="${H.img}" alt="Preview of the report">`}</div>
+      <div class="hrform">${done||`
+        <label><span class="eyebrow">HR email</span><input class="inp" id="hrTo" type="email" inputmode="email" placeholder="hr@company.com" value="${esc(H.to)}" autocomplete="email"></label>
+        <label><span class="eyebrow">Cc <em>(optional)</em></span><input class="inp" id="hrCc" type="text" placeholder="manager@company.com" value="${esc(H.cc)}"></label>
+        <div class="hrsub"><span class="eyebrow">Subject</span><b>${esc(hrSubject(H.k))}</b></div>
+        ${share?`<button class="btn" type="button" data-hr="share" ${H.busy?"disabled":""}>${IC.send}Email with PDF attached</button>
+          <button class="btn ghost" type="button" data-hr="mail" ${H.busy?"disabled":""}>${IC.dl}Download PDF + open email</button>
+          <p class="hint">“Email with PDF attached” opens your device's share menu – pick Outlook or Mail and the PDF is already in it.</p>`
+        :`<button class="btn" type="button" data-hr="mail" ${H.busy?"disabled":""}>${IC.send}Download PDF + open email</button>
+          <p class="hint">The PDF downloads and your email opens already addressed to HR. Drag the PDF in and press Send.</p>`}
+        <p class="hint">HR's email is saved, so next time it's just one tap.</p>`}</div></div></div>`;
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.hr){S.hr=null;renderHR()}});
 /* ---------- automatic emails ---------- */
 function mailCfg(){return {on:false,to:"",at:"17:30",remind:false,remindAt:"10:00",...(S.settings.autoMail||{}),...(S.draft.mail||{})}}
 function mailPanel(){
@@ -2046,6 +2149,7 @@ function reportsPanel(){
       <div class="rep-c"><input class="inp sel" type="date" id="dSel" value="${esc(k)}" max="${todayKey}" aria-label="Day to report">
         ${downloads?`<button class="btn sm" type="button" data-act="dxlsx">${dl}Excel</button>`:""}
         <button class="btn sm pdfbtn" type="button" data-act="dpdf">${IC.pdf}PDF report</button>
+        ${S.canWrite?`<button class="btn sm hrbtn" type="button" data-act="hrsend" data-k="${esc(k)}">${IC.send}Send to HR</button>`:""}
         <button class="btn ghost sm" type="button" data-act="dmail">${IC.mail}Email text</button></div>
       ${sum?`<div class="minis"><span class="mini-t" style="--c:var(--in)"><b>${sum.c.p}</b>In office</span><span class="mini-t" style="--c:var(--home)"><b>${sum.c.wfh}</b>From home</span><span class="mini-t" style="--c:var(--leave)"><b>${sum.c.leave}</b>On leave</span><span class="mini-t" style="--c:var(--late)"><b>${sum.c.ooo}</b>Out of office</span></div>`:`<p class="sub" style="margin:10px 0 0">Preview shows the last 30 days. Older days still export.</p>`}
     </section>
@@ -2462,6 +2566,7 @@ view.addEventListener("click",e=>{
     case "prev":S.weekOffset--;subWeek();render();break;
     case "next":if(S.weekOffset<0){S.weekOffset++;subWeek();render()}break;
     case "csv":exportCsv();break;
+    case "hrsend":openHR(b.dataset.k||vKey());break;
     case "mrepx":S.month=b.dataset.ym;exportExcel();LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
     case "mrepp":S.month=b.dataset.ym;makePdf("month");LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
     case "mrepdone":LS.set("mrep-"+b.dataset.ym,"1");render();toast(monthName(b.dataset.ym)+" report hidden. It's always on the Reports tab.");break;
