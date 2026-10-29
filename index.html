@@ -753,6 +753,16 @@ header::after{height:1px;bottom:-1px;background:linear-gradient(90deg,transparen
 .hrdone b{display:block;margin-bottom:6px}.hrdone ol b{display:inline;margin:0;word-break:break-all}.hrdone ol{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:4px}
 .btn.hrbtn{background:var(--accent);color:var(--accent-ink)}
 @media (prefers-reduced-motion:no-preference){.hrbar{animation:rise .55s var(--spring) both}.hrdone{animation:rise .5s var(--spring) both}}
+
+.hrgo{min-height:52px!important;font-size:16px}
+.hralt{font-size:13px;color:var(--muted)}.hralt summary{cursor:pointer;font-weight:700;padding:4px 0}
+.hralt .btn{width:100%;margin-top:8px}
+.hrwarn{padding:10px 12px;border-radius:12px;background:var(--late-soft);font-size:13px}.hrwarn b{display:block;color:var(--late)}
+.hrsent span{font-size:13.5px;color:var(--muted)}
+.spin{width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hrfields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.hrfields label{display:flex;flex-direction:column;gap:5px}
+@media (max-width:640px){.hrfields{grid-template-columns:1fr}}
 </style>
 
 <div id="splash" aria-hidden="true"><i class="sg sg1"></i><i class="sg sg2"></i><i class="sg sg3"></i><div class="spc"><svg viewBox="-1 -1 64 81">
@@ -1595,10 +1605,23 @@ async function hrMarkSent(k){const m={...(S.settings.hrSent||{})};m[k]=new Date(
   const H=S.hr, hr={to:H.to.trim(),cc:H.cc.trim()};
   await saveSettings({hrSent:m,hr})}
 function hrValid(){const H=S.hr;return H&&/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(H.to.trim().split(/[,;]\s*/)[0]||"")}
+function canDirect(){return !!(window.PC_ADMIN&&window.PC_ADMIN.run)&&!S.hrNoServer}
+function b64(bytes){let out="";for(let i=0;i<bytes.length;i+=0x8000)out+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(out)}
 async function hrGo(how){
-  const H=S.hr; if(!H||H.busy)return;
+  const H=S.hr; if(!H||H.busy||H.sending)return;
   if(!hrValid()){toast("Add HR's email address first.");const x=document.getElementById("hrTo");x&&x.focus();return}
   const k=H.k, subj=hrSubject(k), body=hrBody(k,H.sum);
+  if(how==="direct"){
+    H.sending=true;renderHR();
+    try{await window.PC_ADMIN.run("sendHrPdf",JSON.stringify({to:H.to.trim(),cc:H.cc.trim(),subject:subj,body,filename:hrFile(k),pdf:b64(H.bytes)}));
+      H.sending=false;H.sent=true;renderHR();await hrMarkSent(k);
+      setTimeout(()=>{if(S.hr&&S.hr.sent){S.hr=null;renderHR();render()}},2200)}
+    catch(e){H.sending=false;const m=String(e&&e.message||"");
+      if(/unknown action/.test(m)){S.hrNoServer=true;H.needUpdate=true}
+      else if(/not_admin/.test(m))toast("Enter the admin PIN first (Admin button at the top).");
+      else toast(/email/i.test(m)?"Check HR's email address and try again.":"Couldn't send. Check your connection and try again.");
+      renderHR()}
+    return}
   if(how==="share"){
     try{await navigator.share({files:[new File([H.bytes],hrFile(k),{type:"application/pdf"})],title:subj,text:body});
       await hrMarkSent(k);S.hr=null;renderHR();toast("Report shared with HR");}
@@ -1615,10 +1638,10 @@ function renderHR(){
   if(!S.hr){if(ov)closeOv(ov);return}
   if(!ov){ov=document.createElement("div");ov.id="hrov";ov.className="pdfov";document.body.appendChild(ov);setTimeout(()=>ov.classList.add("settled"),650);
     ov.addEventListener("click",e=>{const b=e.target.closest("[data-hr]");if(e.target===ov||b&&b.dataset.hr==="close"){S.hr=null;renderHR();render();return}
-      if(b&&b.dataset.hr==="mail")hrGo("mail");if(b&&b.dataset.hr==="share")hrGo("share")});
+      if(b&&b.dataset.hr==="mail")hrGo("mail");if(b&&b.dataset.hr==="direct")hrGo("direct");if(b&&b.dataset.hr==="share")hrGo("share")});
     ov.addEventListener("input",e=>{if(!S.hr)return;if(e.target.id==="hrTo")S.hr.to=e.target.value;if(e.target.id==="hrCc")S.hr.cc=e.target.value})}
   const H=S.hr, d=dateOf(H.k), share=canShareFiles();
-  const done=H.done?`<div class="hrdone"><span class="ricon">${IC.check}</span><div><b>Almost done – just attach and send</b>
+  const done=H.sent?`<div class="hrdone hrsent"><span class="ricon">${IC.check}</span><div><b>Sent to HR</b><span>${esc(H.to.trim())}${H.cc.trim()?" · cc "+esc(H.cc.trim()):""} has the PDF.</span></div></div>`:H.done?`<div class="hrdone"><span class="ricon">${IC.check}</span><div><b>Almost done – just attach and send</b>
       <ol><li>Your email is open, addressed to HR, with the subject and message filled in.</li><li>Drag <b>${esc(hrFile(H.k))}</b> from your Downloads into the email.</li><li>Press Send.</li></ol></div></div>
       <div class="acts"><button class="btn" type="button" data-hr="close">Done</button></div>`:"";
   ov.innerHTML=`<div class="pdfbox hrbox" role="dialog" aria-label="Send the daily report to HR">
@@ -1628,9 +1651,12 @@ function renderHR(){
         <label><span class="eyebrow">HR email</span><input class="inp" id="hrTo" type="email" inputmode="email" placeholder="hr@company.com" value="${esc(H.to)}" autocomplete="email"></label>
         <label><span class="eyebrow">Cc <em>(optional)</em></span><input class="inp" id="hrCc" type="text" placeholder="manager@company.com" value="${esc(H.cc)}"></label>
         <div class="hrsub"><span class="eyebrow">Subject</span><b>${esc(hrSubject(H.k))}</b></div>
-        ${share?`<button class="btn" type="button" data-hr="share" ${H.busy?"disabled":""}>${IC.send}Email with PDF attached</button>
-          <button class="btn ghost" type="button" data-hr="mail" ${H.busy?"disabled":""}>${IC.dl}Download PDF + open email</button>
-          <p class="hint">“Email with PDF attached” opens your device's share menu – pick Outlook or Mail and the PDF is already in it.</p>`
+        ${H.needUpdate?`<div class="hrwarn"><b>One-time update needed</b><span>Direct sending needs the small update to your Google Sheet script. Until then, use the option below.</span></div>`:""}
+        ${canDirect()?`<button class="btn hrgo" type="button" data-hr="direct" ${H.busy||H.sending?"disabled":""}>${H.sending?`<span class="spin"></span>Sending…`:IC.send+"Send to HR now"}</button>
+          <p class="hint">The PDF is emailed to HR straight away. Nothing else to do.</p>
+          <details class="hralt"><summary>Other ways to send</summary>${share?`<button class="btn ghost sm" type="button" data-hr="share">Share with PDF attached</button>`:""}<button class="btn ghost sm" type="button" data-hr="mail">Download PDF + open my email</button></details>`
+        :share?`<button class="btn" type="button" data-hr="share" ${H.busy?"disabled":""}>${IC.send}Email with PDF attached</button>
+          <button class="btn ghost" type="button" data-hr="mail" ${H.busy?"disabled":""}>${IC.dl}Download PDF + open email</button>`
         :`<button class="btn" type="button" data-hr="mail" ${H.busy?"disabled":""}>${IC.send}Download PDF + open email</button>
           <p class="hint">The PDF downloads and your email opens already addressed to HR. Drag the PDF in and press Send.</p>`}
         <p class="hint">HR's email is saved, so next time it's just one tap.</p>`}</div></div></div>`;
@@ -1638,6 +1664,13 @@ function renderHR(){
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.hr){S.hr=null;renderHR()}});
 /* ---------- automatic emails ---------- */
 function mailCfg(){return {on:false,to:"",at:"17:30",remind:false,remindAt:"10:00",...(S.settings.autoMail||{}),...(S.draft.mail||{})}}
+function hrPanel(){
+  const h=hrCfg(), ro=S.canWrite?"":"disabled", D=S.draft.hr, v=D||h, dirty=!!D&&(D.to!==h.to||D.cc!==h.cc);
+  return `<div class="panel mailp hrp"><h2>Daily report to HR</h2><p class="sub">Who gets the PDF when you tap <b>Send to HR</b> on the Today tab.</p>
+    <div class="hrfields"><label><span class="eyebrow">HR email</span><input class="inp" id="t-hrTo" type="email" placeholder="hr@company.com" value="${esc(v.to)}" ${ro}></label>
+      <label><span class="eyebrow">Cc (optional)</span><input class="inp" id="t-hrCc" type="text" placeholder="manager@company.com" value="${esc(v.cc)}" ${ro}></label></div>
+    <div class="acts">${dirty?`<button class="btn ghost sm" type="button" data-act="hrreset">Discard</button>`:""}<button class="btn sm" type="button" data-act="hrsave" ${ro} ${dirty?"":"disabled"}>${dirty?"Save":"Saved"}</button></div></div>`;
+}
 function mailPanel(){
   const M=mailCfg(), ro=S.canWrite?"":"disabled", dirty=!!S.draft.mail;
   return `<div class="panel mailp"><h2>Reminder</h2><p class="sub">A banner on the Today tab if attendance isn't finished by a set time.</p>
@@ -2387,7 +2420,7 @@ function renderTeam(){
       <div class="field"><label for="sTeam">Team name</label><input class="inp" id="sTeam" maxlength="50" value="${esc(D.sTeam==null?s.teamName:D.sTeam)}" placeholder="e.g. B3 Dubai office"></div>
       <button class="btn" type="submit" ${ro}>Save name</button>
     </form>
-  </div>${mailPanel()}</div>`;
+  </div>${hrPanel()}${mailPanel()}</div>`;
 }
 
 /* ---------- schedule ---------- */
@@ -2512,6 +2545,8 @@ view.addEventListener("input",e=>{
   if(id==="e-note"&&S.edit){S.edit.note=e.target.value;return}
   const mm=/^m-(to|on|at|remind|remindAt)$/.exec(id);
   if(mm){const was=!!S.draft.mail;const M=S.draft.mail||(S.draft.mail={...mailCfg()});M[mm[1]]=e.target.type==="checkbox"?e.target.checked:e.target.value;if(!was||e.target.type==="checkbox")render();return}
+  if(id==="t-hrTo"||id==="t-hrCc"){const was=!!S.draft.hr;const D=S.draft.hr||(S.draft.hr={...hrCfg()});D[id==="t-hrTo"?"to":"cc"]=e.target.value;
+    const bt=view.querySelector('[data-act="hrsave"]');if(bt){bt.disabled=false;bt.textContent="Save"}return}
   if(id==="rn-name"&&S.rename){S.rename.name=e.target.value;return}
   if(id==="rn-role"&&S.rename){S.rename.role=e.target.value;return}
   if((id==="rn-bd"||id==="rn-bm")&&S.rename){const d=document.getElementById("rn-bd").value,m=document.getElementById("rn-bm").value;S.rename.bday=d&&m?m+"-"+d:"";return}
@@ -2566,6 +2601,9 @@ view.addEventListener("click",e=>{
     case "prev":S.weekOffset--;subWeek();render();break;
     case "next":if(S.weekOffset<0){S.weekOffset++;subWeek();render()}break;
     case "csv":exportCsv();break;
+    case "hrreset":S.draft.hr=null;render();break;
+    case "hrsave":{const D=S.draft.hr;if(!D)break;const to=D.to.trim();if(to&&!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/.test(to)){toast("That email address doesn't look right.");break}
+      saveSettings({hr:{to,cc:D.cc.trim()}},"HR email saved").then(ok=>{if(ok){S.draft.hr=null;render()}});break}
     case "hrsend":openHR(b.dataset.k||vKey());break;
     case "mrepx":S.month=b.dataset.ym;exportExcel();LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
     case "mrepp":S.month=b.dataset.ym;makePdf("month");LS.set("mrep-"+b.dataset.ym,"1");setTimeout(render,400);break;
