@@ -1046,7 +1046,7 @@ function card(p,now){
       <div class="field"><label for="e-note">Note</label><textarea class="inp" id="e-note" rows="2" maxlength="300" placeholder="Optional, e.g. client site visit in Abu Dhabi">${esc(E.note||"")}</textarea></div>
       <div class="acts"><button class="btn" type="button" data-act="esave" data-id="${p.id}" ${dis}>Save</button><button class="btn ghost sm" type="button" data-act="ecancel">Cancel</button></div></div>`;
   }else if(st==="none"){
-    pill=!sc.on?`<span class="pill">${sc.holiday?esc(sc.holiday):"Day off"}</span>`:plan?`<span class="pill home">WFH day</span>`:`<span class="pill in">Office day</span>`;
+    pill=sc.holiday?"":!sc.on?`<span class="pill">Day off</span>`:plan?`<span class="pill home">WFH day</span>`:`<span class="pill in">Office day</span>`;
     const loc=plan?"home":"office";
     acts=S.confirm==="lv:"+p.id
       ?`<div class="editbox"><span class="eyebrow">Type of leave</span><div class="lvgrid">${Object.entries(LEAVE_CHOICES).map(([k,l])=>`<button class="lvbtn lv-${k}" type="button" data-act="leavetype" data-type="${k}" data-id="${p.id}" ${dis}>${l}</button>`).join("")}</div>
@@ -1507,7 +1507,7 @@ async function exportExcel(){
     const S0=DL+2, SL=SUM.length?S0+SUM.length-1:DL;      // summary columns after a spacer
     const sc=k=>S0+SUM.findIndex(x=>x.k===k);
     ws.getColumn(1).width=24;
-    days.forEach((d,i)=>ws.getColumn(D0+i).width=sched(d).on?11.5:5.2);
+    days.forEach((d,i)=>ws.getColumn(D0+i).width=holidayOf(d)?7.5:sched(d).on?11.5:5.2);
     if(SUM.length)ws.getColumn(DL+1).width=2;
     SUM.forEach((x,i)=>ws.getColumn(S0+i).width=x.k==="rate"?11.5:x.tot?10:9);
 
@@ -1527,7 +1527,7 @@ async function exportExcel(){
 
     // header: weeks (Sunday to Saturday, as in the B3 sheet) / date / day
     const R_W=5,R_D=6,R_N=7,R_H=8; ws.getRow(3).height=4; ws.getRow(4).height=6;
-    ws.getRow(R_W).height=22; ws.getRow(R_D).height=20; ws.getRow(R_N).height=74; ws.getRow(R_H).height=22;
+    ws.getRow(R_W).height=22; ws.getRow(R_D).height=20; ws.getRow(R_N).height=days.some(d=>holidayOf(d))?96:74; ws.getRow(R_H).height=22;
     [["Weeks",R_W],["Date",R_D],["Days",R_N]].forEach(([l,r])=>{const c=ws.getCell(r,1);c.value=l;c.font={bold:true,color:{argb:C.ink},size:11};
       c.fill=solid(C.brandSoft);c.alignment={vertical:"middle",horizontal:"center"};c.border=r===R_W?{top:med,bottom:med,left:med,right:med}:{...box,left:med,right:med}});
     let wk=0,start=0; const bandOf=[];
@@ -1543,12 +1543,12 @@ async function exportExcel(){
       const col=D0+i, band=BANDS[bandOf[i]%BANDS.length], off=!sched(d).on, today=key(d)===tk;
       const dc=ws.getCell(R_D,col); dc.value=d.getDate(); dc.font={bold:true,size:11,color:{argb:off?C.red:C.ink}};
       const hol=holidayOf(d);
-      const nc=ws.getCell(R_N,col); nc.value=hol?"Public Holiday":d.toLocaleDateString("en-GB",{weekday:"long"}); nc.font={size:10,bold:off,color:{argb:hol?"FF0F6E64":off?C.red:C.ink}};
+      const nc=ws.getCell(R_N,col); nc.value=hol?d.toLocaleDateString("en-GB",{weekday:"long"})+"\nPublic Holiday":d.toLocaleDateString("en-GB",{weekday:"long"}); nc.font={size:10,bold:off,color:{argb:hol?"FF0F6E64":off?C.red:C.ink}};
       nc.alignment={textRotation:90,horizontal:"center",vertical:"middle"};
       [dc,nc].forEach(c=>{c.fill=solid(hol?"FFD6F0EC":band);c.border=box;if(!nc.alignment||c===dc)c.alignment={horizontal:"center",vertical:"middle"}});
       if(hol)dc.font={bold:true,size:11,color:{argb:"FF0F6E64"}};
       dc.border={...box,top:med};
-      nc.alignment={textRotation:90,horizontal:"center",vertical:"middle"};
+      nc.alignment={textRotation:90,horizontal:"center",vertical:"middle",wrapText:!!hol};
       const hc=ws.getCell(R_H,col); hc.fill=solid(C.brand); hc.border={top:hair,bottom:hair,left:{style:"thin",color:{argb:C.brand2}},right:{style:"thin",color:{argb:C.brand2}}};
       if(today){hc.value="Today";hc.font={size:8,bold:true,color:{argb:C.white}};hc.alignment={horizontal:"center",vertical:"middle"}}
       else if(holidayOf(d)){hc.value="Holiday";hc.font={size:8,bold:true,color:{argb:C.white}};hc.alignment={horizontal:"center",vertical:"middle"}}
